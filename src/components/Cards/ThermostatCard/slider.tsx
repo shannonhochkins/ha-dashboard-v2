@@ -200,14 +200,12 @@ export class CircularSlider extends React.Component<
               thickness: trackWidth,
               svgSize: size,
               direction: angleType.direction,
-              roundEdges: true
             })}
             fill={trackColors.length ? 'url(#gradient)' : '#aaa'}
           />
         </React.Fragment>
 
         {
-          /* Handle 1 */
           controllable && (
             <React.Fragment>
               <filter
@@ -242,17 +240,6 @@ export class CircularSlider extends React.Component<
           )
         }
       </svg>
-      <div style={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        width: 2,
-        height: 2,
-        marginLeft: -1,
-        marginRight: -1,
-        background: 'red'
-
-      }}></div>
       {/* <Thermometer value={handle.value} min={minValue} max={maxValue} thickness={trackWidth} size={size} /> */}
     </Wrapper>
   }
@@ -312,39 +299,3 @@ function ThermometerBase({
     </svg>
   );
 }
-
-export class CircularSliderWithChildren extends React.Component<
-  React.PropsWithChildren<Props>
-> {
-  static defaultProps = CircularSlider.defaultProps;
-  render() {
-    const { size } = this.props;
-    return (
-      <div
-        style={{
-          width: size,
-          height: size,
-          position: "relative",
-        }}
-      >
-        <CircularSlider {...this.props} />
-        <div
-          style={{
-            position: "absolute",
-            top: "25%",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          {this.props.children}
-        </div>
-      </div>
-    );
-  }
-}
-
-export default CircularSlider;

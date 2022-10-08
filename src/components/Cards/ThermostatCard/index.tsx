@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
-import CircularSlider from './slider';
+import { CircularSlider } from './slider';
 
-import { RoundSlider } from './round-slider';
 export const ThermostatCard = () => {
   const entity = 'climate.daikin_ac';
   const [value, setValue] = useState(50);

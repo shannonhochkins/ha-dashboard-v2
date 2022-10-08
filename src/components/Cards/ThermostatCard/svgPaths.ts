@@ -80,12 +80,10 @@ export function arcPathWithRoundedEnds(opts: {
   thickness: number;
   svgSize: number;
   direction: "cw" | "ccw";
-  roundEdges: boolean;
 }) {
-  const { startAngle, innerRadius, thickness, direction, angleType, svgSize, roundEdges } =
+  const { startAngle, innerRadius, thickness, direction, angleType, svgSize } =
     opts;
   let { endAngle } = opts;
-  const height = svgSize * 2;
 
   if (startAngle % 360 === endAngle % 360 && startAngle !== endAngle) {
     // Drawing a full circle, slightly offset end angle
@@ -94,7 +92,6 @@ export function arcPathWithRoundedEnds(opts: {
   }
   const largeArc = endAngle - startAngle >= 180;
   const outerRadius = innerRadius + thickness;
-  const butt = roundEdges ? thickness / 2 : 0;
 
   const innerArcStart = angleToPosition(
     { degree: startAngle, ...angleType },
@@ -123,7 +120,7 @@ export function arcPathWithRoundedEnds(opts: {
     svgSize
   );
   const firstButt = `
-    A ${butt} ${butt} 0
+    A ${thickness / 2} ${thickness / 2} 0
       ${largeArc ? "1" : "0"}
       ${direction === "cw" ? "0" : "1"}
       ${outerArcStart.x} ${outerArcStart.y}
@@ -141,14 +138,12 @@ export function arcPathWithRoundedEnds(opts: {
       ${outerArcEnd.x} ${outerArcEnd.y}
   `;
 
-
   const secondButt = `
-    A ${butt} ${butt} 0
+    A ${thickness / 2} ${thickness / 2} 0
       ${largeArc ? "1" : "0"}
       ${direction === "cw" ? "0" : "1"}
       ${innerArcStart.x} ${innerArcStart.y}
   `;
-
 
   return startPoint + innerArc + firstButt + outerArc + secondButt + " Z";
 }

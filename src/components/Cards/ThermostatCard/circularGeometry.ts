@@ -142,7 +142,7 @@ export function positionToAngle(
   angleType: AngleDescription
 ) {
   const dX = position.x - svgSize / 2;
-  const dY = (svgSize * 2) / 2 - position.y; // position.y increases downwards in svg
+  const dY = svgSize / 2 - position.y; // position.y increases downwards in svg
   let theta = Math.atan2(dY, dX); // radians, counterclockwise from positive x axis
   if (theta < 0) {
     theta = theta + 2 * Math.PI;
