@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "jsx": "react",
+    "types": ["node"],
+    "baseUrl": ".",
+    "esModuleInterop": true,
+    "paths": {
+      "@root": ["src"],
+      "@store": ["src/store/"],
+      "@components": ["src/components/"],
+      "@areas": ["src/areas/"],
+      "@hooks": ["src/hooks/"],
+      "@hass": ["src/hass/"],
+      "@types": ["types.d.ts"]
+    }
+  },
+  "include": ["src", ".d.ts"],
+  "exclude": [
+    "**/.parcel-cache",
+    "**/dist",
+    "node_modules"
+  ]
+}
