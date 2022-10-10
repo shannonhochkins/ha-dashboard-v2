@@ -1,110 +1,41 @@
+import { START_ANGLE, END_ANGLE } from "./constants"
+
 export function angleToValue(params: {
   angle: number;
-  minValue: number;
-  maxValue: number;
-  startAngle: number;
-  endAngle: number;
+  min: number;
+  max: number;
 }) {
-  const { angle, minValue, maxValue, startAngle, endAngle } = params;
-  if (endAngle <= startAngle) {
-    // math assumes endAngle > startAngle
-    throw new Error("endAngle must be greater than startAngle");
-  }
-
-  if (angle < startAngle) {
-    return minValue;
-  } else if (angle > endAngle) {
-    return maxValue;
+  const { angle, min, max } = params;
+  if (angle < START_ANGLE) {
+    return min;
+  } else if (angle > END_ANGLE) {
+    return max;
   } else {
-    const ratio = (angle - startAngle) / (endAngle - startAngle);
-    const value = ratio * (maxValue - minValue) + minValue;
+    const ratio = (angle - START_ANGLE) / (END_ANGLE - START_ANGLE);
+    const value = ratio * (max - min) + min;
     return value;
   }
 }
 
 export function valueToAngle(params: {
   value: number;
-  minValue: number;
-  maxValue: number;
-  startAngle: number;
-  endAngle: number;
+  min: number;
+  max: number;
 }) {
-  const { value, minValue, maxValue, startAngle, endAngle } = params;
-  if (endAngle <= startAngle) {
-    // math assumes endAngle > startAngle
-    throw new Error("endAngle must be greater than startAngle");
-  }
-  const ratio = (value - minValue) / (maxValue - minValue);
-  const angle = ratio * (endAngle - startAngle) + startAngle;
+  const { value, min, max } = params;
+  const ratio = (value - min) / (max - min);
+  const angle = ratio * (END_ANGLE - START_ANGLE) + START_ANGLE;
   return angle;
 }
 
-export type AngleDescription = {
-  direction: "cw" | "ccw";
-  axis: "+x" | "-x" | "+y" | "-y";
-};
-
-export type AngleWithDescription = {
-  degree: number;
-} & AngleDescription;
-
-function convertAngle(
-  degree: number,
-  from: AngleDescription,
-  to?: AngleDescription
-) {
-  to = to || { direction: "ccw", axis: "+x" };
-
-  if (from.direction !== to.direction) {
-    degree = degree === 0 ? 0 : 360 - degree;
-  }
-
-  if (from.axis === to.axis) {
-    // e.g. +x to +x
-    return degree;
-  }
-
-  if (from.axis[1] === to.axis[1]) {
-    // e.g. +x to -x
-    return (180 + degree) % 360;
-  }
-
-  switch (to.direction + from.axis + to.axis) {
-    case "ccw+x-y":
-    case "ccw-x+y":
-    case "ccw+y+x":
-    case "ccw-y-x":
-    case "cw+y-x":
-    case "cw-y+x":
-    case "cw-x-y":
-    case "cw+x+y":
-      return (90 + degree) % 360;
-    case "ccw+y-x":
-    case "ccw-y+x":
-    case "ccw+x+y":
-    case "ccw-x-y":
-    case "cw+x-y":
-    case "cw-x+y":
-    case "cw+y+x":
-    case "cw-y-x":
-      return (270 + degree) % 360;
-    default:
-      // This is impossible, just for TS
-      throw new Error("Unhandled conversion");
-  }
-}
-
 export function angleToPosition(
-  angle: AngleWithDescription,
+  degree: number,
   radius: number,
   svgSize: number
 ) {
   // js functions need radians, counterclockwise from positive x axis
-  const angleConverted = convertAngle(angle.degree, angle, {
-    direction: "ccw",
-    axis: "+x",
-  });
-  const angleInRad = (angleConverted / 180) * Math.PI;
+  const angle = (90 + degree) % 360;
+  const angleInRad = (angle / 180) * Math.PI;
   let dX: number;
   let dY: number;
 
@@ -127,61 +58,26 @@ export function angleToPosition(
       dX = Math.cos(2 * Math.PI - angleInRad) * radius;
     }
   }
-
   // dX and dY are calculated based on having (0, 0) at the center
   // Now, translate dX and dY to svg coordinates, where (0, 0) is at the top left
   const x = dX + svgSize / 2;
   const y = svgSize / 2 - dY;
-
   return { x, y };
 }
 
 export function positionToAngle(
   position: { x: number; y: number },
   svgSize: number,
-  angleType: AngleDescription
 ) {
   const dX = position.x - svgSize / 2;
-  const dY = svgSize / 2 - position.y; // position.y increases downwards in svg
-  let theta = Math.atan2(dY, dX); // radians, counterclockwise from positive x axis
+  // position.y increases downwards in svg
+  const dY = svgSize / 2 - position.y; 
+  // radians, counterclockwise from positive x axis
+  let theta = Math.atan2(dY, dX); 
   if (theta < 0) {
     theta = theta + 2 * Math.PI;
   }
-  const degree = (theta / Math.PI) * 180; // degrees, counterclockwise from positive x axis
-  return convertAngle(
-    degree,
-    {
-      direction: "ccw",
-      axis: "+x",
-    },
-    angleType
-  );
-}
-
-export function semiCircle(opts: {
-  startAngle: number;
-  endAngle: number;
-  angleType: AngleDescription;
-  radius: number;
-  svgSize: number;
-  direction: "cw" | "ccw";
-}) {
-  const { startAngle, endAngle, radius, svgSize, direction, angleType } = opts;
-  const startPosition = angleToPosition(
-    { degree: startAngle, ...angleType },
-    radius,
-    svgSize
-  );
-  const endPosition = angleToPosition(
-    { degree: endAngle, ...angleType },
-    radius,
-    svgSize
-  );
-  return `
-    M ${svgSize / 2},${svgSize / 2}
-    L ${startPosition.x},${startPosition.y}
-    A ${radius} ${radius} 0 ${direction === "cw" ? "1 1" : "0 0"}
-      ${endPosition.x} ${endPosition.y}
-    Z
-  `;
+  // degrees, counterclockwise from positive x axis
+  const degree = (theta / Math.PI) * 180; 
+  return (270 + degree) % 360;
 }

@@ -1,115 +1,237 @@
-import React, { ReactNode } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from '@emotion/styled';
 import {
   angleToPosition,
   positionToAngle,
-  AngleDescription,
   valueToAngle,
   angleToValue,
 } from "./circularGeometry";
-import { arcPathWithRoundedEnds } from "./svgPaths";
+import { drawArc } from "./svgPaths";
+import { DialLines } from './dialLines';
+import { Thermometer as ThermometerBase } from './thermometer';
+import { Handle, HandleColors, DEFAULT_HANDLE_COLORS } from './handle';
+import { HEIGHT_MULTIPLIER, THICKNESS_DIVISOR, CANVAS_WIDTH, CANVAS_HEIGHT } from './constants';
 
 const Wrapper = styled.div`
   position: relative;
 `;
 
-const INNER_TRACK_SIZE = 1.4;
-const Thermometer = styled(ThermometerBase)`
+const ColorPicker = styled.canvas`
   position: absolute;
-  left: 50%;
-  bottom: 0;
-  transform: translate3d(-50%, -${props => (props.thickness * 2) - (props.thickness / INNER_TRACK_SIZE / 2)}px, 0);
+  background-image: conic-gradient(from 270deg, #ff4800 10%, #dfd902 35%, #20dc68, #0092f4, #da54d8 72% 75%, #ff4800 95%);
+  z-index: -1;
 `;
+
+interface HandleContainerProps {
+  size: number;
+  handleSize: number;
+}
+
+const HandleContainer = styled.div<HandleContainerProps>`
+  position: absolute;
+  z-index: 3;
+  bottom: 0;
+  left: 0;
+  width: ${props => props.size}px;
+  height: ${props => props.size}px;
+  margin-bottom: -${props => props.handleSize -3}px;
+  margin-left: -${props => props.handleSize}px;
+`;
+
+
+const Thermometer = styled(ThermometerBase)<{
+  color: string;
+  handleSize: number;
+}>`
+  color: ${props => props.color};
+  font-family: "Kanit", sans-serif;
+  font-weight: 100;
+`;
+
+interface GradientProps {
+  width: number;
+  height: number;
+}
+const Gradient = styled.div<GradientProps>`
+  width: ${props => props.width}px;
+  height: ${props => props.height}px;
+`;
+
+const Arc = styled.svg`
+  position: relative;
+`;
+
+interface HandleProps {
+  size?: number;
+  colors?: HandleColors;
+}
+
+interface TrackProps {
+  colors?: string[];
+  thickness?: number;
+  markers?: {
+    enabled?: boolean;
+    every?: number;
+    count?: number;
+    main?: {
+      color?: string;
+      length?: number;
+      thickness?: number;
+    };
+    sub?: {
+      color?: string;
+      length?: number;
+      thickness?: number;
+    }
+  }
+}
 
 type Props = {
   size: number;
-  trackWidth: number;
-  shadowWidth: number;
-  minValue: number;
-  maxValue: number;
-  startAngle: number; // 0 - 360 degrees
-  endAngle: number; // 0 - 360 degrees
-  angleType: AngleDescription;
-  handleSize: number;
-  handle: {
-    value: number;
-    onChange?: (value: number) => void;
-  };
-  onControlFinished?: () => void;
+  min: number;
+  max: number;
+  value: number;
+  onChange?: (value: number) => void;
+  handle?: HandleProps;
   disabled?: boolean;
-  // arcColor: string;
-  // arcBackgroundColor: string;
-  // trackBackgroundColor: string;
-  coerceToInt?: boolean;
-  children: ReactNode;
-  trackColors: string[];
+  track?: TrackProps;
 };
 
-export class CircularSlider extends React.Component<
-  React.PropsWithChildren<Props>
-> {
-  static defaultProps: Partial<Props> = {
-    size: 200,
-    minValue: 0,
-    maxValue: 100,
-    startAngle: 0,
-    endAngle: 360,
-    trackWidth: 20,
-    angleType: {
-      direction: "cw",
-      axis: "-y",
+const HANDLE_DEFAULTS: HandleProps = {
+  size: 20,
+  colors: DEFAULT_HANDLE_COLORS
+}
+const TRACK_DEFAULTS: TrackProps = {
+  thickness: 20,
+  colors: ['#cfac48', '#cd5401'],
+  markers: {
+    enabled: true,
+    every: 5,
+    count: 60,
+    main: {
+      color: 'black'
     },
-    handleSize: 8,
-    trackColors: ['#ec008c', '#fc6767']
-  };
-  svgRef = React.createRef<SVGSVGElement>();
+    sub: {
+      color: 'rgba(0,0,0,0.8)'
+    }
+  }
+}
 
-  onMouseEnter = (ev: React.MouseEvent<SVGSVGElement>) => {
+
+export function Thermostat({
+  size = 200,
+  min = 0,
+  max = 100,
+  value,
+  handle: handleInput,
+  track: trackInput,
+  onChange,
+  disabled,
+}: Props) {
+  const handle = {
+    ...HANDLE_DEFAULTS,
+    ...handleInput
+  };
+  const track = {
+    ...TRACK_DEFAULTS,
+    ...trackInput,
+    ...trackInput.markers ? {
+      ...TRACK_DEFAULTS.markers,
+      ...trackInput.markers,
+      main: {
+        ...TRACK_DEFAULTS.markers.main,
+        ...trackInput.markers.main || {},
+      },
+      sub: {
+        ...TRACK_DEFAULTS.markers.sub,
+        ...trackInput.markers.sub || {},
+      }
+    } : {}
+  };
+  const _svgRef = useRef<SVGSVGElement>(null);
+  const _handleRef = useRef<HTMLDivElement>(null)
+  const _canvasRef = useRef<HTMLCanvasElement>(null);
+  const [color, setColor] = useState('transparent');
+  const trackInnerRadius = size / 2 - track.thickness;
+  const thermoOffset = (track.thickness + (track.thickness / THICKNESS_DIVISOR));
+  const height = size * HEIGHT_MULTIPLIER + thermoOffset;
+  const handleAngle = valueToAngle({
+    value,
+    min,
+    max,
+  });
+  const handlePosition = angleToPosition(
+    handleAngle,
+    trackInnerRadius + track.thickness / 2,
+    size
+  );
+  const controllable = !disabled && Boolean(onChange);
+
+  useEffect(() => {
+    const canvasRef = _canvasRef.current;
+    const ctx = canvasRef.getContext('2d');
+    const gradient = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    track.colors.forEach((color, index) => {
+      const offset = index === 0 ? 0.2 : index === track.colors.length - 1 ? 0.8 : (index / (track.colors.length - 1));
+      gradient.addColorStop(offset, color)
+    });
+    ctx.fillStyle = gradient;
+    ctx.rect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
+    ctx.fill();
+  }, [track.colors]);
+
+  useEffect(() => {
+    getColourFromValue();
+  }, [value, track.colors]);
+
+  if (value < min || value > max) {
+    throw new Error(`"value" should be between ${min} and ${max}`);
+  }
+
+  function onMouseEnter(ev: React.MouseEvent<HTMLDivElement>) {
     if (ev.buttons === 1) {
       // The left mouse button is pressed, act as though user clicked us
-      this.onMouseDown(ev);
+      onMouseDown(ev);
     }
   };
 
-  onMouseDown = (ev: React.MouseEvent<SVGSVGElement>) => {
-    const svgRef = this.svgRef.current;
-    if (svgRef) {
-      svgRef.addEventListener("mousemove", this.processSelection);
-      svgRef.addEventListener("mouseleave", this.removeMouseListeners);
-      svgRef.addEventListener("mouseup", this.removeMouseListeners);
+  function onMouseDown(ev: React.MouseEvent<HTMLDivElement>) {
+    const handleRef = _handleRef.current;
+    if (handleRef) {
+      handleRef.addEventListener("mousemove", processSelection);
+      handleRef.addEventListener("mouseleave", removeMouseListeners);
+      handleRef.addEventListener("mouseup", removeMouseListeners);
     }
-    this.processSelection(ev);
+    processSelection(ev);
   };
 
-  removeMouseListeners = () => {
-    const svgRef = this.svgRef.current;
-    if (svgRef) {
-      svgRef.removeEventListener("mousemove", this.processSelection);
-      svgRef.removeEventListener("mouseleave", this.removeMouseListeners);
-      svgRef.removeEventListener("mouseup", this.removeMouseListeners);
-    }
-    if (this.props.onControlFinished) {
-      this.props.onControlFinished();
+  function removeMouseListeners() {
+    const handleRef = _handleRef.current;
+    if (handleRef) {
+      handleRef.removeEventListener("mousemove", processSelection);
+      handleRef.removeEventListener("mouseleave", removeMouseListeners);
+      handleRef.removeEventListener("mouseup", removeMouseListeners);
     }
   };
 
-  processSelection = (ev: React.MouseEvent<SVGSVGElement> | MouseEvent) => {
-    const {
-      size,
-      maxValue,
-      minValue,
-      angleType,
-      startAngle,
-      endAngle,
-      handle,
-      disabled,
-      coerceToInt,
-    } = this.props;
-    if (!handle.onChange) {
+  function getColourFromValue() {
+    const canvasRef = _canvasRef.current;
+    if (canvasRef) {
+      const ctx = canvasRef.getContext('2d');
+      // input value percentage between min and max
+      const percent = ((value - min) * 100) / (max - min);
+      const scaling = (CANVAS_WIDTH - 1) * percent / 100;
+      const v = ctx.getImageData(scaling, 1, 1, 1).data; 
+      setColor(`rgb(${v[0]},${v[1]},${v[2]})`);
+    }
+  }
+
+  function processSelection(ev: React.MouseEvent<HTMLDivElement> | MouseEvent) {
+    if (!onChange) {
       // Read-only, don't bother doing calculations
       return;
     }
-    const svgRef = this.svgRef.current;
+    const svgRef = _svgRef.current;
     if (!svgRef) {
       return;
     }
@@ -118,184 +240,91 @@ export class CircularSlider extends React.Component<
     const x = ev.clientX;
     const y = ev.clientY;
     svgPoint.x = x;
-    svgPoint.y = y;
+    // offset the Y by the size of the thermometer difference
+    svgPoint.y = y - (height - size);
     const coordsInSvg = svgPoint.matrixTransform(
       svgRef.getScreenCTM()!.inverse()
     );
 
-    const angle = positionToAngle(coordsInSvg, size, angleType);
+    const angle = positionToAngle(coordsInSvg, size);
     let value = angleToValue({
       angle,
-      minValue,
-      maxValue,
-      startAngle,
-      endAngle,
+      min,
+      max,
     });
-    if (coerceToInt) {
-      value = Math.round(value);
-    }
-
     if (!disabled) {
-      handle.onChange(value);
+      onChange(value);
     }
   };
-
-  render() {
-    const {
-      size,
-      handle,
-      handleSize,
-      maxValue,
-      minValue,
-      startAngle,
-      endAngle,
-      angleType,
-      disabled,
-      trackColors,
-      children,
-      trackWidth,
-    } = this.props;
-    const thermoInnerScale = 1.5;
-    const trackInnerRadius = size / 2 - trackWidth;
-    const handleAngle = valueToAngle({
-      value: handle.value,
-      minValue,
-      maxValue,
-      startAngle,
-      endAngle,
-    });
-    const handlePosition = angleToPosition(
-      { degree: handleAngle, ...angleType },
-      trackInnerRadius + trackWidth / 2,
-      size
-    );
-    const controllable = !disabled && Boolean(handle.onChange);
-
-    return <Wrapper>
-      <svg
-        width={size}
-        height={size}
-        ref={this.svgRef}
-        onMouseDown={this.onMouseDown}
-        onMouseEnter={this.onMouseEnter}
-        onClick={
-          /* TODO: be smarter about this -- for example, we could run this through our
-          calculation and determine how close we are to the arc, and use that to decide
-          if we propagate the click. */
-          (ev) => controllable && ev.stopPropagation()
-        }
-      >
-        {trackColors && <defs>
-          <linearGradient id="gradient" x1="100%" x2="0">
-            {trackColors.map((color, index) => <stop key={index} offset={`${index / trackColors.length * 100}%`} stopColor={color}></stop>)}
-          </linearGradient>
-        </defs>}
-        <React.Fragment>
-          <path
-            d={arcPathWithRoundedEnds({
-              startAngle,
-              endAngle,
-              angleType,
-              innerRadius: trackInnerRadius,
-              thickness: trackWidth,
-              svgSize: size,
-              direction: angleType.direction,
-            })}
-            fill={trackColors.length ? 'url(#gradient)' : '#aaa'}
-          />
-        </React.Fragment>
-
-        {
-          controllable && (
-            <React.Fragment>
-              <filter
-                id="handleShadow"
-                x="-50%"
-                y="-50%"
-                width="16"
-                height="16"
-              >
-                <feOffset result="offOut" in="SourceGraphic" dx="0" dy="0" />
-                <feColorMatrix
-                  result="matrixOut"
-                  in="offOut"
-                  type="matrix"
-                  values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0.25 0"
-                />
-                <feGaussianBlur
-                  result="blurOut"
-                  in="matrixOut"
-                  stdDeviation="5"
-                />
-                <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-              </filter>
-              <circle
-                r={handleSize}
-                cx={handlePosition.x}
-                cy={handlePosition.y}
-                fill="#ffffff"
-                filter="url(#handleShadow)"
-              />
-            </React.Fragment>
-          )
-        }
-      </svg>
-      {/* <Thermometer value={handle.value} min={minValue} max={maxValue} thickness={trackWidth} size={size} /> */}
-    </Wrapper>
-  }
-}
-interface ThermometerProps {
-  size: number;
-  thickness: number;
-  className?: string;
-  min: number;
-  max: number;
-  value: number;
-}
-function ThermometerBase({
-  size,
-  thickness,
-  className,
-  min,
-  max,
-  value,
-}: ThermometerProps) { 
-  const height = size * 1.5;
-  const center = size / 2;
-  // shrink the inner track from the main track, just a design choice here.
-  const _thickness = thickness / INNER_TRACK_SIZE;
-  // calculate the size of the main bottom circle based on the input size
-  const circleSize = (size - (_thickness * 4.5)) / 2;
-  const radius = circleSize / 2;
-  // input value percentage between min and max
-  const percent = ((value - min) * 100) / (max - min);
-  // / 100 * percent
-  const fullBarHeight = (height - circleSize - radius);
-  // the minimum value the growing center should go to
-  const growingMinY = fullBarHeight - radius - _thickness;
-  // the max height the growing center should go to
-  const growingMaxY = radius;
-  const innerHeight = fullBarHeight - growingMaxY - growingMinY;
-
-  const scaling = ((growingMaxY - growingMinY) * percent / 100) + growingMinY;
-  console.log('min', scaling)
-  return(
-    <svg className={className} width={size} height={size * 1.5}>
-      <mask id="innerMask">
-        <rect id="mask-fill" x="0" y="0" width={size} height={size * 1.5} fill="white" />
-        <circle id="center-circle-mask" cx={center} cy={height - circleSize} r={circleSize - _thickness}  />
-        <circle id="top-cap-mask" cx={center} cy={circleSize - _thickness - ((circleSize - _thickness * 2) / 2)} r={(circleSize - _thickness * 2) / 2} />
-        <rect id="inside-thermo-mask" x={center - radius + _thickness} y={radius} width={circleSize - _thickness * 2} height={height - circleSize - radius} mask="url(#innerMask)" />
+  const arc = drawArc({
+    innerRadius: trackInnerRadius,
+    thickness: track.thickness,
+    svgSize: size,
+  });
+  return <Wrapper>
+    <ColorPicker width={CANVAS_WIDTH} height={CANVAS_HEIGHT} ref={_canvasRef}></ColorPicker>
+    
+    <Arc
+      width={size}
+      height={height}
+      ref={_svgRef}
+    >
+      <Thermometer
+        handleSize={handle.size}
+        textColor={'rgba(0,0,0,0.9)'}
+        color={color}
+        value={Number(value.toFixed(0))} 
+        min={min}
+        max={max}
+        thickness={track.thickness / THICKNESS_DIVISOR}
+        size={size} />
+      <foreignObject x="0" y={height - size} width={size} height={size} clipPath="url(#clip)">
+        <Gradient 
+          width={size}
+          height={size}
+          style={{
+            backgroundImage: `conic-gradient(from 0deg, ${[...track.colors].reverse().map((color, index) => {
+              const offset = index === 0 ? 20 : index === track.colors.length - 1 ? 80 : (index / (track.colors.length - 1)) * 100;
+              return `${color} ${offset}%`;
+            }).join(', ')}`
+          }} />
+      </foreignObject>
+      <mask id="arc-mask">
+        <path d={arc} fill="white" />
       </mask>
-      <circle id="main-circle" cx={center} cy={height - circleSize} r={circleSize} mask="url(#innerMask)" />
-      <circle id="top-cap" fill="green" cx={center} cy={radius} r={radius} mask="url(#innerMask)" />
-      <circle id="center-circle" fill="red" cx={center} cy={height - circleSize} r={circleSize - (_thickness * 2)} />
-      <rect id="thermo-sides" x={center - radius} y={radius} width={circleSize} height={height - circleSize - radius}  mask="url(#innerMask)" />
-      <g>
-        <circle id="growing-thermo-cap" fill="green" cx={center} cy={scaling} r={_thickness / 2} />
-        <rect fill="purple" id="growing-thermo" x={center - (_thickness / 2)} y={scaling} width={_thickness} height={fullBarHeight - scaling} />
-      </g>
-      <circle id="debug-circle" fill="blue" cx={center} cy={height - circleSize} r={2}  />
-    </svg>
-  );
+      <clipPath id="clip">
+        <path d={arc} />
+      </clipPath>
+      {track.markers.enabled && <g transform={`translate(0, ${height - size})`}>
+        <DialLines
+          ticks={{
+            every: track.markers.every,
+            count: track.markers.count,
+            main: {
+              thickness: 2,
+              length: track.thickness / 4,
+              ...track.markers.main
+            },
+            sub: {
+              thickness: 1,
+              length: track.thickness / 8,
+              ...track.markers.sub
+            }
+          }}
+          mask="arc-mask"
+          size={size}
+          />
+      </g>}
+    </Arc>
+    <HandleContainer
+      onMouseDown={onMouseDown}
+      onMouseEnter={onMouseEnter}
+      onClick={(ev) => {
+        // we could determine how close we are to the track here and only allow events when they're closer to the
+        // arc, later job
+        return controllable && ev.stopPropagation()
+      }} ref={_handleRef} handleSize={handle.size} size={size + (handle.size * 2)}>
+      <Handle colors={handle.colors} x={handlePosition.x} y={handlePosition.y} size={size} handleSize={handle.size} />
+    </HandleContainer>
+  </Wrapper>
 }
