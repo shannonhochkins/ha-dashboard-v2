@@ -140,9 +140,9 @@ function App() {
   const handle = useFullScreen();
   return <Hass>
     <>
-      <button style={{ position: 'absolute', 'top': 0, left: 0, zIndex: 20}} onClick={handle.enter}>
+      {/* <button style={{ position: 'absolute', 'top': 0, left: 0, zIndex: 20}} onClick={handle.enter}>
         Enter fullscreen
-      </button>
+      </button> */}
       <FullScreen handle={handle}>
         <Root />
       </FullScreen>

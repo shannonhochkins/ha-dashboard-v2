@@ -171,7 +171,7 @@ export function Thermostat({
     const canvasRef = _canvasRef.current;
     const ctx = canvasRef.getContext('2d');
     const gradient = ctx.createLinearGradient(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
-    track.colors.forEach((color, index) => {
+    track.colors?.forEach((color, index) => {
       const offset = index === 0 ? 0.2 : index === track.colors.length - 1 ? 0.8 : (index / (track.colors.length - 1));
       gradient.addColorStop(offset, color)
     });
@@ -227,7 +227,7 @@ export function Thermostat({
   }
 
   function processSelection(ev: React.MouseEvent<HTMLDivElement> | MouseEvent) {
-    if (!onChange) {
+    if (!onChange || disabled) {
       // Read-only, don't bother doing calculations
       return;
     }
@@ -245,16 +245,12 @@ export function Thermostat({
     const coordsInSvg = svgPoint.matrixTransform(
       svgRef.getScreenCTM()!.inverse()
     );
-
     const angle = positionToAngle(coordsInSvg, size);
-    let value = angleToValue({
+    onChange(angleToValue({
       angle,
       min,
       max,
-    });
-    if (!disabled) {
-      onChange(value);
-    }
+    }));
   };
   const arc = drawArc({
     innerRadius: trackInnerRadius,
@@ -263,7 +259,6 @@ export function Thermostat({
   });
   return <Wrapper>
     <ColorPicker width={CANVAS_WIDTH} height={CANVAS_HEIGHT} ref={_canvasRef}></ColorPicker>
-    
     <Arc
       width={size}
       height={height}
@@ -283,7 +278,7 @@ export function Thermostat({
           width={size}
           height={size}
           style={{
-            backgroundImage: `conic-gradient(from 0deg, ${[...track.colors].reverse().map((color, index) => {
+            backgroundImage: `conic-gradient(from 0deg, ${[...track.colors || []].reverse().map((color, index) => {
               const offset = index === 0 ? 20 : index === track.colors.length - 1 ? 80 : (index / (track.colors.length - 1)) * 100;
               return `${color} ${offset}%`;
             }).join(', ')}`
@@ -316,7 +311,7 @@ export function Thermostat({
           />
       </g>}
     </Arc>
-    <HandleContainer
+    {!disabled && <HandleContainer
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
       onClick={(ev) => {
@@ -325,6 +320,6 @@ export function Thermostat({
         return controllable && ev.stopPropagation()
       }} ref={_handleRef} handleSize={handle.size} size={size + (handle.size * 2)}>
       <Handle colors={handle.colors} x={handlePosition.x} y={handlePosition.y} size={size} handleSize={handle.size} />
-    </HandleContainer>
+    </HandleContainer>}
   </Wrapper>
 }

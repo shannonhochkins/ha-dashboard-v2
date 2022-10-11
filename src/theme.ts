@@ -24,6 +24,13 @@ export const theme = {
     }
   },
   secondary: '#1e1e21',
+  button: {
+    primary: {
+      background: 'rgba(17, 24, 39, 0.9)',
+      color: '#565656',
+      border: '#437882'
+    }
+  },
   text: {
     grey: '#6e6e6e',
     dark: 'rgb(0, 0, 0)',

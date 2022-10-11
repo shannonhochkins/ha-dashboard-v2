@@ -1,9 +1,6 @@
 import React, { ReactElement } from 'react';
 import styled from '@emotion/styled';
 import { useHass } from '@store';
-import { useMq, useEntity } from '@hooks';
-import { Responsive } from '@types';
-
 interface ZoneOverlay {
   top: string;
   left: string;
@@ -81,9 +78,9 @@ function Zone({
   active = false
 }: ZoneProps) {
   let brightness = 0;
-  const { callSwitch } = useHass();
-  const light = useEntity(entities?.light || '');
-  const $switch = useEntity(entities?.switch || '');
+  const { callSwitch, getEntity } = useHass();
+  const light = getEntity(entities?.light || '');
+  const $switch = getEntity(entities?.switch || '');
   if (light || $switch) {
     brightness = light && light.state !== 'unavailable' ? light.state === 'on' ? (light.attributes.brightness / 255) : 0 : $switch.state === 'on' ? 1 : 0;
   } else if (active) {

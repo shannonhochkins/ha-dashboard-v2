@@ -4,8 +4,9 @@ import { isEqual } from 'lodash';
 import { HassEntity } from "home-assistant-js-websocket";
 
 export function useEntity(entity: string)  {
-  const [ $entity, setEntity ] = useState<HassEntity | null>(null);
   const { getEntity, lastUpdated } = useHass();
+  const defaultEntity = getEntity(entity);
+  const [ $entity, setEntity ] = useState<HassEntity | null>(defaultEntity);
 
   useEffect(() => {
     const foundEntity = getEntity(entity);

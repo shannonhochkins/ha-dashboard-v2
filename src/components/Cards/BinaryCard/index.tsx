@@ -2,7 +2,6 @@ import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import{ Lightbulb, ToggleOff, SpaRounded } from '@mui/icons-material';
 import { useHass } from '@store';
-import { useEntity } from '@hooks';
 import { SimpleCard } from '..';
 
 interface BinaryCardProps {
@@ -26,11 +25,11 @@ export function BinaryCard({
   labelActive = 'On',
   labelInactive = 'Off',
 }: BinaryCardProps) {
-  const hass = useHass();
-  const $switch = useEntity(entity);
+  const { getEntity, callSwitch } = useHass();
+  const $switch = getEntity(entity);
   const isActive = $switch?.state === 'on';
   function onToggle() {
-    hass.callSwitch(entity, isActive ? 'turn_off' : 'turn_on');
+    callSwitch(entity, isActive ? 'turn_off' : 'turn_on');
   }
   return <SimpleCard onClick={onToggle} isActive={isActive}>
     <div>

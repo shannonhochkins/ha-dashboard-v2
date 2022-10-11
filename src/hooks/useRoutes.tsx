@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useMemo, ReactElement } from 'react';
 // import { useLocation } from "react-router-dom";
 import { Chair, Home as HomeIcon, Warehouse, Weekend, TableBar, Blender, Bed } from '@mui/icons-material';
-import { useEntity, useHash } from '@hooks';
+import { useHash } from '@hooks';
 import { useHass } from '@store';
 import {
   Home,
