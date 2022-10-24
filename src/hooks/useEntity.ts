@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { useHass } from '@store';
+import { useHass } from '@hooks';
 import { isEqual } from 'lodash';
 import { HassEntity } from "home-assistant-js-websocket";
 

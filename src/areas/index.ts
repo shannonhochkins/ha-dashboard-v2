@@ -5,6 +5,8 @@ import { Kitchen } from './Kitchen';
 import { Living } from './Living';
 import { Office } from './Office';
 import { MasterBedroom } from './MasterBedroom';
+import { Security } from './Secuirty';
+import { AirConditioner } from './AirConditioner';
 
 export {
   Home,
@@ -14,4 +16,6 @@ export {
   Living,
   Office,
   MasterBedroom,
+  Security,
+  AirConditioner,
 }

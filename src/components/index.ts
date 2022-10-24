@@ -1,14 +1,21 @@
 
-import { Sidebar } from './Sidebar';
-import { ErrorBoundary } from './ErrorBoundary';
 import { BinaryCard } from './Cards/BinaryCard';
-import { CardPanel } from './Cards';
+import { CardPanel, MediaCard } from './Cards';
+import { Popup } from './Popup';
+import { WeatherCard } from './Cards/Weather';
+import { CameraCard } from './Cards/CameraCard';
 import { ThermostatCard } from './Cards/ThermostatCard';
+import { Toggle } from './Shared/toggle';
+import { BottomMenu } from './BottomMenu';
 
 export {
-  Sidebar,
-  ErrorBoundary,
+  BottomMenu,
+  Toggle,
+  Popup,
   BinaryCard,
   CardPanel,
-  ThermostatCard
+  ThermostatCard,
+  WeatherCard,
+  MediaCard,
+  CameraCard
 };

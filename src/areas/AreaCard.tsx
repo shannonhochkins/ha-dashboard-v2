@@ -1,6 +1,6 @@
 import React, { ReactElement } from 'react';
 import styled from '@emotion/styled';
-import { useHass } from '@store';
+import { useHass } from '@hooks';
 interface ZoneOverlay {
   top: string;
   left: string;
@@ -54,9 +54,9 @@ const Zones = styled.div`
 
 const Background = styled.div`
   position: relative;
-  width: 100%;
   overflow: hidden;
   border-radius: 30px;
+  margin: 24px;
   img {
     height: auto;
     width: 100%;

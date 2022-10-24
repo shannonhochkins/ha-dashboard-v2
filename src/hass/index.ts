@@ -8,7 +8,7 @@ import {
   getAuthOptions as AuthOptions,
   UnsubscribeFunc,
 } from "home-assistant-js-websocket";
-import { useHass } from '@store';
+import { useHass } from '@hooks';
 
 const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.HA_URL_PROD : process.env.HA_URL_DEV;
 

@@ -4,9 +4,9 @@ import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
 import { Tv } from '@mui/icons-material';
 // import { AreaCard, LightCard, CoverCard, SwitchCard } from '@components/index';
-import livingBase from './assets/living-base.jpg';
-import livingLight from './assets/living-light.jpg';
-import livingTV from './assets/living-tv.jpg';
+import livingBase from '@assets/living-base.jpg';
+import livingLight from '@assets/living-light.jpg';
+import livingTV from '@assets/living-tv.jpg';
 
 const LivingContainer = styled(AreaBase)`
   display: flex;

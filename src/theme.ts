@@ -6,9 +6,16 @@ const namespace = 'ha';
 
 
 export const theme = {
-  sidebar: {
-    width: 280,
-    background: 'rgba(17, 24, 39, 1)'
+  // sidebar: {
+  //   width: 280,
+  //   background: 'rgba(17, 24, 39, 1)'
+  // },
+  menu: {
+    background: 'rgba(17, 24, 39, 1)',
+    animation: {
+      duration: '0.7s',
+      delay: 0,
+    }
   },
   background: 'rgb(11, 15, 25)',
   highlight: 'rgb(45, 55, 72)',
@@ -21,6 +28,12 @@ export const theme = {
     animation: {
       start: 'rgb(25 49 58)',
       end: 'rgba(17, 24, 39, 1)'
+    }
+  },
+  media: {
+    card: {
+      primary: 'linear-gradient(175deg, #75ffef 0%, #50999f 100% )',
+      secondary: 'linear-gradient(175deg, #f0e2f2 0%, #d0c0e2 100% )',
     }
   },
   secondary: '#1e1e21',
@@ -43,7 +56,7 @@ function convertToCssVars(obj, prefix = '') {
     const name = `${prefix ? `${prefix}-` : ''}${key}`;
     return `
       ${acc}
-      ${isObject(value) ? convertToCssVars(value, name) : `--${namespace}-${name}: ${isNumber(value) ? `${value}px` : value};`}
+      ${isObject(value) ? convertToCssVars(value, name) : `--${namespace}-${name}: ${isNumber(value) ? `${value}` : value};`}
     `;
   },
   '');

@@ -11,7 +11,8 @@
       "@areas": ["src/areas/"],
       "@hooks": ["src/hooks/"],
       "@hass": ["src/hass/"],
-      "@types": ["types.d.ts"]
+      "@types": ["types.d.ts"],
+      "@assets/*": ["src/assets/*"]
     }
   },
   "include": ["src", ".d.ts"],

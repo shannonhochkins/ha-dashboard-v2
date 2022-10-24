@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import styled from '@emotion/styled';
-import { useHass } from '@store';
+import { useHass } from '@hooks';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
 // import { AreaCard, LightCard, CoverCard, SwitchCard } from '@components/index';
-import diningBase from './assets/dining-base-optimised.jpg';
-import diningLight from './assets/dining-light-optimised.jpg';
+import diningBase from '@assets/dining-base-optimised.jpg';
+import diningLight from '@assets/dining-light-optimised.jpg';
 
 const DiningContainer = styled(AreaBase)`
   display: flex;

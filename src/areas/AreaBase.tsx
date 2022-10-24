@@ -1,28 +1,48 @@
-import React, { ReactElement } from 'react';
+import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
-import { motion } from 'framer-motion';
 import { useMq } from '@hooks';
-import { Responsive } from '@types';
 
 
-const Space = styled.div`
+
+const BottomMenuFill = styled.span`
+  content: '';
   width: 100%;
-  height: 60px;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 0;
+  background: linear-gradient(to top, rgba(25, 49, 58, 0.5) 0%, rgba(17, 24, 39, 0) 100%);
+  height: 50vh;
+  pointer-events: none;
 `;
 
 const AreaBaseStyled = styled.div`
-  width: calc(100% - 48px);
-  height: calc(100vh - 48px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  padding: 24px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  > div {
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding: 0 48px;
+    height: 90%;
+    margin-top: -5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    > * {
+      max-height: 100%;
+    }
+  }
   ${useMq(['desktop'], `
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
-    ${Space} {
-      height: 0;
+    > * {
+      display: flex;
+      flex-shrink: 0;
     }
   `)}
 
@@ -55,46 +75,40 @@ const AreaBaseStyled = styled.div`
     background: none;
     display: flex;
     align-items: center;
-    justify-content: flex-start;
+    justify-content: center;
     flex-direction: column;
-    ${Space} {
-      height: 0;
-    }
   `)}
-
-
-
 `;
 
-const variants = {
-  enter: (direction: number) => {
-    return {
-      x: (window.innerWidth * -1) * (direction * -1),
-      opacity: 0
-    };
-  },
-  center: {
-    zIndex: 1,
-    x: 0,
-    opacity: 1
-  },
-  exit: (direction: number) => {
-    return {
-      zIndex: 0,
-      x: window.innerWidth * (direction * -1),
-      opacity: 0,
-    };
-  }
-};
+// const variants = {
+//   enter: (direction: number) => {
+//     return {
+//       x: (window.innerWidth * -1) * (direction * -1),
+//       opacity: 0
+//     };
+//   },
+//   center: {
+//     zIndex: 1,
+//     x: 0,
+//     opacity: 1
+//   },
+//   exit: (direction: number) => {
+//     return {
+//       zIndex: 0,
+//       x: window.innerWidth * (direction * -1),
+//       opacity: 0,
+//     };
+//   }
+// };
 
 export interface AreaBaseProps {
   direction: number;
   className?: string;
-  children?: ReactElement;
+  children?: ReactNode;
 }
 export function AreaBase({ children, className, direction }: AreaBaseProps) {
   return <AreaBaseStyled className={className}>
-    {children && children}
-    <Space />
+    <BottomMenuFill />
+    <div>{children && children}</div>
   </AreaBaseStyled>
 }

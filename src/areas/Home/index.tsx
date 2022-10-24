@@ -1,25 +1,8 @@
-import React, { useContext } from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
-import { useMq } from '@hooks';
-import { ThermostatCard } from '@components';
-// import { SwitchCard } from '@components/index';
-// import { CameraCard, ThermostatCard } from '@components/index';
-import { LightbulbOutlined } from '@mui/icons-material';
-
-// const StyledCameraCard = styled(CameraCard)``;
-
-// const CameraSection = styled.div`
-//   display: flex;
-//   flex-wrap: wrap;
-//   width: 50%;
-//   justify-content: space-between;
-
-//   ${StyledCameraCard} {
-//     width: calc(50% - 10px);
-//     margin:10px 0;
-//   }
-// `;
+import { useMq, useRoutes, useHash } from '@hooks';
+import { Popup } from '@components';
 
 const Inner = styled.div`
   display: flex;
@@ -28,27 +11,60 @@ const Inner = styled.div`
   flex-direction: column;
 `;
 
-// const StyledThermostatCard = styled(ThermostatCard)``;
 
 const HomeContainer = styled(AreaBase)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  ${useMq(['desktop'], `
-    ${Inner} {
-      flex-direction: row;
-    }
-  `)}
+  
 `;
 
-export function Home({ direction }: AreaBaseProps) {
-  const cameras = [
-    'camera.aarlo_arlo_camera_front_door',
-    'camera.aarlo_arlo_camera_driveway_main',
-    'camera.aarlo_arlo_camera_caravan',
-  ];
+const Items = styled.div`
+  display: flex;
+	flex-wrap: wrap;
+	/* Compensate for excess margin on outer gallery flex items */
+	margin: -1rem -1rem;
+`;
+const Item = styled.div`
+	flex: 1 0 24rem;
+	overflow: hidden;
+  cursor: pointer;
+  max-width: 100%;
+  max-height: 100%;
+  margin: 1rem;
+  border-radius: 24px;
+`;
+const Image = styled.img`
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 400ms ease-out;
+	box-shadow: 0.3rem 0.4rem 0.4rem rgba(0, 0, 0, 0.4);
+  border-radius: 24px;
+  &:hover, &:active, &:focus {
+    transform: scale(1.15);
+  }
+`;
+const Title = styled.span``;
 
+
+export function Home({ direction }: AreaBaseProps) {
+  const routes = useRoutes();
+  const [hash, setHash] = useHash();
+  const rooms = routes.filter(route => route.room);
   return <HomeContainer direction={direction}>
-    <ThermostatCard />
+    <Items>
+      {rooms.map(({
+        active,
+        name,
+        background,
+        hash,
+        icon,
+        suffix
+      }, index) => {
+        return <Item key={index}  onClick={() => setHash(hash)}>
+          <Image src={background} />
+          <Title>{name}</Title>
+        </Item>
+      })}
+    </Items>
   </HomeContainer>
 }

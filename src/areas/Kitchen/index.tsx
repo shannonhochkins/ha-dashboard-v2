@@ -5,11 +5,11 @@ import { AreaCard } from '../AreaCard';
 import { Tv } from '@mui/icons-material';
 import { BinaryCard } from '@components';
 // import { AreaCard, LightCard, CoverCard, BinaryCard } from '@components/index';
-import kitchenBase from './assets/kitchen-base.jpg';
-import kitchenPantry from './assets/kitchen-pantry.png';
-import kitchenRoof from './assets/kitchen-roof.png';
-import kitchenSmartframe from './assets/kitchen-smartframe.png';
-import kitchenPendants from './assets/kitchen-pendants.png';
+import kitchenBase from '@assets/kitchen-base.jpg';
+import kitchenPantry from '@assets/kitchen-pantry.png';
+import kitchenRoof from '@assets/kitchen-roof.png';
+import kitchenSmartframe from '@assets/kitchen-smartframe.png';
+import kitchenPendants from '@assets/kitchen-pendants.png';
 
 const KitchenContainer = styled(AreaBase)`
   display: flex;

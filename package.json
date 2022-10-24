@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "NODE_ENV=production parcel build --no-source-maps src/index.html",
+    "build": "rm -rf dist && NODE_ENV=production parcel build --no-source-maps src/index.html",
     "start": "NODE_ENV=development parcel src/index.html"
   },
   "repository": {
@@ -30,7 +30,8 @@
     "@areas": "./src/areas/",
     "@types": "./types.d.ts",
     "@hooks": "./src/hooks/",
-    "@hass": "./src/hass/"
+    "@hass": "./src/hass/",
+    "@assets/*": "./src/assets/$1"
   },
   "homepage": "https://github.com/shannonhochkins/ha-dashboard-v2#readme",
   "dependencies": {
@@ -41,17 +42,16 @@
     "@fontsource/roboto": "^4.5.8",
     "@mui/icons-material": "^5.10.6",
     "@mui/material": "^5.10.8",
-    "axios": "^1.0.0",
+    "@types/react-transition-group": "^4.4.5",
     "color": "^4.2.3",
-    "framer-motion": "^7.5.2",
-    "fscreen": "^1.2.0",
+    "d3-shape": "^3.1.0",
     "home-assistant-js-websocket": "^8.0.0",
     "lodash": "^4.17.21",
-    "public-sans": "^0.1.7-1",
+    "polished": "^4.2.2",
     "react": "^18.2.0",
-    "react-circular-slider-svg": "^0.1.5",
     "react-dom": "^18.2.0",
-    "svg-path-properties": "^1.0.13",
+    "react-thermostat": "^1.0.7",
+    "react-transition-group": "^4.4.5",
     "zustand": "^4.1.1"
   },
   "devDependencies": {
@@ -59,7 +59,9 @@
     "@types/lodash": "^4.14.186",
     "@types/node": "^18.8.2",
     "buffer": "^6.0.3",
+    "crypto-browserify": "^3.12.0",
     "parcel": "^2.7.0",
+    "path-browserify": "^1.0.1",
     "process": "^0.11.10",
     "typescript": "^4.8.4"
   }

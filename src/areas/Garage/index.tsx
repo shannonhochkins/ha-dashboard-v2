@@ -3,8 +3,8 @@ import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
 // import { AreaCard, LightCard, CoverCard, SwitchCard } from '@components/index';
-import base from './assets/garage-base.jpg';
-import downlights from './assets/garage-lights.jpg';
+import base from '@assets/garage-base.jpg';
+import downlights from '@assets/garage-lights.jpg';
 
 const GarageContainer = styled(AreaBase)`
   display: flex;

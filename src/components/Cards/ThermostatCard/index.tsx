@@ -1,8 +1,7 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-import { Thermostat } from './slider';
-import { useHass } from '@store';
-import { useEntity } from '@hooks';
+import { Thermostat } from 'react-thermostat';
+import { useHass, useEntity, useDevice } from '@hooks';
 import { WbSunny, AcUnit, LocalFireDepartment, PowerSettingsNew } from '@mui/icons-material';
 
 const Fab = styled.button<{
@@ -80,33 +79,18 @@ const fanColors = ['#fff', '#f9f9f9'];
 
 export const ThermostatCard = () => {
   const { callService } = useHass();
+  const device = useDevice();
   const entity = 'climate.daikin_ac';
   const ac = useEntity(entity);
-  const { current_temperature, fan_mode, fan_modes, hvac_action, hvac_modes, max_temp, min_temp, temperature} = ac.attributes || {};
+  const { current_temperature, fan_mode, fan_modes, max_temp, temperature} = ac.attributes || {};
   const state = ac.state;
   const on = state !== 'off';
   const [colors, setColors] = useState<string[]>(null);
   const [internalFanMode, setInternalFanMode] = useState(fan_mode);
   const [internalState, setInternalState] = useState(state);
   const [internalTemperature, setInternalTemperature] = useState<number>(temperature);
-  const size = 300;
+  const size = device === 'fridge' ? 400 : 300;
 
-  const action = (() => {
-    switch (state) {
-      case 'heat_cool':
-        return 'HEAT COOLING';
-      case 'heat':
-        return 'HEATING';
-      case 'cool':
-        return 'COOLING';
-      case 'dry':
-        return 'DRY FAN';
-      case 'fan_only':
-        return 'FAN ONLY';
-      case 'off':
-        return 'OFF';
-    }
-  })();
 
   useEffect(() => {
     if (state.includes('heat')) {
@@ -151,7 +135,7 @@ export const ThermostatCard = () => {
     }
   }, [internalState, internalTemperature]);
 
-  const currentTempColor = state === 'off' ? 'var(--ha-text-light)' : colors[1];
+  const currentTempColor = state === 'off' ? 'var(--ha-text-light)' : colors ? colors[1] : 'transparent';
 
 
   return internalTemperature !== null ? <Container>
@@ -161,13 +145,13 @@ export const ThermostatCard = () => {
       <span>CURRENT</span>
     </CurrentTemperature>
     <Actions>
-      <Fab active={state === 'heat'} activeColor={heatingColors[0]} onClick={() => {
+      <Fab size={device === 'fridge' ? 'large' : 'small'} active={state === 'heat'} activeColor={heatingColors[0]} onClick={() => {
         setInternalState('heat');
       }}><LocalFireDepartment /></Fab>
-      <Fab active={state === 'dry'} activeColor={dryColors[0]} onClick={() => {
+      <Fab size={device === 'fridge' ? 'large' : 'small'} active={state === 'dry'} activeColor={dryColors[0]} onClick={() => {
         setInternalState('dry');
       }}><WbSunny /></Fab>
-      <Fab active={state === 'cool'} activeColor={coolingColors[1]} onClick={() => {
+      <Fab size={device === 'fridge' ? 'large' : 'small'} active={state === 'cool'} activeColor={coolingColors[1]} onClick={() => {
         setInternalState('cool');
       }}><AcUnit /></Fab>
     </Actions>
@@ -176,8 +160,8 @@ export const ThermostatCard = () => {
       onChange={v => {
         setInternalTemperature(v);
       }}
-      min={6}
-      max={30}
+      min={16}
+      max={max_temp}
       disabled={!on}
       track={{
         thickness: size / 10,

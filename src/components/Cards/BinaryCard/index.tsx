@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import{ Lightbulb, ToggleOff, SpaRounded } from '@mui/icons-material';
-import { useHass } from '@store';
+import { useHass } from '@hooks';
 import { SimpleCard } from '..';
 
 interface BinaryCardProps {

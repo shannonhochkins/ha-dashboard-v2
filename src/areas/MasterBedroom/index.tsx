@@ -4,9 +4,9 @@ import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
 // import { AreaCard, LightCard, CoverCard, SwitchCard } from '@components/index';
 import { Tv } from '@mui/icons-material'
-import base from './assets/bedroom-base.jpg';
-import tv from './assets/bedroom-tv.jpg';
-import roofLight from './assets/bedroom-light-roof.jpg';
+import base from '@assets/bedroom-base.jpg';
+import tv from '@assets/bedroom-tv.jpg';
+import roofLight from '@assets/bedroom-light-roof.jpg';
 
 const MasterBedroomContainer = styled(AreaBase)`
   display: flex;

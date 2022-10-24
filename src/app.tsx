@@ -1,16 +1,13 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
 import { createRoot } from 'react-dom/client';
 import { css, Global } from '@emotion/react';
-import { AnimatePresence } from 'framer-motion';
-
+import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Hass } from '@hass';
-import { useHass } from '@store';
-import { useRoutes, useHash, FullScreen, useFullScreen } from '@hooks';
-// import { HashRouter, Routes, Route, useLocation, useNavigate } from "react-router-dom";
+import { useHass, useRoutes, useHash, useRefresh } from '@hooks';
 import { cssTheme } from './theme';
 
-import { Sidebar } from '@components';
+import { BottomMenu } from '@components';
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -23,29 +20,111 @@ const MIN_SWIPE_DISTANCE = 150;
 
 const Areas = styled.div`
   width: 100%;
-  overflow-x: hidden;
+  height: 100%;
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
 `;
 
 const Container = styled.div`
   display: flex;
   height: 100%;
+  flex-direction: column;
 `;
-
 interface RouteProps {
+  direction: number;
 }
 const Route = styled.div<RouteProps>`
+  position: absolute;
+  top:0;
+  left:0;
   width: 100%;
+  height: 100%;
+  flex-shrink: 0;
+  flex-grow: 0;
+  transition: 0.4s ease;
+  transition-property: opacity, transform;
+  &.route-enter {
+    opacity: 0;
+    transform: translate3d(100%, 0, 0);
+  }
+  &.route-enter-active {
+    opacity: 1;
+  }
+  &.route-exit {
+    opacity: 1;
+  }
+  &.route-exit-active {
+    transform: translate3d(-100%, 0, 0);
+    opacity: 0;
+  }
+
+  &.right-to-left-enter {
+    transform: translateX(100%);
+  }
+  &.right-to-left-enter-active {
+      transform: translateX(0);
+      transition:all 1s liner;
+  }      
+
+  &.right-to-left-exit {
+      transform: translateX(0);
+  }
+  &.right-to-left-exit-active {
+      transform: translateX(-100%);
+      transition:all 1s liner;
+  }      
+
+  &.left-to-right-enter {
+      transform: translateX(-100%);
+  }
+  &.left-to-right-enter-active {
+      transform: translateX(0);
+      transition:all 1s liner;
+  }      
+
+  &.left-to-right-exit {
+      transform: translateX(0);
+  }
+  &.left-to-right-exit-active {
+      transform: translateX(100%);
+      transition:all 1s liner;
+  }      
 `;
+
+// const variants = {
+//   enter: (direction: number) => {
+//     return {
+//       x: (window.innerWidth * -1) * (direction * -1),
+//       opacity: 0
+//     };
+//   },
+//   center: {
+//     zIndex: 1,
+//     x: 0,
+//     opacity: 1
+//   },
+//   exit: (direction: number) => {
+//     return {
+//       zIndex: 0,
+//       x: window.innerWidth * (direction * -1),
+//       opacity: 0,
+//     };
+//   }
+// };
 
 function Root() {
   const hass = useHass();
-  // const location = useLocation();
+  // will automatically refresh the browser at a specific internal, this is to enforce certain reloads
+  // of api datasets
+  useRefresh();
   const routes = useRoutes();
-  // const navigate = useNavigate();
   const [direction, setDirection] = useState(1);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
   const [hash, setHash] = useHash();
+
+  const activeRouteIndex = routes.findIndex(route => route.active);
 
   const onTouchStart = (e) => {
     setTouchEnd(null) // otherwise the swipe is fired even with usual touch events
@@ -126,27 +205,27 @@ function Root() {
       `}
     />
     <Container>
-      <Sidebar />
-      <Areas onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}>
-         {/* <AnimatePresence custom={direction}> */}
-          {routes.map(route => route.active && <Route key={route.name}>{route.render(direction)}</Route>)}
-         {/* </AnimatePresence>  */}
-      </Areas>
+
+      {/* <Areas onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}> */}
+      <TransitionGroup  childFactory={child => React.cloneElement(child, { classNames: direction ? "right-to-left" : "left-to-right", timeout: 1000 })} component={Areas} className={'route-list'}>
+        {routes.filter(route => route.active).map(route => <CSSTransition
+          timeout={500}
+          classNames="right-to-left"
+          nodeRef={route.ref}
+          key={route.name}
+        >
+          <Route direction={direction} ref={route.ref}>{route.render(direction)}</Route>
+        </CSSTransition>)}
+      </TransitionGroup>
+      {/* </Areas> */}
+      <BottomMenu />
     </Container>
   </>
 }
 
 function App() {
-  const handle = useFullScreen();
   return <Hass>
-    <>
-      {/* <button style={{ position: 'absolute', 'top': 0, left: 0, zIndex: 20}} onClick={handle.enter}>
-        Enter fullscreen
-      </button> */}
-      <FullScreen handle={handle}>
-        <Root />
-      </FullScreen>
-    </>
+    <Root />
   </Hass>
 };
 
