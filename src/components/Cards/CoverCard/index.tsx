@@ -1,36 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
 import { Curtains, CurtainsClosed, BlindsClosed, Blinds, FirstPage, Stop, LastPage } from '@mui/icons-material';
-import { useHass, useEntity } from '@hooks';
+import { useHass, useEntity, useMq } from '@hooks';
 import { Popup } from '@components';
 import { IconButton } from '../';
-
-
-
-// const Button = styled(MuiButton)`
-//   border-radius: 8px;
-//   border: 1px solid rgba(117, 130, 235, 0.5);
-//   color: rgb(117, 130, 235);
-//   box-shadow: none;
-//   text-transform: none;
-//   padding: 6px 16px;
-//   svg {
-//     color: currentColor;
-//   }
-//   &:hover, &:active, &:focus {
-//     text-decoration: none;
-//     background-color: rgba(117, 130, 235, 0.04);
-//     border: 1px solid rgb(117, 130, 235);
-//     box-shadow: none;
-//   }
-//   ${props => props.active && `
-//     color: rgb(17, 24, 39);
-//     background-color: rgb(117, 130, 235);
-//     &:hover, &:active, &:focus {
-//       background-color: rgb(81, 91, 164);
-//     }
-//   `}
-// `;
 
 const FieldWrapper = styled.div`
   position: relative;
@@ -44,7 +17,6 @@ const FieldWrapper = styled.div`
   padding:12px 12px;
   flex-wrap: wrap;
 `;
-
 
 const ButtonRow = styled.div`
   display: flex;
@@ -164,6 +136,10 @@ const Label = styled.label`
   font-size: 16px;
   color: white;
   margin-top: 18px;
+  ${useMq(['mobile'], `
+    margin-top: 10px;
+    font-size: 12px;
+  `)}
 `;
 
 let timeout;
@@ -198,11 +174,6 @@ export function CoverCard({
         entity_id: entity,
       })
     }, 200);
-  }
-  
-
-  function onToggle() {
-    // hass.callService('cover', 'toggle', { entity_id: entity });
   }
 
   return <>

@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
-import { useHass } from '@hooks';
+import { useHass, useMq } from '@hooks';
 import { omit } from 'lodash';
 
 interface ZoneOverlay {
@@ -62,12 +62,20 @@ const ZoneFooter = styled.div`
   left: 0;
   right: 0;
   display: flex;
-  flex-direction: column;
-  align-items: flex-end;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end;
   padding: 20px 32px;
   > * {
-    margin-left: 20px;
+    margin: 0 20px;
+    
   }
+  ${useMq(['mobile'], `
+    padding: 10px 16px;
+    > * {
+      margin: 0 10px;
+    }
+  `)}
 `;
 
 const Zones = styled.div`
@@ -84,6 +92,9 @@ const Background = styled.div`
     height: auto;
     width: 100%;
   }
+  ${useMq(['mobile'], `
+    margin: 0;
+  `)}
   
 `;
 interface ZoneProps {

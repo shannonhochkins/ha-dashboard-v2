@@ -22,6 +22,8 @@ const AreaBaseStyled = styled.div`
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  position: relative;
+  
   > div {
     overflow-x: hidden;
     overflow-y: auto;
@@ -31,9 +33,13 @@ const AreaBaseStyled = styled.div`
     display: flex;
     justify-content: center;
     align-items: center;
+    position: relative;
     > * {
       max-height: 100%;
     }
+    ${useMq(['mobile'], `
+      padding: 0 24px;
+    `)}
   }
   ${useMq(['desktop'], `
     display: flex;
@@ -45,7 +51,17 @@ const AreaBaseStyled = styled.div`
       flex-shrink: 0;
     }
   `)}
-
+  ${useMq(['mobile', 'tablet'], `
+    &:after {
+      height: 100px;
+      position: absolute;
+      content: '';
+      left: 0;
+      right: 0;
+      bottom: 1px;
+      background: linear-gradient(to top, rgba(0, 0, 0, 1) 2%, rgba(0, 0, 0, 0) 100%);
+    }
+  `)}
   background: radial-gradient(circle at var(--ha-x) var(--ha-y), var(--ha-radial-animation-start) 0%, var(--ha-radial-animation-end) 50%, var(--ha-radial-animation-end) 100%);
   background-size: cover;
   animation: gradientAnimation 15s linear infinite;

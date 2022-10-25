@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-import { useRoutes, useHash, useResize, useHass } from '@hooks';
+import { useRoutes, useHash, useResize, useHass, useMq } from '@hooks';
 import { Widgets, Thermostat, Security, NightsStay, LightMode } from '@mui/icons-material'; 
 
 
@@ -16,6 +16,10 @@ const Menu = styled.menu`
   background-color: var(--ha-menu-background);
   z-index: 2;
   height: 100px;
+  ${useMq(['mobile'], `
+    font-size: 1em;
+    height: 80px;
+  `)}
 `;
 
 const MenuItem = styled.button<{
@@ -71,6 +75,17 @@ const MenuItem = styled.button<{
       stroke-dashoffset: 600;
     }
   }
+
+  ${useMq(['mobile'], `
+    &:before {
+      width: 3em;
+      height: 3em;
+    }
+    svg {
+      width: 1.3em;
+      height: 1.3em;
+    }
+  `)}
 `;
 
 const MenuBorder = styled.div`
@@ -128,10 +143,13 @@ export function BottomMenu() {
     <Menu>
         <MenuItem active={morningActive} color="#e0b115" onClick={() => {
           setMorningActive(true);
-          callSwitch('switch.smartthings_75_sensors');
-          callSwitch('switch.switch_kitchen_pendant_light');
+          callSwitch('switch.smartthings_75_sensors', 'turn_on');
+          callSwitch('switch.switch_kitchen_pendant_light', 'turn_on');
           callService('cover', 'open', {}, {
-            entity_id: 'cover.living_room_curtains'
+            entity_id: 'cover.curtain_patio_main_curtain'
+          });
+          callService('cover', 'open', {}, {
+            entity_id: 'cover.curtain_pool_window_curtain'
           });
           setTimeout(() => {
             setMorningActive(false);
@@ -159,10 +177,13 @@ export function BottomMenu() {
         </MenuItem>
         <MenuItem color="#e0b115" active={goodNightActive} onClick={() => {
           setGoodMorningActive(true)
-          callSwitch('switch.all_downstairs_light_switchs');
-          callSwitch('switch.all_upstairs_lights');
+          callSwitch('switch.all_downstairs_light_switchs', 'turn_off');
+          callSwitch('switch.all_upstairs_lights', 'turn_off');
           callService('cover', 'close', {}, {
-            entity_id: 'cover.living_room_curtains'
+            entity_id: 'cover.curtain_patio_main_curtain'
+          });
+          callService('cover', 'close', {}, {
+            entity_id: 'cover.curtain_pool_window_curtain'
           });
           setTimeout(() => {
             setGoodMorningActive(false);

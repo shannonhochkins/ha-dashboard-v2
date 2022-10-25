@@ -89,7 +89,8 @@ export const ThermostatCard = () => {
   const [internalFanMode, setInternalFanMode] = useState(fan_mode);
   const [internalState, setInternalState] = useState(state);
   const [internalTemperature, setInternalTemperature] = useState<number>(temperature);
-  const size = device === 'fridge' ? 400 : 300;
+  const size = device === 'fridge' ? 400 : device === 'mobile' ? 270 : 400;
+  console.log('device', device);
 
 
   useEffect(() => {

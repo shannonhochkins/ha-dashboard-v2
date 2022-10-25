@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
-import { useRoutes, useHash } from '@hooks';
+import { useRoutes, useHash, useMq } from '@hooks';
 
 const HomeContainer = styled(AreaBase)``;
 
@@ -11,6 +11,10 @@ const Items = styled.div`
 	/* Compensate for excess margin on outer gallery flex items */
 	margin: -1rem -1rem;
   max-width: 1260px;
+  ${useMq(['mobile'], `
+    margin: 0;
+    max-width: 100%;
+  `)}
 `;
 const Item = styled.div`
 	flex: 1 0 24rem;
@@ -20,6 +24,10 @@ const Item = styled.div`
   max-height: 100%;
   margin: 1rem;
   border-radius: 24px;
+  ${useMq(['mobile'], `
+    margin: 1rem 0;
+    flex: none;
+  `)}
 `;
 const Image = styled.img`
   display: block;
