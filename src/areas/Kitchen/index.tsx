@@ -10,12 +10,9 @@ import kitchenPantry from '@assets/kitchen-pantry.png';
 import kitchenRoof from '@assets/kitchen-roof.png';
 import kitchenSmartframe from '@assets/kitchen-smartframe.png';
 import kitchenPendants from '@assets/kitchen-pendants.png';
+import { Roof, Pendants, Pantry } from './zones';
 
-const KitchenContainer = styled(AreaBase)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-`;
+const KitchenContainer = styled(AreaBase)``;
 
 
 export function Kitchen({ direction }: AreaBaseProps) {
@@ -25,19 +22,34 @@ export function Kitchen({ direction }: AreaBaseProps) {
 
   const zones = [{
     base: kitchenPantry,
-    overlay:  null,
+    overlay:  {
+      renderSvg: onClick => <Pantry onClick={onClick} />,
+      top: '30.1%',
+      left: '52.9%',
+      width: '6.9%',
+    },
     entities: {
       switch: 'switch.switch_pantry_vertical_garden',
     }
   }, {
     base: kitchenPendants,
-    overlay:  null,
+    overlay:  {
+      renderSvg: onClick => <Pendants onClick={onClick} />,
+      top: '25%',
+      left: '54%',
+      width: '14.1%',
+    },
     entities: {
       switch: 'switch.switch_kitchen_pendant_light',
     }
   }, {
     base: kitchenRoof,
-    overlay:  null,
+    overlay:  {
+      renderSvg: onClick => <Roof onClick={onClick} />,
+      top: '12%',
+      left: '46%',
+      width: '8%',
+    },
     entities: {
       switch: 'switch.switch_kitchen_main_light',
     }
@@ -48,30 +60,6 @@ export function Kitchen({ direction }: AreaBaseProps) {
   }];
 
   return <KitchenContainer direction={direction}>
-    <AreaCard base={kitchenBase} zones={zones} footer={
-      <>
-        <BinaryCard entity="switch.switch_kitchen_pendant_light" name="Pendants" />
-        {/* <LightCard
-          switchEntities={[
-            'switch.switch_pantry_vertical_garden',
-          ]}
-          name={'Pantry'} />
-        <LightCard
-          switchEntities={[
-            'switch.switch_kitchen_pendant_light',
-          ]}
-          name={'Pendants'} />
-        <LightCard
-          switchEntities={[
-            'switch.switch_pantry_main',
-          ]}
-          name={'Vertical Garden'} />
-        <LightCard
-          switchEntities={[
-            'switch.switch_kitchen_main_light',
-          ]}
-          name={'Roof'} /> */}
-      </>
-        } />
+    <AreaCard base={kitchenBase} zones={zones} />
   </KitchenContainer>
 }

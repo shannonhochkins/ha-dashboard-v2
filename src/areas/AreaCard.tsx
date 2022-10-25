@@ -1,27 +1,42 @@
-import React, { ReactElement } from 'react';
+import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import { useHass } from '@hooks';
+import { omit } from 'lodash';
+
 interface ZoneOverlay {
-  top: string;
-  left: string;
-  width: string;
-  src: string;
+  width?: string;
+  height?: string;
+  top?: string;
+  left?: string;
+  renderSvg?: (callback: () => void) => ReactNode;
 }
-const ZoneOverlay = styled.img<ZoneOverlay>`
+
+const ZoneOverlay = styled.div`
   position: absolute;
   z-index: 2;
-  cursor: pointer;
-  ${({
-    top,
-    left,
-    width
-  }) => {
-    return `
-      top: ${top || '0'};
-      left: ${left || '0'};
-      width: ${width || '100%'} !important;
-    `;
-  }}
+  svg {
+    width: 100%;
+    animation: fillAnimation 5s linear infinite;
+    path, ellipse {
+      stroke-width: 2;
+      stroke: #5bbaff;
+      cursor: pointer;
+      filter: url(#glow);
+    }
+  }
+  @keyframes fillAnimation {
+    0% {
+      fill: rgb(100 203 255 / 10%)
+    }
+
+    54% {
+      fill: rgb(100 203 255 / 20%)
+    }
+
+    100% {
+      fill: rgb(100 203 255 / 10%)
+    }
+  }
 `;
 
 interface ZoneBaseProps {
@@ -42,10 +57,17 @@ const ZoneBase = styled.img<ZoneBaseProps>`
 `;
 
 const ZoneFooter = styled.div`
-  width: 100%;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: flex-end;
+  padding: 20px 32px;
+  > * {
+    margin-left: 20px;
+  }
 `;
 
 const Zones = styled.div`
@@ -57,10 +79,12 @@ const Background = styled.div`
   overflow: hidden;
   border-radius: 30px;
   margin: 24px;
+  max-width: 940px;
   img {
     height: auto;
     width: 100%;
   }
+  
 `;
 interface ZoneProps {
   entities?: {
@@ -89,15 +113,17 @@ function Zone({
   
   return <>
     <ZoneBase opacity={brightness} src={base} />
-    {overlay !== null && <ZoneOverlay onClick={() => {
-      callSwitch(entities.switch);
-    }} {...overlay} />}
+    {overlay !== null && overlay.renderSvg && <ZoneOverlay style={{...omit(overlay, 'svg')}}>
+      {overlay.renderSvg(() => {
+        callSwitch(entities.switch);
+      })}
+    </ZoneOverlay>}
   </>
 }
 interface AreaCardProps {
   zones: ZoneProps[];
   base: string;
-  footer?: ReactElement;
+  footer?: ReactNode;
 }
 export function AreaCard({
   base,
@@ -109,10 +135,10 @@ export function AreaCard({
       <Zones>
         <img src={base} />
         {zones.map((zone, index) => <Zone {...zone} key={index} />)}
-      </Zones>    
+      </Zones>   
+      {footer && <ZoneFooter>
+        {footer}
+      </ZoneFooter>} 
     </Background>
-    {footer && <ZoneFooter>
-      {footer}
-    </ZoneFooter>}
   </>
 }

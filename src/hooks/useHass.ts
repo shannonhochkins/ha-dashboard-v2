@@ -27,6 +27,7 @@ interface HassState {
   getEntity: (entity: string) => HassEntity | null;
   callSwitch: (entity: string, service?: SwitchServices) => void,
   callLight: (entity: string, service?: LightServices) => void,
+  getAllEntities: () => HassEntities;
   callService: (
     domain: string,
     service: string,
@@ -88,11 +89,18 @@ export const useHass = create<HassState>()((set, get) => ({
     return null;
   },
   setConnection: connection => set(state => ({ connection })),
+  getAllEntities: () => {
+    return ENTITIES;
+  },
   getEntity: entity => {
     const { appendToWhitelist } = get();
     appendToWhitelist(entity);
     // just return the raw entitiy from the list if it's available
-    return ENTITIES && ENTITIES[entity] ? ENTITIES[entity] || null : null;
+    const found = ENTITIES && ENTITIES[entity] ? ENTITIES[entity] || null : null;
+    if (found === null && entity) {
+      alert(`Entity doesn't exist "${entity}"`);
+    }
+    return found;
   },
   callSwitch: (entity, service = 'toggle') => {
     const { callService } = get();

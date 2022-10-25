@@ -7,8 +7,10 @@ import { useDevice } from './useDevice';
 import { useWeather } from './useWeather';
 import { useRefresh } from './useRefresh';
 import { useHass } from './useHass';
+import { useLowDevices } from './useLowDevices';
 
 export {
+  useLowDevices,
   useResize,
   useMq,
   useRoutes,

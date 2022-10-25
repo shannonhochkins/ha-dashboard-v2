@@ -1,26 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
-import { useMq, useRoutes, useHash } from '@hooks';
-import { Popup } from '@components';
+import { useRoutes, useHash } from '@hooks';
 
-const Inner = styled.div`
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-`;
-
-
-const HomeContainer = styled(AreaBase)`
-  
-`;
+const HomeContainer = styled(AreaBase)``;
 
 const Items = styled.div`
   display: flex;
 	flex-wrap: wrap;
 	/* Compensate for excess margin on outer gallery flex items */
 	margin: -1rem -1rem;
+  max-width: 1260px;
 `;
 const Item = styled.div`
 	flex: 1 0 24rem;

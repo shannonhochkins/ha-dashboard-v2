@@ -1,5 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
+import { useMq } from '@hooks';
 
 interface PopupProps {
   className?: string;
@@ -30,7 +31,7 @@ export const Popup = styled(PopupBase)<PopupProps>`
   position: fixed;
   bottom:0;
   left:2.5%;
-  width: 95%;
+  right: 2.5%;
   transition: 0.3s ease-in-out;
   transition-property: opacity, transform;
   height: 75vh;
@@ -41,6 +42,9 @@ export const Popup = styled(PopupBase)<PopupProps>`
   -webkit-backdrop-filter: blur(70px);
   backdrop-filter: blur(70px);
   background: rgb(41 46 108 / 10%);
+  ${useMq(['fridge'], `
+    background-color: rgb(22 30 47);
+  `)}
   border: 1px solid rgba(0, 0, 0, 0.77);
   transform: rotate3d(0, 0, 1, 45deg);
   border-top-left-radius: 5vh;

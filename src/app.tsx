@@ -4,10 +4,10 @@ import { createRoot } from 'react-dom/client';
 import { css, Global } from '@emotion/react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Hass } from '@hass';
-import { useHass, useRoutes, useHash, useRefresh } from '@hooks';
+import { useRoutes, useHash, useRefresh } from '@hooks';
 import { cssTheme } from './theme';
 
-import { BottomMenu } from '@components';
+import { BottomMenu, LowBatteryAlert } from '@components';
 
 import "@fontsource/roboto/300.css";
 import "@fontsource/roboto/400.css";
@@ -23,7 +23,6 @@ const Areas = styled.div`
   height: 100%;
   overflow: hidden;
   position: relative;
-  z-index: 2;
 `;
 
 const Container = styled.div`
@@ -114,9 +113,6 @@ const Route = styled.div<RouteProps>`
 // };
 
 function Root() {
-  const hass = useHass();
-  // will automatically refresh the browser at a specific internal, this is to enforce certain reloads
-  // of api datasets
   useRefresh();
   const routes = useRoutes();
   const [direction, setDirection] = useState(1);
@@ -219,6 +215,7 @@ function Root() {
       </TransitionGroup>
       {/* </Areas> */}
       <BottomMenu />
+      <LowBatteryAlert />
     </Container>
   </>
 }

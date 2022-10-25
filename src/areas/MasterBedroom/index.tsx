@@ -1,64 +1,59 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
+import { useHass } from '@hooks';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
-// import { AreaCard, LightCard, CoverCard, SwitchCard } from '@components/index';
-import { Tv } from '@mui/icons-material'
 import base from '@assets/bedroom-base.jpg';
 import tv from '@assets/bedroom-tv.jpg';
 import roofLight from '@assets/bedroom-light-roof.jpg';
+import { Roof, TV, Soundbar } from './zones';
 
 const MasterBedroomContainer = styled(AreaBase)`
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  
 `;
 
 export function MasterBedroom({ direction }: AreaBaseProps) {
+  const { callService } = useHass();
   const zones = [{
     base: roofLight,
-    overlay:  null,
+    overlay:  {
+      top: '10.5%',
+      left: '36.9%',
+      width: '8.5%',
+      renderSvg: onClick => <Roof onClick={onClick} />,
+    },
     entities: {
       switch: 'switch.switch_master_bedroom_light',
     }
   }, {
     base: tv,
-    overlay:  null,
+    overlay:  {
+      top: '18.8%',
+      left: '56%',
+      width: '20.4%',
+      renderSvg: onClick => <TV onClick={onClick} />,
+    },
     entities: {
       switch: 'switch.tv_master_bedroom',
+    }
+  }, {
+    base: null,
+    overlay:  {
+      top: '40.2%',
+      left: '57.3%',
+      width: '14.4%',
+      renderSvg: () => <Soundbar onClick={() => {
+        callService('remote', 'send_command', {
+          device: 'Soundbar',
+          command: 'Power'
+        }, {
+          device_id: '3b5cd884569e393b965c72ad576cd13b',
+        });
+      }} />,
     }
   }];
   
   return <MasterBedroomContainer direction={direction}>
-    <AreaCard base={base} zones={zones} footer={
-      <>
-        {/* <LightCard
-          switchEntities={[
-            'switch.switch_master_bedroom_light',
-          ]}
-          name={'Fan Light'} />
-        <LightCard
-          mode="light"
-          lightAndSwitchEntities={[
-            {
-              light: 'light.master_striplight_under_bed',
-            }
-          ]}
-          name={'Bed Light'} />
-        <SwitchCard name={'TV'} iconActive={<Tv />} iconInactive={<Tv />} entity="switch.tv_master_bedroom" />
-        <CoverCard 
-          entity="cover.curtain_master_curtain"
-          name={'Curtain'}
-        />
-        <CoverCard
-          entity="cover.roller_blind_master_primary"
-          name={'Blind Main'} 
-        />
-        <CoverCard
-          entity="cover.roller_blind_master_secondary"
-          name={'Blind Small'} 
-        /> */}
-      </>
-        } />
+    <AreaCard base={base} zones={zones} />
   </MasterBedroomContainer>
 }

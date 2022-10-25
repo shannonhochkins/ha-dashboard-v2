@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-import { useRoutes, useHash, useResize } from '@hooks';
-import { Widgets, AcUnit, Security } from '@mui/icons-material'; 
+import { useRoutes, useHash, useResize, useHass } from '@hooks';
+import { Widgets, Thermostat, Security, NightsStay, LightMode } from '@mui/icons-material'; 
 
 
 const Menu = styled.menu`
@@ -19,7 +19,7 @@ const Menu = styled.menu`
 `;
 
 const MenuItem = styled.button<{
-  active: boolean;
+  active?: boolean;
 }>`
   all: unset;
   flex-grow: 1;
@@ -87,6 +87,9 @@ const MenuBorder = styled.div`
 
 export function BottomMenu() {
   const routes = useRoutes();
+  const [morningActive, setMorningActive] = useState(false);
+  const [goodNightActive, setGoodMorningActive] = useState(false);
+  const { callSwitch, callService } = useHass();
   const size = useResize();
   const [hash, setHash] = useHash();
   const menuBorderRef = useRef(null);
@@ -123,11 +126,24 @@ export function BottomMenu() {
   // 65ddb7
   return <>
     <Menu>
+        <MenuItem active={morningActive} color="#e0b115" onClick={() => {
+          setMorningActive(true);
+          callSwitch('switch.smartthings_75_sensors');
+          callSwitch('switch.switch_kitchen_pendant_light');
+          callService('cover', 'open', {}, {
+            entity_id: 'cover.living_room_curtains'
+          });
+          setTimeout(() => {
+            setMorningActive(false);
+          }, 2000);
+        }}>
+          <LightMode />
+        </MenuItem>
         <MenuItem ref={acRef} onClick={() => {
           setHash(acView.hash);
           offsetBubble(acRef.current);
         }} active={acView?.active} color="#f54888">
-          <AcUnit />
+          <Thermostat />
         </MenuItem>
         <MenuItem ref={roomRef} onClick={() => {
           offsetBubble(roomRef.current);
@@ -140,6 +156,19 @@ export function BottomMenu() {
           offsetBubble(securityRef.current);
         }} active={securityView?.active} color="#4343f5">
           <Security />
+        </MenuItem>
+        <MenuItem color="#e0b115" active={goodNightActive} onClick={() => {
+          setGoodMorningActive(true)
+          callSwitch('switch.all_downstairs_light_switchs');
+          callSwitch('switch.all_upstairs_lights');
+          callService('cover', 'close', {}, {
+            entity_id: 'cover.living_room_curtains'
+          });
+          setTimeout(() => {
+            setGoodMorningActive(false);
+          }, 2000);
+        }}>
+          <NightsStay />
         </MenuItem>
         <MenuBorder ref={menuBorderRef} />
       </Menu>

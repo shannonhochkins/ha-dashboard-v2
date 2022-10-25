@@ -1,49 +1,26 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
+import { AreaBase } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
-import { BinaryCard, CardPanel, MediaCard, Toggle } from '@components';
-import { Light } from '@mui/icons-material';
 import officeBase from '@assets/office-base.jpg';
 import downlightsBase from '@assets/office-downlights.jpg';
-import downlightsZone from '@assets/office-downlights-zone.png';
 import striplightsBase from '@assets/office-striplights.jpg';
-import striplightsZone from '@assets/office-striplight-zone.png';
 import roofBase from '@assets/office-roof.jpg';
-import roofZone from '@assets/office-roof-zone.png';
 import computerBase from '@assets/office-computer.jpg';
-import computerZone from '@assets/office-computer-zone.png';
+import { CoverCard } from '@components';
 
-import Downlights from '@assets/downlights.png';
-import Striplights from '@assets/striplights.png';
-import Lightbulb from '@assets/lightbulb.png';
+import { Computer, RoofLight, Downlights, Striplights } from '../Office/zones';
 
-
-const OfficeContainer = styled(AreaBase)`
-  
-`;
-
-
-// - type: call-service
-// service: script.turn_on
-// service_data:
-//   entity_id: script.gaming_light_color_changer
-//   variables:
-//     mode: rgb_color
-//     val:
-//       - 78
-//       - 127
-//       - 255
-
+const OfficeContainer = styled(AreaBase)``;
 
 export function Office({ direction }) {
   const zones = [{
     base: downlightsBase,
     overlay:  {
-      src: downlightsZone,
-      top: '5.2%',
-      width: '46.2%',
-      left: '53.9%'
+      renderSvg: onClick => <Downlights onClick={onClick} />,
+      top: '6.4%',
+      width: '45.1%',
+      left: '55%',
     },
     entities: {
       switch: 'switch.office_downlights',
@@ -52,10 +29,10 @@ export function Office({ direction }) {
   }, {
     base: striplightsBase,
     overlay:  {
-      src: striplightsZone,
-      top: '34.2%',
-      left: '61.9%',
-      width: '38.2%'
+      renderSvg: onClick => <Striplights onClick={onClick} />,
+      top: '35.4%',
+      width: '38%',
+      left: '62%',
     },
     entities: {
       switch: 'switch.office_striplights',
@@ -64,8 +41,8 @@ export function Office({ direction }) {
   }, {
     base: roofBase,
     overlay:  {
-      src: roofZone,
-      top: '0%',
+      renderSvg: onClick => <RoofLight onClick={onClick} />,
+      top: '-5%',
       left: '59%',
       width: '15.2%'
     },
@@ -76,10 +53,10 @@ export function Office({ direction }) {
   }, {
     base: computerBase,
     overlay:  {
-      src: computerZone,
-      top: '63%',
-      left: '7.5%',
-      width: '35.8%'
+      renderSvg: onClick => <Computer onClick={onClick} />,
+      top: '64.6%',
+      left: '8.3%',
+      width: '33.8%',
     },
     entities: {
       switch: 'switch.gaming_pc',
@@ -87,6 +64,8 @@ export function Office({ direction }) {
   }];
 
   return <OfficeContainer direction={direction}>
-    <AreaCard base={officeBase} zones={zones} />
+    <AreaCard base={officeBase} zones={zones} footer={<>
+      <CoverCard entity="cover.curtain_office_curtain" label="Curtain" />
+    </>} />
   </OfficeContainer>
 }

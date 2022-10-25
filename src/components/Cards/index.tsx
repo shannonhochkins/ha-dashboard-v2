@@ -5,6 +5,44 @@ import { adjustHue, darken } from 'polished'
 import { WithActiveProps } from '@types';
 import { useHass } from '@hooks';
 
+
+
+export const IconButton = styled.button<{
+  color?: string;
+}>`
+  all: unset;
+  flex-grow: 1;
+  display: flex;
+  cursor: pointer;
+  position: relative;
+  border-radius: 50%;
+  align-items: center;
+  will-change: transform;
+  justify-content: center;
+  height: 100%;
+  &:before {
+    z-index: -1;
+    content: "";
+    width: 4.2em;
+    height: 4.2em;
+    border-radius: 50%;
+    position: absolute;
+    transform: scale(1);
+    background-color: ${props => props.color};
+  }
+  svg {
+    width: 1.6em;
+    height: 1.6em;
+    stroke: white;
+    fill: transparent;
+    stroke-width: 1pt;
+    stroke-miterlimit: 10;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    stroke-dasharray: 600;
+  }
+`;
+
 const MediaCardContent = styled.div<{
   size: number;
   shiftColor?: number;
