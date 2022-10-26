@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from '@emotion/styled';
 import { useEntity, useWeather, useHass } from '@hooks';
-import { MediaCard } from '@components';
+// import { MediaCard } from '@components';
 import { WeatherIcon } from './WeatherIcon';
 
 const ForecastContent = styled.div`
@@ -58,11 +58,12 @@ export function WeatherCard({
   const { data, isLoading } = useWeather();
   const { attributes, state } = weather;
   const { temperature, forecast } = attributes;
+  return null;
 
-  return data ? <MediaCard shiftColor={0} onClick={onClick} svg={<WeatherIcon />}>
-    <ForecastContent>
-      <Temperature>{data.current.temp.toFixed(0)}°</Temperature>
-      <Forecast>{data.current.weather[0].description}</Forecast>
-    </ForecastContent>
-  </MediaCard> : null;
+  // return data ? <MediaCard shiftColor={0} onClick={onClick} svg={<WeatherIcon />}>
+  //   <ForecastContent>
+  //     <Temperature>{data.current.temp.toFixed(0)}°</Temperature>
+  //     <Forecast>{data.current.weather[0].description}</Forecast>
+  //   </ForecastContent>
+  // </MediaCard> : null;
 }

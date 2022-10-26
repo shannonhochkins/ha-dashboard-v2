@@ -56,7 +56,11 @@ const FieldTitle = styled.label`
   }
 `;
 
-const RangeSlider = styled.div`
+interface RangeSlider {
+  min: number;
+  max: number;
+}
+const RangeSlider = styled.div<RangeSlider>`
   position: relative;
   width: calc(100% - 24px);
   margin: 30px 0;

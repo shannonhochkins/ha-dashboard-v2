@@ -4,7 +4,7 @@
   "description": "",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist && NODE_ENV=production parcel build --no-source-maps src/index.html",
+    "build": "rm -rf dist && NODE_ENV=production parcel build --no-source-maps src/*.html",
     "start": "NODE_ENV=development parcel src/index.html"
   },
   "repository": {

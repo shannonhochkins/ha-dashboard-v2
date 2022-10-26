@@ -2,7 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { useMq } from '@hooks';
-import { CameraCard} from '@components';
+import { CameraCard } from '@components';
 
 const Inner = styled.div`
   display: flex;

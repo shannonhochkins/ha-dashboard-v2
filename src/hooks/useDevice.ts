@@ -6,7 +6,7 @@ function determineDevice() {
     .map(([device, query]) => [device, window.matchMedia(query.replace(/^[^(]+/, ''))])
     .sort()
     .find(([device, query]) => (query as MediaQueryList).matches);
-  return matched[0];
+  return matched[0] as string;
 }
 
 export function useDevice() {
