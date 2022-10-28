@@ -2,8 +2,6 @@ import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
 import { useMq } from '@hooks';
 
-
-
 const BottomMenuFill = styled.span`
   content: '';
   width: 100%;
@@ -28,8 +26,7 @@ const AreaBaseStyled = styled.div`
     overflow-x: hidden;
     overflow-y: auto;
     padding: 0 48px;
-    height: 90%;
-    margin-top: -5%;
+    height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -96,33 +93,11 @@ const AreaBaseStyled = styled.div`
   `)}
 `;
 
-// const variants = {
-//   enter: (direction: number) => {
-//     return {
-//       x: (window.innerWidth * -1) * (direction * -1),
-//       opacity: 0
-//     };
-//   },
-//   center: {
-//     zIndex: 1,
-//     x: 0,
-//     opacity: 1
-//   },
-//   exit: (direction: number) => {
-//     return {
-//       zIndex: 0,
-//       x: window.innerWidth * (direction * -1),
-//       opacity: 0,
-//     };
-//   }
-// };
-
 export interface AreaBaseProps {
-  direction: number;
   className?: string;
   children?: ReactNode;
 }
-export function AreaBase({ children, className, direction }: AreaBaseProps) {
+export function AreaBase({ children, className }: AreaBaseProps) {
   return <AreaBaseStyled className={className}>
     <BottomMenuFill />
     <div>{children && children}</div>

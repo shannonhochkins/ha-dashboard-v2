@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import styled from '@emotion/styled';
-import { useRoutes, useHash, useResize, useHass, useMq } from '@hooks';
-import { Widgets, Thermostat, Security, NightsStay, LightMode } from '@mui/icons-material'; 
+import { useRoutes, useHash, useResize, useHass, useMq, useEntity } from '@hooks';
+import { Icon } from '@iconify/react';
+import { WeatherIcon } from '@components';
 
 
 const Menu = styled.menu`
@@ -52,6 +53,7 @@ const MenuItem = styled.button<{
   svg {
     width: 2.6em;
     height: 2.6em;
+    color: white;
     stroke: white;
     fill: transparent;
     stroke-width: 1pt;
@@ -59,6 +61,9 @@ const MenuItem = styled.button<{
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 600;
+    path {
+      fill: transparent;
+    }
   }
   ${props => props.active && `
     transform: translate3d(0, -.8em , 0);
@@ -102,19 +107,21 @@ const MenuBorder = styled.div`
 
 export function BottomMenu() {
   const routes = useRoutes();
-  const [morningActive, setMorningActive] = useState(false);
-  const [goodNightActive, setGoodMorningActive] = useState(false);
-  const { callSwitch, callService } = useHass();
+  const { callSwitch } = useHass();
   const size = useResize();
   const [hash, setHash] = useHash();
   const menuBorderRef = useRef(null);
   const roomRef = useRef<HTMLButtonElement>(null);
   const acRef = useRef<HTMLButtonElement>(null);
   const securityRef = useRef<HTMLButtonElement>(null);
+  const weatherRef = useRef<HTMLButtonElement>(null);
+  const goodnightSwitch = useEntity('switch.goodnight_switch');
+  const goodmorningSwitch = useEntity('switch.goodmorning_switch');
   
   const roomRoutes = routes.filter(route => route.room);
   const isRoomActive = roomRoutes.some(route => route.active) || hash === '';
   const securityView = routes.find(route => route.hash === 'security');
+  const weatherView = routes.find(route => route.hash === 'weather');
   const acView = routes.find(route => route.hash === 'air-conditioner');
 
 
@@ -132,6 +139,8 @@ export function BottomMenu() {
         offsetBubble(acRef.current);
       } else if (securityView && securityView.active) {
         offsetBubble(securityRef.current);
+      } else if (weatherView && weatherView.active) {
+        offsetBubble(weatherRef.current);
       };
     }
   }, [menuBorderRef, routes, size]);
@@ -141,55 +150,39 @@ export function BottomMenu() {
   // 65ddb7
   return <>
     <Menu>
-        <MenuItem active={morningActive} color="#e0b115" onClick={() => {
-          setMorningActive(true);
-          callSwitch('switch.smartthings_75_sensors', 'turn_on');
-          callSwitch('switch.switch_kitchen_pendant_light', 'turn_on');
-          callService('cover', 'open', {}, {
-            entity_id: 'cover.curtain_patio_main_curtain'
-          });
-          callService('cover', 'open', {}, {
-            entity_id: 'cover.curtain_pool_window_curtain'
-          });
-          setTimeout(() => {
-            setMorningActive(false);
-          }, 2000);
+        <MenuItem active={goodmorningSwitch.state === 'on'} color="#e0b115" onClick={() => {
+          callSwitch('switch.goodmorning_switch', 'turn_on');
         }}>
-          <LightMode />
+          <Icon icon="charm:sun" />
         </MenuItem>
         <MenuItem ref={acRef} onClick={() => {
           setHash(acView.hash);
           offsetBubble(acRef.current);
         }} active={acView?.active} color="#f54888">
-          <Thermostat />
+          <Icon icon="material-symbols:device-thermostat" />
         </MenuItem>
         <MenuItem ref={roomRef} onClick={() => {
           offsetBubble(roomRef.current);
           setHash('');
         }} active={isRoomActive} color="#ff8c00">
-          <Widgets />
+          <Icon icon="mdi:widgets-outline" />
+        </MenuItem>
+        <MenuItem ref={weatherRef} onClick={() => {
+          setHash(weatherView.hash);
+          offsetBubble(weatherRef.current);
+        }} active={weatherView?.active} color="#65ddb7">
+          <WeatherIcon />
         </MenuItem>
         <MenuItem ref={securityRef} onClick={() => {
           setHash(securityView.hash);
           offsetBubble(securityRef.current);
         }} active={securityView?.active} color="#4343f5">
-          <Security />
+          <Icon icon="ic:outline-security" />
         </MenuItem>
-        <MenuItem color="#e0b115" active={goodNightActive} onClick={() => {
-          setGoodMorningActive(true)
-          callSwitch('switch.all_downstairs_light_switchs', 'turn_off');
-          callSwitch('switch.all_upstairs_lights', 'turn_off');
-          callService('cover', 'close', {}, {
-            entity_id: 'cover.curtain_patio_main_curtain'
-          });
-          callService('cover', 'close', {}, {
-            entity_id: 'cover.curtain_pool_window_curtain'
-          });
-          setTimeout(() => {
-            setGoodMorningActive(false);
-          }, 2000);
+        <MenuItem color="#e0b115" active={goodnightSwitch.state === 'on'} onClick={() => {
+          callSwitch('switch.goodnight_switch', 'turn_on');
         }}>
-          <NightsStay />
+          <Icon icon="fluent:weather-partly-cloudy-night-20-filled" />
         </MenuItem>
         <MenuBorder ref={menuBorderRef} />
       </Menu>

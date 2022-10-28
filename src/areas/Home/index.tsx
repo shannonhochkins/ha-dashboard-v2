@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
+import { AreaBase } from '../AreaBase';
 import { useRoutes, useHash, useMq } from '@hooks';
 
 const HomeContainer = styled(AreaBase)``;
@@ -44,11 +44,11 @@ const Image = styled.img`
 const Title = styled.span``;
 
 
-export function Home({ direction }: AreaBaseProps) {
+export function Home() {
   const routes = useRoutes();
   const [hash, setHash] = useHash();
   const rooms = routes.filter(route => route.room);
-  return <HomeContainer direction={direction}>
+  return <HomeContainer>
     <Items>
       {rooms.map(({
         active,

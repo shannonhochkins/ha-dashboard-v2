@@ -1,15 +1,16 @@
 import React  from 'react';
 import styled from '@emotion/styled';
-import { useHass } from '@hooks';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
+import { AreaBase } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
+import { Roof } from './zones';
+import { CoverCard } from '@components';
+
 import diningBase from '@assets/dining-base-optimised.jpg';
 import diningLight from '@assets/dining-light-optimised.jpg';
-import { Roof } from './zones';
 
 const DiningContainer = styled(AreaBase)``;
 
-export function Dining({ direction }: AreaBaseProps) {
+export function Dining() {
   const zones = [{
     base: diningLight,
     overlay:  {
@@ -22,7 +23,10 @@ export function Dining({ direction }: AreaBaseProps) {
       switch: 'switch.stairs_bottom_dining',
     }
   }];
-  return <DiningContainer direction={direction}>
-    <AreaCard base={diningBase} zones={zones} />
+  return <DiningContainer>
+    <AreaCard base={diningBase} zones={zones} footer={<>
+      <CoverCard entity="cover.curtain_patio_main_curtain" label="Main Curtain" />
+      <CoverCard entity="cover.curtain_pool_window_curtain" label="Pool Curtain" />
+    </>} />
   </DiningContainer>
 }

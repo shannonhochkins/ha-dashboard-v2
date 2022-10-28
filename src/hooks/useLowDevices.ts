@@ -7,7 +7,6 @@ export const useLowDevices = () => {
   const [ lowEntities, setLowEntities ] = useState<string[] | null>(null);
   const entities = getAllEntities();
 
-
   useEffect(() => {
     const batteryEntities = Object.keys(entities)
       .filter(e => e.includes('battery'))

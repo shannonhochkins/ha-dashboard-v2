@@ -22,8 +22,8 @@ const SecurityContainer = styled(AreaBase)`
   `)}
 `;
 
-export function Security({ direction }: AreaBaseProps) {
-  return <SecurityContainer direction={direction}>
+export function Security() {
+  return <SecurityContainer>
     <CameraCard />
   </SecurityContainer>
 }

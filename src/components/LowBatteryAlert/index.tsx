@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { useLowDevices, useDevice } from '@hooks';
+import { useLowDevices } from '@hooks';
 
 const AlertOverlay = styled.div`
   position: absolute;
@@ -22,13 +22,9 @@ const AlertChild = styled.div`
 
 export function LowBatteryAlert() {
   const entities = useLowDevices();
-  const device = useDevice();
   return entities ? <AlertOverlay>
     {entities.map(entitiy => {
      return <AlertChild key={entitiy}>{entitiy}</AlertChild>
     })}
-    <AlertChild>{device}</AlertChild>
-    <AlertChild>{window.innerWidth}</AlertChild>
-    <AlertChild>{window.innerHeight}</AlertChild>
   </AlertOverlay> : null;
 }

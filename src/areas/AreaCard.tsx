@@ -17,6 +17,10 @@ const ZoneOverlay = styled.div`
   svg {
     width: 100%;
     animation: fillAnimation 5s linear infinite;
+    ${useMq(['fridge'], `
+      animation: none;
+      fill: rgb(100 203 255 / 10%);
+    `)}
     path, ellipse {
       stroke-width: 2;
       stroke: #5bbaff;

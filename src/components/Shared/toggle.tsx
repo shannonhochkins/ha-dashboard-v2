@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
-import { LightMode, BlurOff } from '@mui/icons-material';
+// import { LightMode, BlurOff } from '@mui/icons-material';
 
 const TOGGLE_SIZE = 40;
 const TOGGLE_HEIGHT = TOGGLE_SIZE * .55;

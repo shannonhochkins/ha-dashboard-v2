@@ -1,12 +1,14 @@
 import { useEffect, useMemo, useState } from "react";
 import { BREAKPOINTS } from './useMq';
 
+type Devices = keyof typeof BREAKPOINTS;
+
 function determineDevice() {
   const matched = Object.entries(BREAKPOINTS)
     .map(([device, query]) => [device, window.matchMedia(query.replace(/^[^(]+/, ''))])
     .sort()
     .find(([device, query]) => (query as MediaQueryList).matches);
-  return matched[0] as string;
+  return matched[0] as Devices;
 }
 
 export function useDevice() {

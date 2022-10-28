@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useMemo, ReactElement, createRef } from 'react';
-import { Chair, Home as HomeIcon, Warehouse, Weekend, TableBar, Blender, Bed, Security as SecurityIcon, AcUnit } from '@mui/icons-material';
 import { useHash, useHass } from '@hooks';
 import {
   Home,
@@ -10,6 +9,7 @@ import {
   Garage,
   MasterBedroom,
   Security,
+  Weather,
   AirConditioner,
 } from '@areas';
 import { isEqual, pick } from 'lodash';
@@ -22,9 +22,8 @@ import master from '@assets/bedroom-base.jpg';
 
 interface RouteDefinition {
   name: string;
-  icon: ReactElement;
   hash: string;
-  render: (direction: number) => ReactElement;
+  render: () => ReactElement;
   active: boolean;
   suffix?: string;
   background: null | string;
@@ -45,71 +44,68 @@ export function useRoutes() {
     const garageTemp = getEntity('sensor.garage_door_contact_sensor_temperature');
     const $routes = [{
       name: 'Home',
-      icon: <HomeIcon />,
       room: false,
       background: null,
       hash: '',
-      render: direction => <Home direction={direction} />,
+      render: () => <Home />,
     }, {
       name: 'Security',
-      icon: <SecurityIcon />,
       room: false,
       background: null,
       hash: 'security',
-      render: direction => <Security direction={direction} />,
+      render: () => <Security />,
     }, {
       name: 'Air Conditioner',
-      icon: <AcUnit />,
       room: false,
       background: null,
       hash: 'air-conditioner',
-      render: direction => <AirConditioner direction={direction} />,
+      render: () => <AirConditioner />,
+    }, {
+      name: 'Weather',
+      room: false,
+      background: null,
+      hash: 'weather',
+      render: () => <Weather />,
     }, {
       name: 'Living Room',
-      icon: <Weekend />,
       background: living,
       room: true,
       hash: 'living-room',
-      render: direction => <Living direction={direction} />,
+      render: () => <Living />,
       suffix: `${livingTemp.state}${livingTemp.attributes.unit_of_measurement}`
     }, {
       name: 'Dining Room',
-      icon: <TableBar />,
       background: dining,
       room: true,
       hash: 'dining-room',
-      render: direction => <Dining direction={direction} />,
+      render: () => <Dining />,
     }, {
       name: 'Kitchen',
-      icon: <Blender />,
       hash: 'kitchen',
       background: kitchen,
       room: true,
-      render: direction => <Kitchen direction={direction} />,
+      render: () => <Kitchen />,
       suffix: `${kitchenTemp.state}${kitchenTemp.attributes.unit_of_measurement}`
     }, {
       name: 'Master Bedroom',
-      icon: <Bed />,
       hash: 'master-bedroom',
       background: master,
       room: true,
-      render: direction => <MasterBedroom direction={direction} />,
+      render: () => <MasterBedroom />,
       suffix: `${masterTemp.state}${masterTemp.attributes.unit_of_measurement}`
     }, {
       name: 'Office',
-      icon: <Chair />,
       background: office,
       hash: 'office',
       room: true,
-      render: direction => <Office direction={direction} />,
+      render: () => <Office />,
       suffix: `${officeTemp.state}${officeTemp.attributes.unit_of_measurement}`
     }, {
       name: 'Garage',
-      icon: <Warehouse />,
       background: garage,
       hash: 'garage',
       room: true,
-      render: direction => <Garage direction={direction} />,
+      render: () => <Garage />,
       suffix: `${garageTemp.state}${garageTemp.attributes.unit_of_measurement}`
     }].map(route => ({
       ...route,

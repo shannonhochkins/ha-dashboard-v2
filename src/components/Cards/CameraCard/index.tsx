@@ -69,13 +69,13 @@ const Camera = ({
 export function CameraCard() {
   const [open, setOpen] = useState(false);
   return <>
-    {/* <MediaCard onClick={() => {
+    <div onClick={() => {
       setOpen(true);
-    }} shiftColor={100} color="secondary" background={camera}>
-      <Content>
+    }}>
+      <div>
         View Cameras
-      </Content>
-    </MediaCard> */}
+      </div>
+    </div>
     <Popup open={open} onClose={() => setOpen(false)}>
       {/* <iframe src="http://homeassistant.local:8123/lovelace/home" width="100%" height="1000px">
       </iframe> */}

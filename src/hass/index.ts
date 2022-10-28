@@ -32,7 +32,7 @@ interface HassProps {
 
 export const Hass = ({
   children
-}: HassProps): ReactElement => {
+}: HassProps): ReactElement | null => {
   const { setEntities, setConnection, ready } = useHass();  
   let auth: Auth | null = null;
   let unsubscribe: UnsubscribeFunc;

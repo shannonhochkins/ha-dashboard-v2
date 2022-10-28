@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
+import { AreaBase } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
 import base from '@assets/garage-base.jpg';
 import downlights from '@assets/garage-lights.jpg';
@@ -10,7 +10,7 @@ const GarageContainer = styled(AreaBase)`
   
 `;
 
-export function Garage({ direction }: AreaBaseProps) {
+export function Garage() {
   const zones = [{
     base: downlights,
     overlay:  {
@@ -23,7 +23,7 @@ export function Garage({ direction }: AreaBaseProps) {
       switch: 'switch.switch_light_garage_main',
     }
   }];
-  return <GarageContainer direction={direction}>
+  return <GarageContainer>
     <AreaCard base={base} zones={zones} />
   </GarageContainer>
 }

@@ -29,12 +29,16 @@ export const IconButton = styled.button<{
     width: 1.6em;
     height: 1.6em;
     stroke: white;
+    color: white;
     fill: transparent;
     stroke-width: 1pt;
     stroke-miterlimit: 10;
     stroke-linecap: round;
     stroke-linejoin: round;
     stroke-dasharray: 600;
+    path {
+      fill: transparent;
+    }
   }
   ${useMq(['mobile', 'tablet'], `
     &:before {

@@ -1,8 +1,16 @@
 import React, { useEffect, useState, ReactNode } from 'react';
 import { useEntity, useWeather } from '@hooks';
 import { Base, Cloudy, CloudyDay, CloudyNight, Rain, Fog, Thunderstorm, ClearDay, ClearNight } from './svgs';
+import { Icon } from '@iconify/react';
+import { WeatherTypes } from '../../../../hooks/useWeather';
 
-export function WeatherIcon() {
+interface WeatherIconProps {
+  className?: string;
+  name?: WeatherTypes;
+  animated?: boolean;
+}
+
+export function WeatherIcon({ className, name, animated = true }: WeatherIconProps) {
   const [icon, setIcon] = useState<ReactNode>(null);
   const { state: sunState } = useEntity('sun.sun');
   const { data, isLoading } = useWeather();
@@ -13,29 +21,54 @@ export function WeatherIcon() {
     }
     const { main, description } = data.current.weather[0];
     let weatherIcon = null;
-    switch(main) {
+    switch(name || main) {
       case 'Clear':
-        weatherIcon = sunState === 'above_horizon' ? <ClearDay /> : <ClearNight />;
+        if (animated) {
+          weatherIcon = sunState === 'above_horizon' ? <ClearDay /> : <ClearNight />;
+        } else {
+          weatherIcon = sunState === 'above_horizon' ? <Icon icon="material-symbols:clear-day" /> : <Icon icon="fluent-mdl2:clear-night" />;
+        }
       break;
       case 'Clouds':
-        if (description.includes('overcast')) {
-          weatherIcon = <Cloudy />
+        if (animated) {
+          if (description.includes('overcast')) {
+            weatherIcon = <Cloudy />
+          } else {
+            weatherIcon = sunState === 'above_horizon' ? <CloudyDay /> : <CloudyNight />;
+          }
         } else {
-          weatherIcon = sunState === 'above_horizon' ? <CloudyDay /> : <CloudyNight />;
+          if (description.includes('overcast')) {
+            weatherIcon = <Icon icon="fluent-mdl2:cloudy" />
+          } else {
+            weatherIcon = sunState === 'above_horizon' ? <Icon icon="fluent-mdl2:partly-cloudy-day" /> : <Icon icon="fluent-mdl2:partly-cloudy-night" />;
+          }
         }
         break;
       case 'Rain':
-        weatherIcon = <Rain />;
+        if (animated) {
+          weatherIcon = <Rain />;
+        }
+        else {
+          weatherIcon = sunState === 'above_horizon' ? <Icon icon="fluent-mdl2:rain-showers-day" /> : <Icon icon="fluent-mdl2:rain-showers-night" />;
+        }
         break;
       case 'Thunderstorm':
-        weatherIcon = <Thunderstorm />;
+        if (animated) {
+          weatherIcon = <Thunderstorm />;
+        } else {
+          weatherIcon = <Icon icon="fluent-mdl2:thunderstorms" />;
+        }
         break;
       case 'Fog':
       case 'Mist':
       case 'Haze':
       case 'Dust':
       case 'Smoke':
-        weatherIcon = <Fog />;
+        if (animated) {
+          weatherIcon = <Fog />;
+        } else {
+          weatherIcon = <Icon icon="fluent-mdl2:fog" />
+        }
         break;
       default:
         weatherIcon = <Cloudy />;
@@ -45,5 +78,5 @@ export function WeatherIcon() {
     }
   }, [data]);
 
-  return icon && <><Base />{icon}</>;
+  return isLoading ? <Icon icon="eos-icons:three-dots-loading" /> : icon && <><Base /><div className={className}>{icon}</div></>;
 }

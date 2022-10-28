@@ -1,10 +1,7 @@
-import React, { useContext } from 'react';
+import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
-import { Tv } from '@mui/icons-material';
-import { BinaryCard } from '@components';
-// import { AreaCard, LightCard, CoverCard, BinaryCard } from '@components/index';
 import kitchenBase from '@assets/kitchen-base.jpg';
 import kitchenPantry from '@assets/kitchen-pantry.png';
 import kitchenRoof from '@assets/kitchen-roof.png';
@@ -15,7 +12,7 @@ import { Roof, Pendants, Pantry } from './zones';
 const KitchenContainer = styled(AreaBase)``;
 
 
-export function Kitchen({ direction }: AreaBaseProps) {
+export function Kitchen() {
   // 9pm - 8am
   const now = new Date().getHours();
   const smartFrameOn = now >= 8 && now <= 21;
@@ -59,7 +56,7 @@ export function Kitchen({ direction }: AreaBaseProps) {
     active: smartFrameOn
   }];
 
-  return <KitchenContainer direction={direction}>
+  return <KitchenContainer>
     <AreaCard base={kitchenBase} zones={zones} />
   </KitchenContainer>
 }

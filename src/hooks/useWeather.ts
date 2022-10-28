@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
 const KEY = process.env.WEATHER_API_KEY;
-const lat = 33.2553;
-const lon = 151.4749;
+const lat = -33.255275;
+const lon = 151.474943;
 
-type WeatherTypes =
+export type WeatherTypes =
   'Thunderstorm' |
   'Drizzle' |
   'Rain' |
@@ -72,6 +72,8 @@ interface DailyWeather extends Shared {
 
 interface HourlyWeather extends Shared {
   weather: Weather[];
+  temp: number;
+  pop: number;
 }
 
 interface WeatherResponse {
@@ -83,19 +85,23 @@ interface WeatherResponse {
   daily: DailyWeather[];
   hourly: HourlyWeather[];
 }
+
+let weatherRequest = null;
  
 export const useWeather = () => {
   const [data, setData] = useState<WeatherResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState("");
   useEffect(() => {
-  fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${KEY}&units=metric`)
-    .then((res) => res.json())
-    .then((data) => {
-        setError(data.error)
-        setData(data)
-        setIsLoading(false)
-    })
+    if (!weatherRequest) {
+      weatherRequest = fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${KEY}&units=metric&exclude=minutely`).then((res) => res.json());
+    }
+    weatherRequest
+      .then((data) => {
+          setError(data.error)
+          setData(data)
+          setIsLoading(false)
+      })
   }, []);
  
   return { data, isLoading, error };

@@ -13,7 +13,7 @@ import { Computer, RoofLight, Downlights, Striplights } from '../Office/zones';
 
 const OfficeContainer = styled(AreaBase)``;
 
-export function Office({ direction }) {
+export function Office() {
   const zones = [{
     base: downlightsBase,
     overlay:  {
@@ -59,11 +59,11 @@ export function Office({ direction }) {
       width: '33.8%',
     },
     entities: {
-      switch: 'switch.gaming_pc',
+      switch: 'switch.gaming_pc_2',
     }
   }];
 
-  return <OfficeContainer direction={direction}>
+  return <OfficeContainer>
     <AreaCard base={officeBase} zones={zones} footer={<>
       <CoverCard entity="cover.curtain_office_curtain" label="Curtain" />
       <CoverCard entity="cover.roller_blind_office" label="Blind" />

@@ -12,7 +12,7 @@ const MasterBedroomContainer = styled(AreaBase)`
   
 `;
 
-export function MasterBedroom({ direction }: AreaBaseProps) {
+export function MasterBedroom() {
   const { callService } = useHass();
   const zones = [{
     base: roofLight,
@@ -53,7 +53,7 @@ export function MasterBedroom({ direction }: AreaBaseProps) {
     }
   }];
   
-  return <MasterBedroomContainer direction={direction}>
+  return <MasterBedroomContainer>
     <AreaCard base={base} zones={zones} />
   </MasterBedroomContainer>
 }

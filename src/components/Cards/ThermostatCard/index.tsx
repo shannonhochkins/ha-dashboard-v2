@@ -1,13 +1,13 @@
-import React, { useContext, useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Thermostat } from 'react-thermostat';
 import { useHass, useEntity, useDevice } from '@hooks';
-import { WbSunny, AcUnit, LocalFireDepartment, PowerSettingsNew } from '@mui/icons-material';
+import { Icon } from '@iconify/react';
 
 const Fab = styled.button<{
   activeColor?: string;
   active?: boolean;
-  size?: 'small' | 'large'
+  size?: number;
 }>`
   background-color: var(--ha-button-primary-background);
   border: 2px solid ${props => props.active ? `var(--ha-button-primary-border)` : `var(--ha-button-primary-color)`};
@@ -17,10 +17,10 @@ const Fab = styled.button<{
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${props => props.size === 'large' ? '80px' : '50px'};
-  height: ${props => props.size === 'large' ? '80px' : '50px'};
+  width: ${props => props.size / 5}px;
+  height: ${props => props.size / 5}px;
   svg {
-    font-size: ${props => props.size === 'large' ? '40px' : '20px'};
+    font-size: ${props => props.size / 10}px;
   }
   outline: 0;
   color: ${props => props.active ? `${props.activeColor}` : 'var(--ha-button-primary-color)'}
@@ -34,7 +34,36 @@ const Container = styled.div`
   flex-direction: column;
 `;
 
-const Actions = styled.div`
+const FanIcon = styled(Icon)<{
+  speed: FanMode | null;
+}>`
+  animation-name: spin;
+  animation-duration: ${props => props.speed === 'Low' ? '5s' : props.speed === 'Mid' ? '3s' : props.speed === 'High' ? '1s' : '0s'};
+  animation-iteration-count: infinite;
+  animation-timing-function: linear;
+  @keyframes spin {
+    from {
+      transform:rotate(0deg);
+    }
+    to {
+      transform:rotate(360deg);
+    }
+  }
+`;
+
+const ActionsLeft = styled.div`
+  position: absolute;
+  top: 17%;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  z-index: 4;
+  > * {
+    margin-bottom: 8px;
+  }
+`;
+
+const ActionsRight = styled.div`
   position: absolute;
   top: 0;
   right:0;
@@ -76,6 +105,8 @@ const offColors = ['#848484', '#383838'];
 const dryColors = ['#fff', '#ffc0bd'];
 const fanColors = ['#fff', '#f9f9f9'];
 
+type FanMode = 'Low' | 'Mid' | 'High';
+
 
 export const ThermostatCard = () => {
   const { callService } = useHass();
@@ -85,13 +116,11 @@ export const ThermostatCard = () => {
   const { current_temperature, fan_mode, fan_modes, max_temp, temperature} = ac.attributes || {};
   const state = ac.state;
   const on = state !== 'off';
-  const [colors, setColors] = useState<string[]>(null);
-  const [internalFanMode, setInternalFanMode] = useState(fan_mode);
+  const [colors, setColors] = useState<string[]>(offColors);
+  const [internalFanMode, setInternalFanMode] = useState<FanMode>(fan_mode as FanMode);
   const [internalState, setInternalState] = useState(state);
   const [internalTemperature, setInternalTemperature] = useState<number>(temperature);
-  const size = device === 'fridge' ? 400 : device === 'mobile' ? 270 : 400;
-  console.log('device', device);
-
+  const size = device === 'fridge' ? 400 : device === 'mobile' ? 220 : 350;
 
   useEffect(() => {
     if (state.includes('heat')) {
@@ -145,17 +174,23 @@ export const ThermostatCard = () => {
       {current_temperature}°
       <span>CURRENT</span>
     </CurrentTemperature>
-    <Actions>
-      <Fab size={device === 'fridge' ? 'large' : 'small'} active={state === 'heat'} activeColor={heatingColors[0]} onClick={() => {
+    <ActionsLeft>
+      <Fab size={size} active={on} activeColor={colors[1]} onClick={() => {
+          const currentIndex = fan_modes.findIndex(mode => mode === internalFanMode);
+          setInternalFanMode(fan_modes[currentIndex + 1] ? fan_modes[currentIndex + 1] : fan_modes[0]);
+        }}><FanIcon speed={on ? internalFanMode : null} icon="mdi:fan" /></Fab>
+    </ActionsLeft>
+    <ActionsRight>
+      <Fab size={size} active={state === 'heat'} activeColor={colors[0]} onClick={() => {
         setInternalState('heat');
-      }}><LocalFireDepartment /></Fab>
-      <Fab size={device === 'fridge' ? 'large' : 'small'} active={state === 'dry'} activeColor={dryColors[0]} onClick={() => {
+      }}><Icon icon="material-symbols:mode-heat" /></Fab>
+      <Fab size={size} active={state === 'dry'} activeColor={colors[0]} onClick={() => {
         setInternalState('dry');
-      }}><WbSunny /></Fab>
-      <Fab size={device === 'fridge' ? 'large' : 'small'} active={state === 'cool'} activeColor={coolingColors[1]} onClick={() => {
+      }}><Icon icon="material-symbols:cool-to-dry-outline" /></Fab>
+      <Fab size={size} active={state === 'cool'} activeColor={colors[1]} onClick={() => {
         setInternalState('cool');
-      }}><AcUnit /></Fab>
-    </Actions>
+      }}><Icon icon="ic:baseline-ac-unit" /></Fab>
+    </ActionsRight>
     <Thermostat
       value={internalTemperature}
       onChange={v => {
@@ -172,8 +207,8 @@ export const ThermostatCard = () => {
     />
     <Fab style={{
       marginTop: 20
-    }} size="large" active={on} activeColor={'#cfac48'} onClick={() => {
+    }} size={size * 1.5} active={on} activeColor={'#cfac48'} onClick={() => {
       setInternalState('off');
-    }}><PowerSettingsNew /></Fab>
+    }}><Icon icon="ic:round-power-settings-new" /></Fab>
   </Container> : null;
 };

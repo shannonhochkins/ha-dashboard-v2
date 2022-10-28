@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { Curtains, CurtainsClosed, BlindsClosed, Blinds, FirstPage, Stop, LastPage } from '@mui/icons-material';
 import { useHass, useEntity, useMq } from '@hooks';
 import { Popup } from '@components';
 import { IconButton } from '../';
+
+import { Icon } from '@iconify/react';
 
 const FieldWrapper = styled.div`
   position: relative;
@@ -139,7 +140,7 @@ const Cover = styled.div`
 const Label = styled.label`
   font-size: 16px;
   color: white;
-  margin-top: 18px;
+  margin-top: 24px;
   ${useMq(['mobile'], `
     margin-top: 10px;
     font-size: 12px;
@@ -186,9 +187,9 @@ export function CoverCard({
     }}>
       <IconButton color={'#4343f5'}>
         {isCoverOpen ?
-          entity.toLowerCase().includes('curtain') ? <Curtains /> : <Blinds />
+          entity.toLowerCase().includes('curtain') ? <Icon icon="mdi:curtains" /> : <Icon icon="mdi:blinds-open" /> 
           :
-          entity.toLowerCase().includes('curtain') ? <CurtainsClosed /> : <BlindsClosed />
+          entity.toLowerCase().includes('curtain') ? <Icon icon="mdi:curtains-closed" /> : <Icon icon="mdi:blinds" /> 
         }
       </IconButton>
       <Label>{label}</Label>
@@ -200,19 +201,19 @@ export function CoverCard({
           <Button onClick={() => {
               callService('cover', 'close_cover', {}, { entity_id: entity });
             }}>
-            <FirstPage />
+            <Icon icon="ic:baseline-first-page" />
             CLOSE
           </Button>
           <Button onClick={() => {
               callService('cover', 'stop_cover', {}, { entity_id: entity });
             }}>
-            <Stop />
+            <Icon icon="bx:stop-circle" />
             STOP
           </Button>
           <Button onClick={() => {
               callService('cover', 'open_cover', {}, { entity_id: entity });
             }}>
-            <LastPage />
+            <Icon icon="ic:baseline-last-page" />
             OPEN
           </Button>
         </ButtonRow>

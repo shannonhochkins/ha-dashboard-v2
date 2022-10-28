@@ -4,7 +4,7 @@ import { createRoot } from 'react-dom/client';
 import { css, Global } from '@emotion/react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
 import { Hass } from '@hass';
-import { useRoutes, useHash, useRefresh } from '@hooks';
+import { useRoutes, useRefresh } from '@hooks';
 import { cssTheme } from './theme';
 
 import { BottomMenu, LowBatteryAlert } from '@components';
@@ -14,9 +14,6 @@ import "@fontsource/roboto/400.css";
 import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "@fontsource/kanit/100.css";
-
-
-const MIN_SWIPE_DISTANCE = 150;
 
 const Areas = styled.div`
   width: 100%;
@@ -31,7 +28,7 @@ const Container = styled.div`
   flex-direction: column;
 `;
 interface RouteProps {
-  direction: number;
+  
 }
 const Route = styled.div<RouteProps>`
   position: absolute;
@@ -58,22 +55,6 @@ const Route = styled.div<RouteProps>`
     opacity: 0;
   }
 
-  &.right-to-left-enter {
-    transform: translateX(100%);
-  }
-  &.right-to-left-enter-active {
-      transform: translateX(0);
-      transition:all 1s liner;
-  }      
-
-  &.right-to-left-exit {
-      transform: translateX(0);
-  }
-  &.right-to-left-exit-active {
-      transform: translateX(-100%);
-      transition:all 1s liner;
-  }      
-
   &.left-to-right-enter {
       transform: translateX(-100%);
   }
@@ -91,72 +72,9 @@ const Route = styled.div<RouteProps>`
   }      
 `;
 
-// const variants = {
-//   enter: (direction: number) => {
-//     return {
-//       x: (window.innerWidth * -1) * (direction * -1),
-//       opacity: 0
-//     };
-//   },
-//   center: {
-//     zIndex: 1,
-//     x: 0,
-//     opacity: 1
-//   },
-//   exit: (direction: number) => {
-//     return {
-//       zIndex: 0,
-//       x: window.innerWidth * (direction * -1),
-//       opacity: 0,
-//     };
-//   }
-// };
-
 function Root() {
   useRefresh();
   const routes = useRoutes();
-  const [direction, setDirection] = useState(1);
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  const [hash, setHash] = useHash();
-
-  const activeRouteIndex = routes.findIndex(route => route.active);
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null) // otherwise the swipe is fired even with usual touch events
-    setTouchStart(e.targetTouches[0].clientX)
-  }
-  
-  const onTouchMove = (e) => setTouchEnd(e.targetTouches[0].clientX);
-  
-  const goTo = ($hash: string) => {
-    setHash($hash);
-  };
-  
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > MIN_SWIPE_DISTANCE;
-    const isRightSwipe = distance < -MIN_SWIPE_DISTANCE;
-    if (isLeftSwipe || isRightSwipe) {
-      const newDirection = isLeftSwipe ? 1 : -1;
-      const currentRouteIndex = routes.findIndex(route => route.hash === hash.replace('#', ''));
-      setDirection(newDirection);
-      
-      if (newDirection === -1) {
-        // swiped right, technically go backwards
-        const newRouteIndex = currentRouteIndex - 1 < 0 ? routes.length - 1 : currentRouteIndex - 1;
-        const nextRoute = routes[newRouteIndex];
-        goTo(nextRoute.hash);
-      }
-      if (newDirection === 1) {
-        // swiped left, technically go forwards
-        const newRouteIndex = currentRouteIndex + 1 > routes.length - 1 ? 0 : currentRouteIndex + 1;
-        const nextRoute = routes[newRouteIndex];
-        goTo(nextRoute.hash);
-      }
-    }
-  }
   return <>
     <Global
       styles={css`
@@ -202,18 +120,16 @@ function Root() {
     />
     <Container>
 
-      {/* <Areas onTouchStart={onTouchStart} onTouchMove={onTouchMove} onTouchEnd={onTouchEnd}> */}
-      <TransitionGroup  childFactory={child => React.cloneElement(child, { classNames: direction ? "right-to-left" : "left-to-right", timeout: 1000 })} component={Areas} className={'route-list'}>
+      <TransitionGroup  childFactory={child => React.cloneElement(child, { classNames: "left-to-right", timeout: 1000 })} component={Areas} className={'route-list'}>
         {routes.filter(route => route.active).map(route => <CSSTransition
           timeout={500}
           classNames="right-to-left"
           nodeRef={route.ref}
           key={route.name}
         >
-          <Route direction={direction} ref={route.ref}>{route.render(direction)}</Route>
+          <Route ref={route.ref}>{route.render()}</Route>
         </CSSTransition>)}
       </TransitionGroup>
-      {/* </Areas> */}
       <BottomMenu />
       <LowBatteryAlert />
     </Container>

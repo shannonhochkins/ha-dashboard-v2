@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
+import { createPortal } from 'react-dom';
 import styled from '@emotion/styled';
 import { useMq } from '@hooks';
-
 interface PopupProps {
   className?: string;
   open: boolean;
@@ -64,10 +64,13 @@ function PopupBase({
   open,
   onClose = () => {},
 }: PopupProps) {
-  return <>
-    <Backdrop open={open} onClick={() => onClose()} />
-    <div className={className}>
-      {children && <div>{children}</div>}
-    </div>
-  </>
+  return createPortal(
+    <>
+      <Backdrop open={open} onClick={() => onClose()} />
+      <div className={className}>
+        {children && <div>{children}</div>}
+      </div>
+    </>,
+    document.getElementById('root')
+  )
 }

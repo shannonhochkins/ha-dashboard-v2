@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase, AreaBaseProps } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
+import { CoverCard } from '@components';
 import livingBase from '@assets/living-base.jpg';
 import livingLight from '@assets/living-light.jpg';
 import livingTV from '@assets/living-tv.jpg';
@@ -10,7 +11,7 @@ import { TV, Roof } from './zones';
 const LivingContainer = styled(AreaBase)``;
 
 
-export function Living({ direction }: AreaBaseProps) {
+export function Living() {
   const zones = [{
     base: livingLight,
     overlay:  {
@@ -35,7 +36,10 @@ export function Living({ direction }: AreaBaseProps) {
     }
   }];
 
-  return <LivingContainer direction={direction}>
-    <AreaCard base={livingBase} zones={zones} />
+  return <LivingContainer>
+    <AreaCard base={livingBase} zones={zones} footer={<>
+      <CoverCard entity="cover.curtain_patio_secondary_curtain" label="Patio Curtain" />
+      <CoverCard entity="cover.curtain_bbq_window_curtain" label="BBQ Curtain" />
+    </>} />
   </LivingContainer>
 }

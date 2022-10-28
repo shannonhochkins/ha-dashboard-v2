@@ -1,6 +1,6 @@
 
 import { Popup } from './Popup';
-import { WeatherCard } from './Cards/Weather';
+import { WeatherIcon, WeatherCard } from './Cards/Weather';
 import { CameraCard } from './Cards/CameraCard';
 import { ThermostatCard } from './Cards/ThermostatCard';
 import { BottomMenu } from './BottomMenu';
@@ -9,6 +9,7 @@ import { LowBatteryAlert } from './LowBatteryAlert';
 import { Glow } from './Shared/glow';
 
 export {
+  WeatherIcon,
   CoverCard,
   Glow,
   BottomMenu,

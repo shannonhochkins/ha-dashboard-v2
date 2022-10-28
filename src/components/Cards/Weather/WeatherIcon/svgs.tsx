@@ -187,7 +187,7 @@ function Styles() {
 export function Base() {
   return <>
     <Styles />
-    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0">
+    <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style={{ width: 0, height: 0}}>
       <defs>
         <radialGradient id="gradYellow" cx="50%" cy="50%" r="80%" fx="90%" fy="80%">
           <stop offset="0%" style={{
