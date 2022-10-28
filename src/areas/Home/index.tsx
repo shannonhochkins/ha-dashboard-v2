@@ -17,6 +17,7 @@ const Items = styled.div`
   `)}
 `;
 const Item = styled.div`
+  position: relative;
 	flex: 1 0 24rem;
 	overflow: hidden;
   cursor: pointer;
@@ -42,6 +43,17 @@ const Image = styled.img`
   }
 `;
 const Title = styled.span``;
+const Temp = styled.span`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  border-top-left-radius: 24px;
+  border-bottom-right-radius: 12px;
+  padding: 8px 12px;
+  background-color: rgba(0,0,0,0.2);
+  font-size: 14px;
+`;
 
 
 export function Home() {
@@ -51,16 +63,15 @@ export function Home() {
   return <HomeContainer>
     <Items>
       {rooms.map(({
-        active,
         name,
         background,
         hash,
-        icon,
         suffix
       }, index) => {
         return <Item key={index}  onClick={() => setHash(hash)}>
           <Image src={background} />
           <Title>{name}</Title>
+          {suffix && <Temp>{suffix}</Temp>}
         </Item>
       })}
     </Items>

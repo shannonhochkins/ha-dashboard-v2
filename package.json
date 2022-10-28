@@ -18,7 +18,7 @@
   "bugs": {
     "url": "https://github.com/shannonhochkins/ha-dashboard-v2/issues"
   },
-  "browserslist": "Samsung 5",
+  "browserslist": "last 2 major versions",
   "targets": {
     "": {
       "publicUrl": "./"
@@ -36,6 +36,7 @@
   },
   "homepage": "https://github.com/shannonhochkins/ha-dashboard-v2#readme",
   "dependencies": {
+    "@babel/plugin-proposal-optional-chaining": "^7.18.9",
     "@emotion/babel-plugin": "^11.10.2",
     "@emotion/react": "^11.10.4",
     "@emotion/styled": "^11.10.4",
@@ -49,7 +50,7 @@
     "react": "^18.2.0",
     "react-chartjs-2": "^4.3.1",
     "react-dom": "^18.2.0",
-    "react-thermostat": "^1.0.17",
+    "react-thermostat": "^1.0.18",
     "react-transition-group": "^4.4.5",
     "zustand": "^4.1.1"
   },

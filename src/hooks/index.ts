@@ -8,11 +8,13 @@ import { useWeather } from './useWeather';
 import { useRefresh } from './useRefresh';
 import { useHass } from './useHass';
 import { useLowDevices } from './useLowDevices';
+import { useCurrentRoute } from './useCurrentRoute';
 
 export {
   useLowDevices,
   useResize,
   useMq,
+  useCurrentRoute,
   useRoutes,
   useEntity,
   useHash,

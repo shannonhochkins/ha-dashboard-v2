@@ -1,4 +1,4 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Icon } from '@iconify/react';
 import { Line as LineBase } from 'react-chartjs-2';
@@ -10,11 +10,11 @@ import {
   LinearScale,
   PointElement,
   LineElement,
-  Filler
+  Filler,
 } from 'chart.js';
-
-import { useEntity, useWeather, useHass, useDevice, useMq } from '@hooks';
+import { useWeather, useDevice, useMq } from '@hooks';
 import { WeatherIcon as WeatherIconBase } from './WeatherIcon';
+import { isEqual } from 'lodash';
 export { WeatherIcon } from './WeatherIcon';
 
 
@@ -125,9 +125,11 @@ const DateTime = styled.h3`
   line-height:24px;
   font-family: "Kanit", sans-serif;
 `;
-const Line = styled(LineBase)<{
+
+const ChartWrapper = styled(Row)<{
   view: 'daily' | 'hourly'
 }>`
+  position: relative;
   height: 200px;
   ${useMq(['mobile'], `
     height: 150px;
@@ -147,6 +149,7 @@ const Line = styled(LineBase)<{
     `)}
   `}
 `;
+const Line = styled(LineBase)``;
 
 ChartJS.register(
   CategoryScale,
@@ -157,31 +160,7 @@ ChartJS.register(
   ChartDataLabels,
   Gradient,
 );
-const options = {
-  responsive: true,
-  maintainAspectRatio: false,
-  plugins: {
-    datalabels: {
-      formatter: Math.round,
-      anchor: 'end',
-      align: 'top',
-      color: '#36A2EB'
-    }
-  },
-  layout: {
-    padding: 30
-  },
-  scales: {
-    x: {
-    },
-    y: {
-      ticks: {
-        display: false,
-      }
-    }
-  }
-  
-};
+
 
 function toDate(dt: number, options?: Intl.DateTimeFormatOptions) {
   return new Date((dt * 1000)).toLocaleDateString('en-AU', options || {
@@ -233,15 +212,13 @@ function Toggle({
 
 
 export function WeatherCard() {
-  const hass = useHass();
-  const [view, setView] = useState<'hourly' | 'daily'>('hourly');
-  const weather = useEntity('weather.freesia');
+  const [view, setView] = useState<'hourly' | 'daily'>('daily');
   const { data, isLoading } = useWeather();
+  const [chartData, setChartData] = useState(null);
   const device = useDevice();
   const today = new Date();
   const hour = today.getHours();
   let time = null;
-  console.log('weather', data);
   // Parts of the Day.
   // Morning 5 am to 12 pm (noon)
   // Afternoon 12 pm to 5 pm.
@@ -257,20 +234,48 @@ export function WeatherCard() {
   } else {
     time = 'night';
   }
-  if (isLoading) {
-    return null;
-  }
-  const hourlyTemperatures = data.hourly.map(hourly => hourly.temp).slice(0, 24);
+  
+  const hourlyTemperatures = (data?.hourly || []).map(hourly => hourly.temp).slice(0, 24);
   const minTemp = Math.min(...hourlyTemperatures);
   const maxTemp = Math.max(...hourlyTemperatures);
-  const hourlyData = data.hourly.slice(0, device === 'mobile' ? 6 : 10);
-  const dailyData = data.daily.slice(0, device === 'mobile' ? 6 : 7).map(data => ({
+  const hourlyData = (data?.hourly || []).slice(0, device === 'mobile' ? 6 : 10);
+  const dailyData = (data?.daily || []).slice(0, device === 'mobile' ? 6 : 7).map(data => ({
     ...data,
     temp: data.temp[time]
   }));
 
   const hourlyLabels = hourlyData.map(() => '');
   const dailyLabels = dailyData.map(() => '');
+
+  useEffect(() => {
+    const newChartData = {
+      labels: view === 'daily' ? dailyLabels : hourlyLabels,
+      datasets: [
+        {
+          label: 'Dataset 1',
+          data: (view === 'daily' ? dailyData : hourlyData).map(data => data.temp),
+          fill: true,
+          gradient: {
+            backgroundColor: {
+              axis: 'y',
+              colors: {
+                0: 'rgb(0 77 113)',
+                100: 'rgb(0 138 203)',
+                
+              }
+            }
+          }
+        },
+      ],
+    };
+    if (!isEqual(chartData, newChartData)) {
+      setChartData(newChartData);
+    }
+  }, [hourlyLabels, dailyLabels]);
+
+  if (isLoading) {
+    return null;
+  }
 
   return <Weather>
     <Column>
@@ -285,31 +290,35 @@ export function WeatherCard() {
         <Toggle active={view === 'hourly'} onClick={() => setView('hourly')}>Hourly</Toggle>
         <Toggle active={view === 'daily'} onClick={() => setView('daily')}>Daily</Toggle>
       </Row>
-      <Row>
+      <ChartWrapper view={view}>
         <Line
-          view={view}
-          options={options}
-          data={{
-          labels: view === 'daily' ? dailyLabels : hourlyLabels,
-          datasets: [
-            {
-              label: 'Dataset 1',
-              data: (view === 'daily' ? dailyData : hourlyData).map(data => data.temp),
-              fill: true,
-              gradient: {
-                backgroundColor: {
-                  axis: 'y',
-                  colors: {
-                    0: 'rgb(0 77 113)',
-                    100: 'rgb(0 138 203)',
-                    
-                  }
-                }
+          options={{
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              datalabels: {
+                formatter: Math.round,
+                anchor: 'end',
+                align: 'top',
+                color: '#36A2EB'
               }
             },
-          ],
-        }} />
-      </Row>
+            layout: {
+              padding: 30
+            },
+            scales: {
+              x: {
+              },
+              y: {
+                ticks: {
+                  display: false,
+                }
+              }
+            }
+            
+          }}
+          data={chartData} />
+      </ChartWrapper>
       <Predictions active={view === 'daily'}>{dailyData.map((daily, index) => {
         return <Column key={daily.dt}>
           <Row>

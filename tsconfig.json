@@ -3,6 +3,7 @@
     "jsx": "react",
     "types": ["node"],
     "baseUrl": ".",
+    "target": "es2015",
     "esModuleInterop": true,
     "paths": {
       "@root": ["src"],

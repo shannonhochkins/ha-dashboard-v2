@@ -20,7 +20,7 @@ import living from '@assets/living-base.jpg';
 import office from '@assets/office-base.jpg';
 import master from '@assets/bedroom-base.jpg';
 
-interface RouteDefinition {
+export interface RouteDefinition {
   name: string;
   hash: string;
   render: () => ReactElement;

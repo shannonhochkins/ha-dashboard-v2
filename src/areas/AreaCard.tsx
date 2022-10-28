@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
-import { useHass, useMq } from '@hooks';
+import { useHass, useMq, useCurrentRoute } from '@hooks';
 import { omit } from 'lodash';
 
 interface ZoneOverlay {
@@ -135,6 +135,19 @@ function Zone({
     </ZoneOverlay>}
   </>
 }
+
+const Temp = styled.span`
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  color: white;
+  border-top-left-radius: 24px;
+  border-bottom-right-radius: 12px;
+  padding: 8px 12px;
+  background-color: rgba(0,0,0,0.2);
+  font-size: 14px;
+`;
+
 interface AreaCardProps {
   zones: ZoneProps[];
   base: string;
@@ -143,8 +156,9 @@ interface AreaCardProps {
 export function AreaCard({
   base,
   zones,
-  footer
+  footer,
 }: AreaCardProps) {
+  const currentRoute = useCurrentRoute();
   return <>
     <Background>
       <Zones>
@@ -154,6 +168,7 @@ export function AreaCard({
       {footer && <ZoneFooter>
         {footer}
       </ZoneFooter>} 
+      {!!currentRoute && currentRoute.suffix && <Temp>{currentRoute.suffix}</Temp>}
     </Background>
   </>
 }
