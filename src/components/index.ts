@@ -5,7 +5,8 @@ import { CameraCard } from './Cards/CameraCard';
 import { ThermostatCard } from './Cards/ThermostatCard';
 import { BottomMenu } from './BottomMenu';
 import { CoverCard } from './Cards/CoverCard';
-import { LowBatteryAlert } from './LowBatteryAlert';
+import { LowBatteryAlert } from './Alerts/LowBatteryAlert';
+import { FrontDoorOpened } from './Alerts/FrontDoorOpened';
 import { Glow } from './Shared/glow';
 
 export {
@@ -17,5 +18,6 @@ export {
   ThermostatCard,
   WeatherCard,
   LowBatteryAlert,
-  CameraCard
+  CameraCard,
+  FrontDoorOpened
 };

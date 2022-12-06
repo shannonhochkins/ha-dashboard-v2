@@ -1,8 +1,9 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { useHass } from '@hooks';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
+import { useHass, useEntity } from '@hooks';
+import { AreaBase } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
+import { CoverCard } from '@components';
 import base from '@assets/bedroom-base.jpg';
 import tv from '@assets/bedroom-tv.jpg';
 import roofLight from '@assets/bedroom-light-roof.jpg';
@@ -14,6 +15,7 @@ const MasterBedroomContainer = styled(AreaBase)`
 
 export function MasterBedroom() {
   const { callService } = useHass();
+  const masterTV = useEntity('media_player.samsung_tv_master_bedroom');
   const zones = [{
     base: roofLight,
     overlay:  {
@@ -31,10 +33,16 @@ export function MasterBedroom() {
       top: '18.8%',
       left: '56%',
       width: '20.4%',
-      renderSvg: onClick => <TV onClick={onClick} />,
+      renderSvg: () => {
+        return <TV onClick={() => {
+          callService('media_player', masterTV.state === 'on' ? 'turn_off' : 'turn_on', {}, {
+            entity_id: 'media_player.samsung_tv_master_bedroom',
+          });
+        }} />;
+      }
     },
     entities: {
-      switch: 'switch.tv_master_bedroom',
+      switch: 'media_player.samsung_tv_master_bedroom',
     }
   }, {
     base: null,
@@ -54,6 +62,9 @@ export function MasterBedroom() {
   }];
   
   return <MasterBedroomContainer>
-    <AreaCard base={base} zones={zones} />
+    <AreaCard base={base} zones={zones} footer={<>
+      <CoverCard entity="cover.sb_curtain_master_main" label="Curtain Main" />
+      <CoverCard entity="cover.curtain_master_small" label="Curtain Small" />
+    </>} />
   </MasterBedroomContainer>
 }

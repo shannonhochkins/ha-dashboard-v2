@@ -1,10 +1,15 @@
 {
   "compilerOptions": {
+    "target": "es5",
+    "lib": ["dom", "DOM.Iterable", "esnext"],
     "jsx": "react",
     "types": ["node"],
-    "baseUrl": ".",
-    "target": "es2015",
+    "moduleResolution": "node",
     "esModuleInterop": true,
+    "forceConsistentCasingInFileNames": true,
+    "isolatedModules": true,
+    "resolveJsonModule": true,
+    "baseUrl": ".",
     "paths": {
       "@root": ["src"],
       "@store": ["src/store/"],
@@ -18,8 +23,8 @@
   },
   "include": ["src", ".d.ts"],
   "exclude": [
-    "**/.parcel-cache",
-    "**/dist",
+    ".parcel-cache",
+    "dist",
     "node_modules"
   ]
 }

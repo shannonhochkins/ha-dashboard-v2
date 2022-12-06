@@ -7,11 +7,15 @@ import livingBase from '@assets/living-base.jpg';
 import livingLight from '@assets/living-light.jpg';
 import livingTV from '@assets/living-tv.jpg';
 import { TV, Roof } from './zones';
+import { useHass, useEntity } from '@hooks';
 
 const LivingContainer = styled(AreaBase)``;
 
 
 export function Living() {
+  const { callService } = useHass();
+  const livingRoomTV = useEntity('media_player.samsung_tv_master_bedroom');
+
   const zones = [{
     base: livingLight,
     overlay:  {
@@ -29,17 +33,21 @@ export function Living() {
       top: '37%',
       left: '60%',
       width: '17.1%',
-      renderSvg: onClick => <TV onClick={onClick} />,
+      renderSvg: () => <TV onClick={() => {
+        callService('media_player', livingRoomTV.state === 'on' ? 'turn_off' : 'turn_on', {}, {
+          entity_id: 'media_player.samsung_tv_living_room',
+        });
+      }} />
     },
     entities: {
-      switch: 'switch.smartthings_75_sensors',
+      switch: 'media_player.samsung_tv_living_room'
     }
   }];
 
   return <LivingContainer>
     <AreaCard base={livingBase} zones={zones} footer={<>
-      <CoverCard entity="cover.curtain_patio_secondary_curtain" label="Patio Curtain" />
-      <CoverCard entity="cover.curtain_bbq_window_curtain" label="BBQ Curtain" />
+      <CoverCard entity="cover.sb_curtain_patio_secondary" label="Patio Curtain" />
+      <CoverCard entity="cover.sb_curtain_bbq_window" label="BBQ Curtain" />
     </>} />
   </LivingContainer>
 }

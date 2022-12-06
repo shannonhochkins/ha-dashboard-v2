@@ -11,11 +11,15 @@ interface ZoneOverlay {
   renderSvg?: (callback: () => void) => ReactNode;
 }
 
-const ZoneOverlay = styled.div`
+const ZoneOverlay = styled.div<{
+  on: boolean;
+  stateless: boolean;
+}>`
   position: absolute;
   z-index: 2;
   svg {
     width: 100%;
+    overflow: inherit;
     animation: fillAnimation 5s linear infinite;
     ${useMq(['fridge'], `
       animation: none;
@@ -23,7 +27,7 @@ const ZoneOverlay = styled.div`
     `)}
     path, ellipse {
       stroke-width: 2;
-      stroke: #5bbaff;
+      stroke: ${props => props.stateless ? 'rgb(91 141 255)' : props.on ? 'rgb(99 255 91)' : 'rgb(255 91 123)'};
       cursor: pointer;
       filter: url(#glow);
     }
@@ -45,6 +49,7 @@ const ZoneOverlay = styled.div`
 
 interface ZoneBaseProps {
   opacity: number;
+  blendMode: string;
 }
 const ZoneBase = styled.img<ZoneBaseProps>`
   position: absolute;
@@ -52,7 +57,7 @@ const ZoneBase = styled.img<ZoneBaseProps>`
   left: 0;
   bottom: 0;
   right: 0;
-  mix-blend-mode: lighten;
+  mix-blend-mode: ${props => props.blendMode};
   pointer-events: none;
   opacity: 0;
   z-index: 1;
@@ -105,32 +110,48 @@ interface ZoneProps {
   entities?: {
     light?: string;
     switch?: string;
+    cover?: string;
   };
-  base: string;
+  base?: string;
+  blendMode?: string;
   active?: boolean;
+  stateless?: boolean;
   overlay: null | ZoneOverlay;
 }
 function Zone({
   entities,
   base,
   overlay = null,
+  stateless = false,
+  blendMode = 'lighten',
   active = false
 }: ZoneProps) {
+  console.log('blendMode', blendMode);
   let brightness = 0;
-  const { callSwitch, getEntity } = useHass();
+  const { callSwitch, getEntity, callCover } = useHass();
   const light = getEntity(entities?.light || '');
   const $switch = getEntity(entities?.switch || '');
+  const cover = getEntity(entities?.cover || '');
   if (light || $switch) {
     brightness = light && light.state !== 'unavailable' ? light.state === 'on' ? (light.attributes.brightness / 255) : 0 : $switch.state === 'on' ? 1 : 0;
   } else if (active) {
     brightness = 1;
+  } else if (cover && cover.state === 'open') {
+    brightness = 1;
   }
+  const on = $switch?.state === 'on' || light?.state === 'on' || cover?.state === 'open';
+  console.log('on', on);
   
   return <>
-    <ZoneBase opacity={brightness} src={base} />
-    {overlay !== null && overlay.renderSvg && <ZoneOverlay style={{...omit(overlay, 'svg')}}>
+    {base && <ZoneBase blendMode={blendMode} opacity={brightness} src={base} />}
+    {overlay !== null && overlay.renderSvg && <ZoneOverlay stateless={stateless} on={on} style={{...omit(overlay, 'svg')}}>
       {overlay.renderSvg(() => {
-        callSwitch(entities.switch);
+        if (entities?.switch) {
+          callSwitch(entities.switch);
+        }
+        if (entities?.cover && cover) {
+          callCover(entities.cover, cover.state === 'open' ? 'close_cover' : 'open_cover');
+        }
       })}
     </ZoneOverlay>}
   </>

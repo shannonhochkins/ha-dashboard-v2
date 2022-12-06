@@ -8,7 +8,7 @@ import { Icon } from '@iconify/react';
 
 const FieldWrapper = styled.div`
   position: relative;
-  width: calc(100% - 24px);
+  width: calc(100% - 40px);
   margin: 30px 0;
   display: flex;
   justify-content: center;
@@ -17,6 +17,9 @@ const FieldWrapper = styled.div`
   border-radius: 12px;
   padding:12px 12px;
   flex-wrap: wrap;
+  ${useMq(['fridge'], `
+    padding: 40px 12px;
+  `)}
 `;
 
 const ButtonRow = styled.div`
@@ -24,6 +27,9 @@ const ButtonRow = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
+  ${useMq(['mobile'], `
+    flex-direction: column;
+  `)}
 `;
 
 const Button = styled.button`
@@ -33,9 +39,20 @@ const Button = styled.button`
   align-items: center;
   justify-content: center;
   border-radius: 8px;
-  padding: 4px 8px;
-  margin:0 6px;
-  background-color: rgba(255,255,255,0.4);
+  padding: 20px 20px;
+  margin:0 8px;
+  background-color: rgba(255,255,255,0.9);
+  svg {
+    margin-right: 6px;
+  }
+  ${useMq(['mobile'], `
+    width: calc(100% - 40px);
+    margin: 8px 0;
+  `)}
+  ${useMq(['fridge'], `
+    padding: 30px;
+    font-size: 24px;
+  `)}
 `;
 
 const FieldTitle = styled.label`
@@ -55,82 +72,10 @@ const FieldTitle = styled.label`
     font-variant-numeric: tabular-nums;
     color: #fff;
   }
-`;
-
-interface RangeSlider {
-  min: number;
-  max: number;
-}
-const RangeSlider = styled.div<RangeSlider>`
-  position: relative;
-  width: calc(100% - 24px);
-  margin: 30px 0;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  background: rgba(255, 255, 255, 0.04);
-  border-radius: 12px;
-  padding:24px 12px;
-  &::before,
-  &::after {
-    position: absolute;
-    color: #fff;
-    font-size: 0.9rem;
-    font-weight: bold;
-  }
-  &::before {
-    content: '${props => props.min}';
-    left: 10px;
-  }
-  &::after {
-    content: '${props => props.max}';
-    right: 10px;
-  }
-  .title::after {
-    content: attr(data-length);
-    position: absolute;
-    right: -16px;
-    font-variant-numeric: tabular-nums;
-    color: #fff;
-  }
-
-  input {
-    -webkit-appearance: none;
-    width: calc(100% - 70px);
-    height: 2px;
-    border-radius: 5px;
-    background: rgba(255, 255, 255, 0.314);
-    outline: none;
-    padding: 0;
-    margin: 0;
-    cursor: pointer;
-
-    &::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 20px;
-      height: 20px;
-      border-radius: 50%;
-      background: rgb(255, 255, 255);
-      cursor: pointer;
-      transition: all 0.15s ease-in-out;
-      &:hover {
-        background: rgb(212, 212, 212);
-        transform: scale(1.2);
-      }
-    }
-    &::-moz-range-thumb {
-      width: 20px;
-      height: 20px;
-      border: 0;
-      border-radius: 50%;
-      background: rgb(255, 255, 255);
-      cursor: pointer;
-      transition: background 0.15s ease-in-out;
-      &:hover {
-        background: rgb(212, 212, 212);
-      }
-    }
-  }
+  ${useMq(['fridge'], `
+    font-size: 24px;
+    margin-top: -20px;
+  `)}
 `;
 
 const Cover = styled.div`
@@ -147,11 +92,11 @@ const Label = styled.label`
   `)}
 `;
 
-let timeout;
 
 export function CoverCard({ 
   entity,
   label,
+  type = null
 }) {
 
   const { callService } = useHass();
@@ -167,26 +112,23 @@ export function CoverCard({
     }
   }, [cover.attributes.current_position])
 
-  function handleChange(event) {
-    const value = parseInt(event.target.value);
-    setValue(value);
-    timeout && clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      // call hass
-      callService('cover', 'set_cover_position', {
-        position: value,
-      }, {
-        entity_id: entity,
-      })
-    }, 200);
-  }
-
+  const garageIcon = cover.state === 'open' ? 'mdi:garage-open': cover.state === 'closed' ? 'mdi:garage' : 'mdi:garage-alert';
   return <>
     <Cover onClick={() => {
-      setOpen(true);
+      if (type === 'garage') {
+        if (cover.state === 'open') {
+          callService('cover', 'close_cover', {}, { entity_id: entity });
+        } else if (cover.state === 'closed') {
+          callService('cover', 'open_cover', {}, { entity_id: entity });
+        } else {
+          callService('cover', 'stop_cover', {}, { entity_id: entity });
+        }
+      } else {
+        setOpen(true);
+      }
     }}>
       <IconButton color={'#4343f5'}>
-        {isCoverOpen ?
+        {type === 'garage' ? <Icon icon={garageIcon} /> : isCoverOpen ?
           entity.toLowerCase().includes('curtain') ? <Icon icon="mdi:curtains" /> : <Icon icon="mdi:blinds-open" /> 
           :
           entity.toLowerCase().includes('curtain') ? <Icon icon="mdi:curtains-closed" /> : <Icon icon="mdi:blinds" /> 
@@ -194,10 +136,11 @@ export function CoverCard({
       </IconButton>
       <Label>{label}</Label>
     </Cover>
-    <Popup open={open} onClose={() => setOpen(false)}>
+    {type !== 'garage' && <Popup open={open} onClose={() => setOpen(false)}>
       <FieldWrapper>
-        <FieldTitle>Controls:</FieldTitle>
+        {typeof value !== 'undefined' && <FieldTitle data-val={`${value}%`}>Current Position:</FieldTitle>}
         <ButtonRow>
+          
           <Button onClick={() => {
               callService('cover', 'close_cover', {}, { entity_id: entity });
             }}>
@@ -205,10 +148,28 @@ export function CoverCard({
             CLOSE
           </Button>
           <Button onClick={() => {
-              callService('cover', 'stop_cover', {}, { entity_id: entity });
+              callService('cover', 'set_cover_position', {
+                position: 25
+              }, { entity_id: entity });
             }}>
-            <Icon icon="bx:stop-circle" />
-            STOP
+            <Icon icon="ic:baseline-curtains" />
+            25%
+          </Button>
+          <Button onClick={() => {
+              callService('cover', 'set_cover_position', {
+                position: 50
+              }, { entity_id: entity });
+            }}>
+            <Icon icon="ic:baseline-curtains" />
+            50%
+          </Button>
+          <Button onClick={() => {
+              callService('cover', 'set_cover_position', {
+                position: 75
+              }, { entity_id: entity });
+            }}>
+            <Icon icon="ic:baseline-curtains" />
+            75%
           </Button>
           <Button onClick={() => {
               callService('cover', 'open_cover', {}, { entity_id: entity });
@@ -218,11 +179,7 @@ export function CoverCard({
           </Button>
         </ButtonRow>
       </FieldWrapper>
-      <RangeSlider min={1} max={100}>
-        <FieldTitle data-val={`${value}%`}>Current Position:</FieldTitle>
-        <input type="range" onChange={handleChange} min={1} max={100} value={value} />
-      </RangeSlider>
-    </Popup>
+    </Popup>}
   </>
 }
 

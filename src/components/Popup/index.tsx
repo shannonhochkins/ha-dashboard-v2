@@ -7,6 +7,7 @@ interface PopupProps {
   open: boolean;
   onClose?: () => void,
   children?: ReactNode;
+  fillHeight?: boolean;
 }
 
 const Backdrop = styled.div<Partial<PopupProps>>`
@@ -50,6 +51,14 @@ export const Popup = styled(PopupBase)<PopupProps>`
   border-top-left-radius: 5vh;
   border-top-right-radius: 5vh;
   z-index: 20;
+  > div {
+    width: calc(100% - 20px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    ${props => props.fillHeight ? 'height: 100%;' : ''}
+  }
   ${({ open }) => {
     return `
       opacity: ${open ? '1' : '0'};

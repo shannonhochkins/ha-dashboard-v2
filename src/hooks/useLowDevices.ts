@@ -16,7 +16,7 @@ export const useLowDevices = () => {
         ...b,
         state: Number(b.state)
       }))
-      .filter(x => !x.entity_id.includes('phone'))
+      .filter(x => !x.entity_id.includes('phone') && !x.entity_id.includes('tablet') && !x.entity_id.includes('sm_t220'))
       .filter(b => b.state <= 5 && b.state >= 0);
     if (batteryEntities) {
       setLowEntities(batteryEntities.map(e => `${e.attributes.friendly_name} ${e.state}%`));

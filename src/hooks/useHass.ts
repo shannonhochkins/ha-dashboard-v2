@@ -8,6 +8,7 @@ import {
   HassEntity
 } from "home-assistant-js-websocket";
 import { isEqual } from 'lodash';
+import toast from 'react-hot-toast';
 
 const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.HA_URL_PROD : process.env.HA_URL_DEV;
 
@@ -16,6 +17,7 @@ const WHITELIST: string[] = [
 ];
 type SwitchServices = 'toggle' | 'turn_on' | 'turn_off';
 type LightServices = 'toggle' | 'turn_on' | 'turn_off';
+type CoverServices = 'close_cover' | 'open_cover' | 'stop_cover' | 'set_cover_position' | 'toggle';
 
 interface HassState {
   connection: Connection | null;
@@ -28,6 +30,7 @@ interface HassState {
   getEntity: (entity: string) => HassEntity | null;
   callSwitch: (entity: string, service?: SwitchServices) => void,
   callLight: (entity: string, service?: LightServices) => void,
+  callCover: (entity: string, service?: CoverServices) => void,
   getAllEntities: () => HassEntities;
   callService: (
     domain: string,
@@ -103,6 +106,12 @@ export const useHass = create<HassState>()((set, get) => ({
     }
     return found;
   },
+  callCover: (entity, service = 'toggle') => {
+    const { callService } = get();
+    callService('cover', service, {}, {
+      entity_id: entity
+    });
+  },
   callSwitch: (entity, service = 'toggle') => {
     const { callService } = get();
     callService('switch', service, {}, {
@@ -123,6 +132,7 @@ export const useHass = create<HassState>()((set, get) => ({
   ) => {
     const { connection, ready } = get();
     if (connection && ready) {
+      toast(`Updating the ${domain}.`);
       await callService(connection, domain, service, serviceData, target);
     }
   }

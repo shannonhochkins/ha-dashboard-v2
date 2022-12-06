@@ -8,17 +8,20 @@ import {
   Kitchen,
   Garage,
   MasterBedroom,
-  Security,
   Weather,
   AirConditioner,
+  OutdoorKitchen,
+  FrontHouse,
 } from '@areas';
 import { isEqual, pick } from 'lodash';
 import dining from '@assets/dining-base-optimised.jpg';
 import garage from '@assets/garage-base.jpg';
+import frontHouse from '@assets/front-house-base.jpg';
 import kitchen from '@assets/kitchen-base.jpg';
 import living from '@assets/living-base.jpg';
 import office from '@assets/office-base.jpg';
 import master from '@assets/bedroom-base.jpg';
+import outdoorKitchen from '@assets/outdoor-kitchen-base.jpg';
 
 export interface RouteDefinition {
   name: string;
@@ -48,12 +51,6 @@ export function useRoutes() {
       background: null,
       hash: '',
       render: () => <Home />,
-    }, {
-      name: 'Security',
-      room: false,
-      background: null,
-      hash: 'security',
-      render: () => <Security />,
     }, {
       name: 'Air Conditioner',
       room: false,
@@ -87,6 +84,12 @@ export function useRoutes() {
       render: () => <Kitchen />,
       suffix: `${kitchenTemp.state}${kitchenTemp.attributes.unit_of_measurement}`
     }, {
+      name: 'Outdoor Kitchen',
+      hash: 'outdoor-kitchen',
+      background: outdoorKitchen,
+      room: true,
+      render: () => <OutdoorKitchen />,
+    }, {
       name: 'Master Bedroom',
       hash: 'master-bedroom',
       background: master,
@@ -107,6 +110,12 @@ export function useRoutes() {
       room: true,
       render: () => <Garage />,
       suffix: `${garageTemp.state}${garageTemp.attributes.unit_of_measurement}`
+    }, {
+      name: 'Front House',
+      background: frontHouse,
+      hash: 'front-house',
+      room: true,
+      render: () => <FrontHouse />,
     }].map(route => ({
       ...route,
       ref: createRef(),

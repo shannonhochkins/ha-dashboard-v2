@@ -31,6 +31,7 @@ const AreaBaseStyled = styled.div`
     justify-content: center;
     align-items: center;
     position: relative;
+    z-index: 1;
     > * {
       max-height: 100%;
     }
@@ -52,10 +53,12 @@ const AreaBaseStyled = styled.div`
     &:after {
       height: 100px;
       position: absolute;
+      pointer-events: none;
       content: '';
       left: 0;
       right: 0;
       bottom: 1px;
+      z-index:0;
       background: linear-gradient(to top, rgba(0, 0, 0, 1) 2%, rgba(0, 0, 0, 0) 100%);
     }
   `)}

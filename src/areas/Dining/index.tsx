@@ -25,8 +25,8 @@ export function Dining() {
   }];
   return <DiningContainer>
     <AreaCard base={diningBase} zones={zones} footer={<>
-      <CoverCard entity="cover.curtain_patio_main_curtain" label="Main Curtain" />
-      <CoverCard entity="cover.curtain_pool_window_curtain" label="Pool Curtain" />
+      <CoverCard entity="cover.sb_curtain_patio_main" label="Main Curtain" />
+      <CoverCard entity="cover.sb_curtain_pool_window" label="Pool Curtain" />
     </>} />
   </DiningContainer>
 }

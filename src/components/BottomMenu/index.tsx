@@ -120,7 +120,6 @@ export function BottomMenu() {
   
   const roomRoutes = routes.filter(route => route.room);
   const isRoomActive = roomRoutes.some(route => route.active) || hash === '';
-  const securityView = routes.find(route => route.hash === 'security');
   const weatherView = routes.find(route => route.hash === 'weather');
   const acView = routes.find(route => route.hash === 'air-conditioner');
 
@@ -137,17 +136,12 @@ export function BottomMenu() {
         offsetBubble(roomRef.current);
       } else if (acView && acView.active) {
         offsetBubble(acRef.current);
-      } else if (securityView && securityView.active) {
-        offsetBubble(securityRef.current);
       } else if (weatherView && weatherView.active) {
         offsetBubble(weatherRef.current);
       };
     }
   }, [menuBorderRef, routes, size]);
 
-  // 4343f5
-  // e0b115
-  // 65ddb7
   return <>
     <Menu>
         <MenuItem active={goodmorningSwitch.state === 'on'} color="#e0b115" onClick={() => {
@@ -172,12 +166,6 @@ export function BottomMenu() {
           offsetBubble(weatherRef.current);
         }} active={weatherView?.active} color="#65ddb7">
           <WeatherIcon />
-        </MenuItem>
-        <MenuItem ref={securityRef} onClick={() => {
-          setHash(securityView.hash);
-          offsetBubble(securityRef.current);
-        }} active={securityView?.active} color="#4343f5">
-          <Icon icon="ic:outline-security" />
         </MenuItem>
         <MenuItem color="#e0b115" active={goodnightSwitch.state === 'on'} onClick={() => {
           callSwitch('switch.goodnight_switch', 'turn_on');

@@ -331,7 +331,7 @@ export function WeatherCard() {
             <WeatherIconSmall name={daily.weather[0].main} animated={false} />
           </Row>
           <Row>
-            <Umbrella icon="fluent-mdl2:umbrella" /> {daily.pop * 100}%
+            <Umbrella icon="fluent-mdl2:umbrella" /> {Number(daily.pop * 100).toFixed(0)}%
           </Row>
         </Column>
       })}
@@ -349,7 +349,7 @@ export function WeatherCard() {
               <WeatherIconSmall name={hourly.weather[0].main} animated={false} />
             </Row>
             <Row>
-              <Umbrella icon="fluent-mdl2:umbrella" /> {hourly.pop * 100}%
+              <Umbrella icon="fluent-mdl2:umbrella" /> {Number(hourly.pop * 100).toFixed(0)}%
             </Row>
           </Column>
         })}

@@ -65,7 +65,7 @@ export function Office() {
 
   return <OfficeContainer>
     <AreaCard base={officeBase} zones={zones} footer={<>
-      <CoverCard entity="cover.curtain_office_curtain" label="Curtain" />
+      <CoverCard entity="cover.sb_curtain_office" label="Curtain" />
       <CoverCard entity="cover.roller_blind_office" label="Blind" />
     </>} />
   </OfficeContainer>

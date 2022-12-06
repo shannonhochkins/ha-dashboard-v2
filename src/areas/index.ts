@@ -5,11 +5,13 @@ import { Kitchen } from './Kitchen';
 import { Living } from './Living';
 import { Office } from './Office';
 import { MasterBedroom } from './MasterBedroom';
-import { Security } from './Secuirty';
 import { AirConditioner } from './AirConditioner';
 import { Weather } from './Weather';
+import { OutdoorKitchen } from './OutdoorKitchen';
+import { FrontHouse } from './FrontHouse';
 
 export {
+  FrontHouse,
   Home,
   Dining,
   Garage,
@@ -17,7 +19,7 @@ export {
   Living,
   Office,
   MasterBedroom,
-  Security,
+  OutdoorKitchen,
   Weather,
   AirConditioner,
 }

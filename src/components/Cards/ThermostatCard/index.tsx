@@ -107,13 +107,16 @@ const fanColors = ['#fff', '#f9f9f9'];
 
 type FanMode = 'Low' | 'Mid' | 'High';
 
+const fanModes: FanMode[] = ['Low', 'Mid', 'High'];
+
 
 export const ThermostatCard = () => {
   const { callService } = useHass();
   const device = useDevice();
   const entity = 'climate.daikin_ac';
   const ac = useEntity(entity);
-  const { current_temperature, fan_mode, fan_modes, max_temp, temperature} = ac.attributes || {};
+  const { current_temperature, fan_mode, max_temp, temperature} = ac.attributes || {};
+  console.log('ac', ac)
   const state = ac.state;
   const on = state !== 'off';
   const [colors, setColors] = useState<string[]>(offColors);
@@ -176,8 +179,8 @@ export const ThermostatCard = () => {
     </CurrentTemperature>
     <ActionsLeft>
       <Fab size={size} active={on} activeColor={colors[1]} onClick={() => {
-          const currentIndex = fan_modes.findIndex(mode => mode === internalFanMode);
-          setInternalFanMode(fan_modes[currentIndex + 1] ? fan_modes[currentIndex + 1] : fan_modes[0]);
+          const currentIndex = fanModes.findIndex(mode => mode === internalFanMode);
+          setInternalFanMode(fanModes[currentIndex + 1] ? fanModes[currentIndex + 1] : fanModes[0]);
         }}><FanIcon speed={on ? internalFanMode : null} icon="mdi:fan" /></Fab>
     </ActionsLeft>
     <ActionsRight>
@@ -208,7 +211,15 @@ export const ThermostatCard = () => {
     <Fab style={{
       marginTop: 20
     }} size={size * 1.5} active={on} activeColor={'#cfac48'} onClick={() => {
-      setInternalState('off');
+      if (on) {
+        setInternalState('off');
+      } else {
+        if (temperature > 25) {
+          setInternalState('heat');
+        } else {
+          setInternalState('cool');
+        }
+      }
     }}><Icon icon="ic:round-power-settings-new" /></Fab>
   </Container> : null;
 };
