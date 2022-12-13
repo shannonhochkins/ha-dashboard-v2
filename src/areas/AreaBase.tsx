@@ -38,6 +38,9 @@ const AreaBaseStyled = styled.div`
     ${useMq(['mobile'], `
       padding: 0 24px;
     `)}
+    ${useMq(['fridge'], `
+      padding: 48px;
+    `)}
   }
   ${useMq(['desktop'], `
     display: flex;

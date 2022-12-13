@@ -12,7 +12,7 @@ import { useHass } from '@hooks';
 
 const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.HA_URL_PROD : process.env.HA_URL_DEV;
 
-const getAuthOptions = (): AuthOptions => ({
+export const getAuthOptions = (): AuthOptions => ({
   hassUrl: BASE_URL,
   async loadTokens() {
     try {
@@ -36,7 +36,6 @@ export const Hass = ({
   const { setEntities, setConnection, ready } = useHass();  
   let auth: Auth | null = null;
   let unsubscribe: UnsubscribeFunc;
-
 
   useEffect(() => {
     async function authenticate() {

@@ -280,7 +280,6 @@ export function WeatherCard() {
   return <Weather>
     <Column>
       <Location>Hamlyn Terrace</Location>
-      <DateTime>{toDate(Date.now() / 1000)}</DateTime>
       <Row><CurrentTemperature>{toTemp(data.current.temp)}</CurrentTemperature> <WeatherIcon /></Row>
       <CurrentWeatherDescription>{data.current.weather[0].description}</CurrentWeatherDescription>
       <FeelsLike>

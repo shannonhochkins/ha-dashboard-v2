@@ -8,8 +8,6 @@ const HomeContainer = styled(AreaBase)``;
 const Items = styled.div`
   display: flex;
 	flex-wrap: wrap;
-	/* Compensate for excess margin on outer gallery flex items */
-	margin: -1rem -1rem;
   max-width: 1260px;
   ${useMq(['mobile'], `
     margin: 0;

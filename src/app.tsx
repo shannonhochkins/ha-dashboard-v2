@@ -73,6 +73,34 @@ const Route = styled.div<RouteProps>`
   }      
 `;
 
+const DateTime = styled.h3`
+  position: absolute;
+  top: 0;
+  font-size: 20px;
+  line-height:24px;
+  font-family: "Kanit", sans-serif;
+  color: var(--ha-text-light);
+  z-index: 3;
+  text-align: center;
+  background-color: rgba(0,0,0,0.3);
+  border-radius: 8px;
+  padding: 6px;
+  margin: 10px 0 0 0;
+  left: 50%;
+  transform: translate3d(-50%,0, 0);
+  text-transform: uppercase;
+`;
+
+function toDate(dt: number, options?: Intl.DateTimeFormatOptions) {
+  return new Date((dt * 1000)).toLocaleDateString('en-AU', options || {
+    hour: '2-digit',
+    minute: '2-digit',
+    weekday: 'short',
+    day: '2-digit',
+    month: 'short'
+  });
+}
+
 function Root() {
   useRefresh();
   const routes = useRoutes();
@@ -120,7 +148,7 @@ function Root() {
       `}
     />
     <Container>
-
+      <DateTime>{toDate(Date.now() / 1000)}</DateTime>
       <TransitionGroup  childFactory={child => React.cloneElement(child, { classNames: "left-to-right", timeout: 1000 })} component={Areas} className={'route-list'}>
         {routes.filter(route => route.active).map(route => <CSSTransition
           timeout={500}

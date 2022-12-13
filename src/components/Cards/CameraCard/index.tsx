@@ -200,7 +200,7 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
     requestData();
   }, []);
 
-  function requestData() {
+  async function requestData() {
     setLoading(true);
     fetch(`https://rwdwrtzkr59smlxgb934b72q647a3zr1.ui.nabu.casa/local/reo_assets.json?d=${Date.now()}`, {
     }).then(r => r.json()).then($assets => {
@@ -213,7 +213,7 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
           year,
           month,
           day,
-          path: `https://rwdwrtzkr59smlxgb934b72q647a3zr1.ui.nabu.casa/local${a.name.replace('/config/www', '')}`,
+          path: `https://100.94.20.97:8080${a.name}`,
           dateString,
           key: index,
           date: dateCreated.getTime()
