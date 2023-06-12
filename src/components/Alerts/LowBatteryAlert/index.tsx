@@ -1,15 +1,9 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from '@emotion/styled';
+import { Icon } from '@iconify/react';
 import { useLowDevices } from '@hooks';
+import { Popup } from '@components';
 
-const AlertOverlay = styled.div`
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 3;
-  display: flex;
-  flex-direction: column;
-`;
 
 const AlertChild = styled.div`
   padding: 4px;
@@ -17,14 +11,47 @@ const AlertChild = styled.div`
   border-bottom: 1px solid rgba(255, 255, 255, 0.3);
   margin-bottom: 4px;
   font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  span {
+    padding: 0px 8px;
+  }
 `;
+
+const Fab = styled.button`
+  all: unset;
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  border-radius: 100%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0;
+  color: var(--ha-text-light);
+  border: 1px solid var(--ha-text-light);
+  cursor: pointer;
+  background-color: var(--ha-secondary);
+`;
+
 
 
 export function LowBatteryAlert() {
   const entities = useLowDevices();
-  return entities ? <AlertOverlay>
-    {entities.map(entitiy => {
-     return <AlertChild key={entitiy}>{entitiy}</AlertChild>
-    })}
-  </AlertOverlay> : null;
+  const [open, setOpen] = useState(false);
+  const someLowDevices = entities.some(entity => Number(entity.state) < 10);
+  return <>
+    {someLowDevices && <Fab onClick={() => setOpen(true)}><Icon icon="material-symbols:battery-alert" /></Fab>}
+    <Popup onClose={() => setOpen(false)} open={open}>
+      {entities ? <div>
+      {entities.sort((a,b) => Number(a.state) - Number(b.state)).map(entitiy => {
+      return <AlertChild key={entitiy.entity_id}><span>{entitiy.attributes.friendly_name}</span><span>{entitiy.state}%</span></AlertChild>
+      })}
+    </div> : null}
+    </Popup>
+  </>
 }

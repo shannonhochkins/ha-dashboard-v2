@@ -76,7 +76,6 @@ export const useHass = create<HassState>()((set, get) => ({
       // trigger an update for all those effects watching it
       if (!isEqual(newEntities, PREV_ENTITIES)) {
         PREV_ENTITIES = newEntities;
-        console.log('ENTITIES', ENTITIES);
         set(state => ({ lastUpdated: Date.now(), }))
       }
     }, THROTTLE_UPDATE);

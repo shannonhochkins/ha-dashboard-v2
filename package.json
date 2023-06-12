@@ -6,7 +6,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist .parcel-cache",
     "build": "npm run clean && NODE_ENV=production parcel build --no-source-maps src/*.html",
-    "start": "NODE_ENV=development parcel src/index.html"
+    "start": "NODE_ENV=development parcel src/index.html",
+    "postbuild": "node replace-html.js"
   },
   "repository": {
     "type": "git",
@@ -55,6 +56,7 @@
     "react-select": "^5.7.0",
     "react-thermostat": "^1.0.22",
     "react-transition-group": "^4.4.5",
+    "replace-in-file": "^6.3.5",
     "zustand": "^4.1.1"
   },
   "devDependencies": {

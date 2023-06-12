@@ -12,7 +12,7 @@ interface ZoneOverlay {
 }
 
 const ZoneOverlay = styled.div<{
-  on: boolean;
+  on?: string;
   stateless: boolean;
 }>`
   position: absolute;
@@ -126,7 +126,6 @@ function Zone({
   blendMode = 'lighten',
   active = false
 }: ZoneProps) {
-  console.log('blendMode', blendMode);
   let brightness = 0;
   const { callSwitch, getEntity, callCover } = useHass();
   const light = getEntity(entities?.light || '');
@@ -140,11 +139,10 @@ function Zone({
     brightness = 1;
   }
   const on = $switch?.state === 'on' || light?.state === 'on' || cover?.state === 'open';
-  console.log('on', on);
   
   return <>
     {base && <ZoneBase blendMode={blendMode} opacity={brightness} src={base} />}
-    {overlay !== null && overlay.renderSvg && <ZoneOverlay stateless={stateless} on={on} style={{...omit(overlay, 'svg')}}>
+    {overlay !== null && overlay.renderSvg && <ZoneOverlay stateless={stateless} on={on ? 'on' : undefined} style={{...omit(overlay, 'svg')}}>
       {overlay.renderSvg(() => {
         if (entities?.switch) {
           callSwitch(entities.switch);

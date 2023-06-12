@@ -2,6 +2,7 @@ import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase } from '../AreaBase';
 import { useRoutes, useHash, useMq } from '@hooks';
+import { ImagePreloader } from './ImagePreloader';
 
 const HomeContainer = styled(AreaBase)``;
 
@@ -28,19 +29,7 @@ const Item = styled.div`
     flex: none;
   `)}
 `;
-const Image = styled.img`
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform 400ms ease-out;
-	box-shadow: 0.3rem 0.4rem 0.4rem rgba(0, 0, 0, 0.4);
-  border-radius: 24px;
-  &:hover, &:active, &:focus {
-    transform: scale(1.15);
-  }
-`;
-const Title = styled.span``;
+
 const Temp = styled.span`
   position: absolute;
   top: 10px;
@@ -67,8 +56,7 @@ export function Home() {
         suffix
       }, index) => {
         return <Item key={index}  onClick={() => setHash(hash)}>
-          <Image src={background} />
-          <Title>{name}</Title>
+          <ImagePreloader src={background} />
           {suffix && <Temp>{suffix}</Temp>}
         </Item>
       })}

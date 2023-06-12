@@ -119,6 +119,13 @@ const Refresh = styled(Icon)`
   font-size: 32px;
   cursor: pointer;
 `;
+
+const PaginationIcon = styled(Icon)`
+  margin-left: 10px;
+  font-size: 32px;
+  cursor: pointer;
+`;
+
 interface Asset {
   name: string;
   year: string;
@@ -145,10 +152,11 @@ interface Asset {
   }
 }
 
+
 interface AssetsByDate {
   [dateString: string]: Asset[]
 }
-
+// used to find assets that are 60s apart from each other (groups events together)
 const TIME_SPAN = 60;
 
 function download(url, ref, cb) {
@@ -187,38 +195,68 @@ function createdAt(d) {
   return (h ? h : 12) + ":" + (m < 10 ? "0" + m : m) + ":" + (s < 10 ? "0" + s : s) + " " + meridian;
 }
 
+type PaginationOptions<T> = {
+  page: number,
+  pageSize: number,
+  data: T[]
+}
 
+function paginate<T>({ page = 1, pageSize = 10, data = [] }: PaginationOptions<T>): { 
+  currentPage: number,
+  data: T[],
+  totalPages: number,
+  pageSize: number
+} {
+  const startIndex = (Math.max(page - 1, 0)) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const paginatedData = [...data].slice(startIndex, endIndex);
+  const totalPages = Math.max(Math.ceil(data.length / pageSize), 1);
+  return {
+    currentPage: Math.min(Math.max(page, 1), totalPages),
+    data: paginatedData,
+    totalPages: totalPages,
+    pageSize: pageSize
+  };
+}
 
 export function CameraCard({ open, onClose, camera, title }: { open: boolean, onClose: () => void, camera: string, title: string }) {
   const [assets, setAssets] = useState<AssetsByDate>({});
   const [day, setDay] = useState(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
   const progressRefs = useRef({});
   const [downloadingVideo, setDownloadingVideo] = useState(null);
   const [thumbnails, setThumbnails] = useState<Asset[][] | null>(null);
+  const [allData, setAllData] = useState<Asset[][] | null>(null);
+  const [totalPages, setTotalPages] = useState(1);
   useEffect(() => {
     requestData();
   }, []);
 
   async function requestData() {
     setLoading(true);
-    fetch(`https://rwdwrtzkr59smlxgb934b72q647a3zr1.ui.nabu.casa/local/reo_assets.json?d=${Date.now()}`, {
+    fetch(`https://rwdwrtzkr59smlxgb934b72q647a3zr1.ui.nabu.casa/local/${camera}.json?d=${Date.now()}`, {
     }).then(r => r.json()).then($assets => {
-      const mapped = $assets.filter(a => !a.stat.isDirectory && a.name.includes(camera)).map((a, index) => {
-        const [fullMatch, year, month, day, hour, min, sec] = a.name.match(/(\d{4})+(\d{2})+(\d{2})+(\d{2})+(\d{2})+(\d{2})/);
+      const mapped = $assets.map((a, index) => {
+        const matched = a.match(/(\d{4})+(\d{2})+(\d{2})+(\d{2})+(\d{2})+(\d{2})/);
+        if (matched === null) {
+          return null;
+        }
+        const [fullMatch, year, month, day, hour, min, sec] = matched;
         const dateString = `${year}/${month}/${day}`;
         const dateCreated = new Date(`${year}-${month}-${day}T${hour}:${min}:${sec}`);
+        const isDev = window.location.origin.endsWith('1234');
         return {
-          ...a,
+          name: a,
           year,
           month,
           day,
-          path: `https://100.94.20.97:8080${a.name}`,
+          path: `${isDev ? 'https://homeassistant.local' : window.location.origin}:8080${a}`,
           dateString,
           key: index,
           date: dateCreated.getTime()
         }
-      });
+      }).filter(x => x !== null);
       const groupedAssets = groupBy(mapped.sort((a, b) => a.date - b.date), a => a.dateString);
       setAssets(groupedAssets);
       setDay(Object.keys(groupedAssets).pop());
@@ -263,15 +301,6 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
     return null;
   }
 
-  function temp() {
-    const key = day;
-    const selectedDayEntries = {...assets}[key];
-    if (selectedDayEntries) {
-      return selectedDayEntries.filter(a => a.name.endsWith('jpg') && a.name.match(/[\d]_thumb\.jpg+/));
-    }
-    return [];
-  }
-
   function findRelatedAssets(thumbnail) {
     const key = day;
     const selectedDayEntries = {...assets}[key];
@@ -287,11 +316,40 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
     return null;
   }
 
+  function updatePageNumber(direction: number) {
+    let _currentPage = currentPage;
+    if (direction > 0) {
+      // move forward if possible
+      _currentPage += 1;
+    } else {
+      // move backwards
+      _currentPage -= 1;
+    }
+    const { data, totalPages: $totalPages, currentPage: $currentPage } = paginate<Asset[]>({
+      page: _currentPage,
+      pageSize: 10,
+      data: allData
+    });
+    setCurrentPage($currentPage);
+    setThumbnails(data);
+    setTotalPages($totalPages);
+  }
+
 
   useEffect(() => {
-    const $thumbnail = getAvailableThumbnails();
-    setThumbnails($thumbnail);
+    const $allThumbnails = getAvailableThumbnails();
+    if ($allThumbnails !== null ) {
+      const { data, totalPages: $totalPages } = paginate<Asset[]>({
+        page: currentPage,
+        pageSize: 10,
+        data: $allThumbnails
+      });
+      setAllData($allThumbnails);
+      setThumbnails(data);
+      setTotalPages($totalPages);
+    }
   }, [day]);
+
 
   const options = Object.keys(assets).map(d => ({
     label: d,
@@ -339,8 +397,12 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
             }}
             options={options} />
             <Refresh onClick={() => requestData()} icon="material-symbols:refresh" />
+            <p style={{ marginLeft: 40 }}>Page {currentPage} of {totalPages}</p>
+            <PaginationIcon onClick={() => currentPage > 1 && updatePageNumber(-1)} icon="material-symbols:chevron-left" />
+            <PaginationIcon onClick={() => currentPage !== totalPages && updatePageNumber(1)} icon="material-symbols:chevron-right" />
         </Row>
         {loading ? <Loading icon="line-md:loading-twotone-loop" /> : <CameraCardContent>
+          {thumbnails && thumbnails.length === 0 && <Row><p>No camera data available for this date.</p></Row>}
           {thumbnails && [...thumbnails].reverse().map((groupedThumbnails, index) => {
             const [snapshot, $video] = findRelatedAssets(groupedThumbnails[0]);
             return groupedThumbnails && <CameraInner>
