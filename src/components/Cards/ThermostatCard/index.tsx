@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Thermostat } from 'react-thermostat';
 import { useHass, useEntity, useDevice } from '@hooks';
@@ -19,6 +19,8 @@ const Fab = styled.button<{
   justify-content: center;
   width: ${props => props.size / 5}px;
   height: ${props => props.size / 5}px;
+  font-size: ${props => props.size / 17}px;
+  padding: 4px;
   svg {
     font-size: ${props => props.size / 10}px;
   }
@@ -75,6 +77,32 @@ const ActionsRight = styled.div`
   }
 `;
 
+const Timers = styled.div`
+  position: absolute;
+  bottom: -10%;
+  right:0;
+  display: flex;
+  flex-direction: column;
+  z-index: 4;
+  align-items: center;
+  > * {
+    margin-bottom: 8px;
+  }
+`;
+
+const TimerLabel = styled.span<{
+  fontSize: number;
+}>`
+  font-size: ${props => props.fontSize * 1.5}px;
+  text-align: center;
+  color: var(--ha-text-light);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%) rotateZ(90deg);
+  right: -100%;
+  white-space: nowrap;
+`;
+
 const CurrentTemperature = styled.div<{
   fontSize: number;
   color: string;
@@ -115,7 +143,12 @@ export const ThermostatCard = () => {
   const device = useDevice();
   const entity = 'climate.air_conditioner';
   const ac = useEntity(entity);
-  const { current_temperature, fan_mode, max_temp, temperature} = ac.attributes || {};
+  const ac_30 = useEntity('automation.turn_off_aircon_after_30mins');
+  const ac_45 = useEntity('automation.turn_off_aircon_after_45_mins');
+  const ac_60 = useEntity('automation.turn_off_aircon_after_60_mins');
+
+  const currentTime = useEntity('sensor.time');
+  const { current_temperature, fan_mode, max_temp, temperature } = ac.attributes || {};
   const state = ac.state;
   const on = state !== 'off';
   const [colors, setColors] = useState<string[]>(offColors);
@@ -156,6 +189,21 @@ export const ThermostatCard = () => {
     }
   }, [internalFanMode]);
 
+  const turnOn = useCallback(() => {
+    if (temperature >= 24) {
+      setInternalState('heat');
+    } else {
+      setInternalState('cool');
+    }
+  }, [temperature]);
+
+  const getElapsedTimeInMinutes = useCallback((date: string) => {
+    const now = new Date();
+    const pastDate = new Date(date); // Past date
+    const timeDifference = now.getTime() - pastDate.getTime(); // Difference in milliseconds
+    return Math.floor(timeDifference / (1000 * 60));
+  }, []);
+
   useEffect(() => {
     if (internalState !== state || internalTemperature !== temperature) {
       callService('climate', 'set_temperature', {
@@ -168,6 +216,56 @@ export const ThermostatCard = () => {
   }, [internalState, internalTemperature]);
 
   const currentTempColor = state === 'off' ? 'var(--ha-text-light)' : colors ? colors[1] : 'transparent';
+
+  const ac60Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_60.attributes.last_triggered), [ac_60.attributes.last_triggered, currentTime]);
+  const ac45Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_45.attributes.last_triggered), [ac_45.attributes.last_triggered, currentTime]);
+  const ac30Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_30.attributes.last_triggered), [ac_30.attributes.last_triggered, currentTime]);
+
+  const ac60Active = useMemo(() => ac60Elapsed <= 60 && ac_60.state === 'on', [ac60Elapsed, ac_60]);
+  const ac45Active = useMemo(() => ac45Elapsed <= 45 && ac_45.state === 'on', [ac45Elapsed, ac_45]);
+  const ac30Active = useMemo(() => ac30Elapsed <= 30 && ac_30.state === 'on', [ac30Elapsed, ac_30]);
+
+  const startTimer = useCallback((incoming: string) => {
+    const list = [
+      {
+        entity_id: 'automation.turn_off_aircon_after_60_mins',
+        active: ac60Active,
+        state: ac_60.state,
+      },
+      {
+        entity_id: 'automation.turn_off_aircon_after_45_mins',
+        active: ac45Active,
+        state: ac_45.state,
+      },
+      {
+        entity_id: 'automation.turn_off_aircon_after_30mins',
+        active: ac30Active,
+        state: ac_30.state,
+      }
+    ];
+    list.forEach(({ entity_id, active, state }) => {
+      if (entity_id === incoming && !active && state !== 'on') {
+        turnOn();
+        callService('automation', 'turn_on', {}, {
+          entity_id
+        }, false);
+        callService('automation', 'trigger', {}, {
+          entity_id
+        }, false);
+      } else {
+        callService('automation', 'turn_off', {}, {
+          entity_id
+        }, false);
+      }
+    });
+  }, [
+    ac60Active,
+    ac45Active,
+    ac30Active,
+    ac_30,
+    ac_45,
+    ac_60,
+  ])
 
 
   return internalTemperature !== null ? <Container>
@@ -194,6 +292,20 @@ export const ThermostatCard = () => {
         setInternalState('cool');
       }}><Icon icon="ic:baseline-ac-unit" /></Fab>
     </ActionsRight>
+
+    <Timers>
+      <TimerLabel fontSize={size / 40}>{on ? 'TURN OFF IN' : 'TURN ON FOR'}:</TimerLabel>
+      <Fab size={size / 1.1} active={ac60Active} activeColor={colors[0]} onClick={() => {
+        turnOn();
+        startTimer('automation.turn_off_aircon_after_60_mins');
+      }}>{ac60Active ? 60 - ac60Elapsed : 60}{ac60Active ? 'm left' : ' min'}</Fab>
+      <Fab size={size / 1.1} active={ac45Active} activeColor={colors[0]} onClick={() => {
+        startTimer('automation.turn_off_aircon_after_45_mins');
+      }}>{ac45Active ? 45 - ac45Elapsed : 45}{ac45Active ? 'm left' : ' min'}</Fab>
+      <Fab size={size / 1.1} active={ac30Active} activeColor={colors[1]} onClick={() => {
+        startTimer('automation.turn_off_aircon_after_30mins');
+      }}>{ac30Active ? 30 - ac30Elapsed : 30}{ac30Active ? 'm left' : ' min'}</Fab>
+    </Timers>
     <Thermostat
       value={internalTemperature}
       onChange={v => {
@@ -214,11 +326,7 @@ export const ThermostatCard = () => {
       if (on) {
         setInternalState('off');
       } else {
-        if (temperature > 25) {
-          setInternalState('heat');
-        } else {
-          setInternalState('cool');
-        }
+        turnOn();
       }
     }}><Icon icon="ic:round-power-settings-new" /></Fab>
   </Container> : null;

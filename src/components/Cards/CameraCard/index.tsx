@@ -245,13 +245,12 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
         const [fullMatch, year, month, day, hour, min, sec] = matched;
         const dateString = `${year}/${month}/${day}`;
         const dateCreated = new Date(`${year}-${month}-${day}T${hour}:${min}:${sec}`);
-        const isDev = window.location.origin.endsWith('1234');
         return {
           name: a,
           year,
           month,
           day,
-          path: `${isDev ? 'https://homeassistant.local' : window.location.origin}:8080${a}`,
+          path: `https://homeassistant.local:8080${a}`,
           dateString,
           key: index,
           date: dateCreated.getTime()

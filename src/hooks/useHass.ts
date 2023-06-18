@@ -36,7 +36,8 @@ interface HassState {
     domain: string,
     service: string,
     serviceData: object,
-    target: HassServiceTarget
+    target: HassServiceTarget,
+    showToast?: boolean
   ) => void;
 }
 
@@ -127,11 +128,14 @@ export const useHass = create<HassState>()((set, get) => ({
     domain: string,
     service: string,
     serviceData: object,
-    target: HassServiceTarget
+    target: HassServiceTarget,
+    showToast: boolean = true
   ) => {
     const { connection, ready } = get();
     if (connection && ready) {
-      toast(`Updating the ${domain}.`);
+      if (showToast) {
+        toast(`Updating the ${domain}.`);
+      }
       await callService(connection, domain, service, serviceData, target);
     }
   }
