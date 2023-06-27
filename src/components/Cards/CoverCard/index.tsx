@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { useHass, useEntity, useMq } from '@hooks';
+import { useMq } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
 import { Popup } from '@components';
 import { IconButton } from '../';
 
@@ -117,11 +118,29 @@ export function CoverCard({
     <Cover onClick={() => {
       if (type === 'garage') {
         if (cover.state === 'open') {
-          callService('cover', 'close_cover', {}, { entity_id: entity });
+          callService({
+            domain: 'cover',
+            service: 'close_cover',
+            target: {
+              entity_id: entity
+            }
+          });
         } else if (cover.state === 'closed') {
-          callService('cover', 'open_cover', {}, { entity_id: entity });
+          callService({
+            domain: 'cover',
+            service: 'open_cover',
+            target: {
+              entity_id: entity
+            }
+          });
         } else {
-          callService('cover', 'stop_cover', {}, { entity_id: entity });
+          callService({
+            domain: 'cover',
+            service: 'stop_cover',
+            target: {
+              entity_id: entity
+            }
+          });
         }
       } else {
         setOpen(true);
@@ -142,37 +161,70 @@ export function CoverCard({
         <ButtonRow>
           
           <Button onClick={() => {
-              callService('cover', 'close_cover', {}, { entity_id: entity });
+            callService({
+              domain: 'cover',
+              service: 'close_cover',
+              target: {
+                entity_id: entity
+              }
+            });
             }}>
             <Icon icon="ic:baseline-first-page" />
             CLOSE
           </Button>
           <Button onClick={() => {
-              callService('cover', 'set_cover_position', {
+            callService({
+              domain: 'cover',
+              service: 'set_cover_position',
+              serviceData: {
                 position: 25
-              }, { entity_id: entity });
+              },
+              target: {
+                entity_id: entity
+              }
+            });
             }}>
             <Icon icon="ic:baseline-curtains" />
             25%
           </Button>
           <Button onClick={() => {
-              callService('cover', 'set_cover_position', {
-                position: 50
-              }, { entity_id: entity });
+              callService({
+                domain: 'cover',
+                service: 'set_cover_position',
+                serviceData: {
+                  position: 50
+                },
+                target: {
+                  entity_id: entity
+                }
+              });
             }}>
             <Icon icon="ic:baseline-curtains" />
             50%
           </Button>
           <Button onClick={() => {
-              callService('cover', 'set_cover_position', {
-                position: 75
-              }, { entity_id: entity });
+              callService({
+                domain: 'cover',
+                service: 'set_cover_position',
+                serviceData: {
+                  position: 75
+                },
+                target: {
+                  entity_id: entity
+                }
+              });
             }}>
             <Icon icon="ic:baseline-curtains" />
             75%
           </Button>
           <Button onClick={() => {
-              callService('cover', 'open_cover', {}, { entity_id: entity });
+              callService({
+                domain: 'cover',
+                service: 'open_cover',
+                target: {
+                  entity_id: entity
+                }
+              });
             }}>
             <Icon icon="ic:baseline-last-page" />
             OPEN

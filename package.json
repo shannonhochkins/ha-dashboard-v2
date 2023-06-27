@@ -45,6 +45,7 @@
     "@fontsource/roboto": "^4.5.8",
     "@types/react-transition-group": "^4.4.5",
     "chart.js": "^3.9.1",
+    "ha-component-kit": "^0.1.11",
     "home-assistant-js-websocket": "^8.0.0",
     "lodash": "^4.17.21",
     "polished": "^4.2.2",
@@ -56,8 +57,7 @@
     "react-select": "^5.7.0",
     "react-thermostat": "^1.0.22",
     "react-transition-group": "^4.4.5",
-    "replace-in-file": "^6.3.5",
-    "zustand": "^4.1.1"
+    "replace-in-file": "^6.3.5"
   },
   "devDependencies": {
     "@babel/core": "^7.19.3",

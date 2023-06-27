@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import styled from '@emotion/styled';
 import { Icon } from '@iconify/react';
 import { AreaBase } from '../AreaBase';
@@ -7,13 +7,22 @@ import base from '@assets/garage-base.jpg';
 import downlights from '@assets/garage-lights.jpg';
 import { CoverCard } from '@components';
 import { Downlights, GarageDoor } from './zones';
-import { useHass, useEntity } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
 
 const GarageContainer = styled(AreaBase)`
   
 `;
 export function Garage() {
-  const { callCover } = useHass();
+  const { callService } = useHass();
+  const callCover = useCallback(entity => {
+    callService({
+      domain: 'cover',
+      service: 'toggle',
+      target: {
+        entity_id: entity
+      }
+    })
+  }, []);
   const garageMain = useEntity('cover.garage_door_main');
   const zones = [{
     base: downlights,

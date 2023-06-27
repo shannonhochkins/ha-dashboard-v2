@@ -8,13 +8,12 @@ import mainGarage from '@assets/front-house-main-gargage-open.png';
 import toolshedGarge from '@assets/front-house-tool-garage-open.png';
 import { CameraCard } from '@components';
 import { ToolShed, MainGarage, Circle } from './zones';
-import { useHass, useEntity } from '@hooks';
+import { useEntity } from 'ha-component-kit';
 
 const FrontHouseContainer = styled(AreaBase)`
   
 `;
 export function FrontHouse() {
-  const { callCover } = useHass();
   const [activeCamera, setActiveCamera] = useState<null | {
     name: string;
     title: string;

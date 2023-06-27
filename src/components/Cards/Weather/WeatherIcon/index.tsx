@@ -1,5 +1,6 @@
 import React, { useEffect, useState, ReactNode } from 'react';
-import { useEntity, useWeather } from '@hooks';
+import { useWeather } from '@hooks';
+import { useEntity } from 'ha-component-kit';
 import { Base, Cloudy, CloudyDay, CloudyNight, Rain, Fog, Thunderstorm, ClearDay, ClearNight } from './svgs';
 import { Icon } from '@iconify/react';
 import { WeatherTypes } from '../../../../hooks/useWeather';

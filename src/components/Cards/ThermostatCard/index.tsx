@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useCallback, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Thermostat } from 'react-thermostat';
-import { useHass, useEntity, useDevice } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
+import { useDevice } from '@hooks';
 import { Icon } from '@iconify/react';
 
 const Fab = styled.button<{
@@ -181,10 +182,15 @@ export const ThermostatCard = () => {
 
   useEffect(() => {
     if (internalFanMode !== fan_mode) {
-      callService('climate', 'set_fan_mode', {
-        fan_mode: internalFanMode
-      }, {
-        entity_id: entity
+      callService({
+        domain: 'climate',
+        service: 'set_fan_mode',
+        serviceData: {
+          fan_mode: internalFanMode
+        },
+        target: {
+          entity_id: entity
+        }
       });
     }
   }, [internalFanMode]);
@@ -206,12 +212,17 @@ export const ThermostatCard = () => {
 
   useEffect(() => {
     if (internalState !== state || internalTemperature !== temperature) {
-      callService('climate', 'set_temperature', {
-        hvac_mode: internalState,
-        temperature: internalTemperature
-      }, {
-        entity_id: entity
-      });      
+      callService({
+        domain: 'climate',
+        service: 'set_temperature',
+        serviceData: {
+          hvac_mode: internalState,
+          temperature: internalTemperature
+        },
+        target: {
+          entity_id: entity
+        }
+      });
     }
   }, [internalState, internalTemperature]);
 
@@ -246,16 +257,28 @@ export const ThermostatCard = () => {
     list.forEach(({ entity_id, active, state }) => {
       if (entity_id === incoming && !active && state !== 'on') {
         turnOn();
-        callService('automation', 'turn_on', {}, {
-          entity_id
-        }, false);
-        callService('automation', 'trigger', {}, {
-          entity_id
-        }, false);
+        callService({
+          domain: 'automation',
+          service: 'turn_on',
+          target: {
+            entity_id
+          }
+        });
+        callService({
+          domain: 'automation',
+          service: 'trigger',
+          target: {
+            entity_id
+          }
+        });
       } else {
-        callService('automation', 'turn_off', {}, {
-          entity_id
-        }, false);
+        callService({
+          domain: 'automation',
+          service: 'turn_off',
+          target: {
+            entity_id
+          }
+        });
       }
     });
   }, [

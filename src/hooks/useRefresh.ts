@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useHass, useEntity } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
 
 interface TimerEvent {
   data: {
@@ -27,8 +27,12 @@ export function useRefresh()  {
   });
   useEffect(() => {
     if (timer.state === 'idle') {
-      callService('timer', 'start', {}, {
-        entity_id: 'timer.refresh_internal'
+      callService({
+        domain: 'timer',
+        service: 'start',
+        target: {
+          entity_id: 'timer.refresh_internal'
+        }
       })
     }
   }, [timer]);

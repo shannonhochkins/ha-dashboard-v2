@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo, ReactElement, createRef } from 'react';
-import { useHash, useHass } from '@hooks';
+import { useHash } from '@hooks';
+import { useHass } from 'ha-component-kit';
 import {
   Home,
   Office,

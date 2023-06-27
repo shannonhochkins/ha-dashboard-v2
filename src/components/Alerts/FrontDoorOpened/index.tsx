@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import styled from '@emotion/styled';
-import { useEntity, useMq } from '@hooks';
+import { useMq } from '@hooks';
+import { useEntity } from 'ha-component-kit';
 import { Popup } from '@components';
 import frontDoor from '@assets/front-door-open.jpg';
 

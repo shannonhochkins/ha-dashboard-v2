@@ -1,7 +1,8 @@
-import React, { ReactNode } from 'react';
+import React, { ReactNode, useCallback } from 'react';
 import styled from '@emotion/styled';
-import { useHass, useMq, useCurrentRoute } from '@hooks';
+import { useMq, useCurrentRoute } from '@hooks';
 import { omit } from 'lodash';
+import { useHass } from 'ha-component-kit';
 
 interface ZoneOverlay {
   width?: string;
@@ -127,10 +128,28 @@ function Zone({
   active = false
 }: ZoneProps) {
   let brightness = 0;
-  const { callSwitch, getEntity, callCover } = useHass();
-  const light = getEntity(entities?.light || '');
-  const $switch = getEntity(entities?.switch || '');
-  const cover = getEntity(entities?.cover || '');
+  const { getEntity, callService } = useHass();
+  const callSwitch = useCallback((entity) => {
+    callService({
+      domain: 'switch',
+      service: 'toggle',
+      target: {
+        entity_id: entity
+      }
+    });
+  }, []);
+  const callCover = useCallback((entity, service) => {
+    callService({
+      domain: 'cover',
+      service,
+      target: {
+        entity_id: entity
+      }
+    });
+  }, []);
+  const light = entities?.light ? getEntity(entities.light) : null;
+  const $switch = entities?.switch ? getEntity(entities.switch) : null;
+  const cover = entities?.cover ? getEntity(entities.cover) : null;
   if (light || $switch) {
     brightness = light && light.state !== 'unavailable' ? light.state === 'on' ? (light.attributes.brightness / 255) : 0 : $switch.state === 'on' ? 1 : 0;
   } else if (active) {

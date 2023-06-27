@@ -1,6 +1,6 @@
 import React from 'react';
 import styled from '@emotion/styled';
-import { useHass, useEntity } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
 import { AreaBase } from '../AreaBase';
 import { AreaCard } from '../AreaCard';
 import { CoverCard } from '@components';
@@ -35,8 +35,12 @@ export function MasterBedroom() {
       width: '20.4%',
       renderSvg: () => {
         return <TV onClick={() => {
-          callService('media_player', masterTV.state === 'on' ? 'turn_off' : 'turn_on', {}, {
-            entity_id: 'media_player.samsung_tv_master_bedroom',
+          callService({
+            domain: 'media_player',
+            service: masterTV.state === 'on' ? 'turn_off' : 'turn_on',
+            target: {
+              entity_id: 'media_player.samsung_tv_master_bedroom',
+            }
           });
         }} />;
       }
@@ -51,12 +55,17 @@ export function MasterBedroom() {
       left: '57.3%',
       width: '14.4%',
       renderSvg: () => <Soundbar onClick={() => {
-        callService('remote', 'send_command', {
-          device: 'Soundbar',
-          command: 'Power'
-        }, {
-          device_id: '3b5cd884569e393b965c72ad576cd13b',
-        });
+        callService({
+          domain: 'remote',
+          service: 'send_command',
+          target: {
+            device_id: '3b5cd884569e393b965c72ad576cd13b',
+          },
+          serviceData: {
+            command: 'Power',
+            device: 'Soundbar',
+          }
+        })
       }} />,
     }
   }];

@@ -7,7 +7,7 @@ import livingBase from '@assets/living-base.jpg';
 import livingLight from '@assets/living-light.jpg';
 import livingTV from '@assets/living-tv.jpg';
 import { TV, Roof } from './zones';
-import { useHass, useEntity } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
 
 const LivingContainer = styled(AreaBase)``;
 
@@ -15,7 +15,6 @@ const LivingContainer = styled(AreaBase)``;
 export function Living() {
   const { callService } = useHass();
   const livingRoomTV = useEntity('media_player.samsung_tv_master_bedroom');
-
   const zones = [{
     base: livingLight,
     overlay:  {
@@ -34,8 +33,12 @@ export function Living() {
       left: '60%',
       width: '17.1%',
       renderSvg: () => <TV onClick={() => {
-        callService('media_player', livingRoomTV.state === 'on' ? 'turn_off' : 'turn_on', {}, {
-          entity_id: 'media_player.samsung_tv_living_room',
+        callService({
+          domain: 'media_player',
+          service: livingRoomTV.state === 'on' ? 'turn_off' : 'turn_on',
+          target: {
+            entity_id: 'media_player.samsung_tv_living_room',
+          }
         });
       }} />
     },

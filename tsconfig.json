@@ -2,7 +2,7 @@
   "compilerOptions": {
     "target": "es5",
     "lib": ["dom", "DOM.Iterable", "esnext"],
-    "jsx": "react",
+    "jsx": "react-jsx",
     "types": ["node"],
     "moduleResolution": "node",
     "esModuleInterop": true,

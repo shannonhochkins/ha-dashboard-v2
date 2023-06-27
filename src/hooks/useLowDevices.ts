@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react';
-import { useHass } from './useHass';
+import { useHass } from 'ha-component-kit';
 import { HassEntity } from "home-assistant-js-websocket";
 
 export const useLowDevices = () => {

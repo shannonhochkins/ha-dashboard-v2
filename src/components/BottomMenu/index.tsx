@@ -1,6 +1,7 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useCallback } from 'react';
 import styled from '@emotion/styled';
-import { useRoutes, useHash, useResize, useHass, useMq, useEntity } from '@hooks';
+import { useHass, useEntity } from 'ha-component-kit';
+import { useRoutes, useHash, useResize, useMq } from '@hooks';
 import { Icon } from '@iconify/react';
 import { WeatherIcon } from '@components';
 
@@ -107,7 +108,16 @@ const MenuBorder = styled.div`
 
 export function BottomMenu() {
   const routes = useRoutes();
-  const { callSwitch } = useHass();
+  const { callService } = useHass();
+  const callSwitch = useCallback((entity, service) => {
+    callService({
+      domain: 'switch',
+      service,
+      target: {
+        entity_id: entity
+      }
+    });
+  }, []);
   const size = useResize();
   const [hash, setHash] = useHash();
   const menuBorderRef = useRef(null);

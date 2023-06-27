@@ -23,7 +23,7 @@ export function Office() {
       left: '55%',
     },
     entities: {
-      switch: 'switch.downlights',
+      switch: 'switch.switch_office_downlights',
       light: 'light.all_office_downlights'
     }
   }, {
@@ -35,7 +35,7 @@ export function Office() {
       left: '62%',
     },
     entities: {
-      switch: 'switch.striplights',
+      switch: 'switch.switch_office_striplights',
       light: 'light.all_office_striplights'
     }
   }, {
@@ -47,7 +47,7 @@ export function Office() {
       width: '15.2%'
     },
     entities: {
-      switch: 'switch.roof',
+      switch: 'switch.switch_office_roof_light',
       light: 'light.light_office_roof'
     }
   }, {
