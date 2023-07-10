@@ -57,7 +57,7 @@ export function MasterBedroom() {
       renderSvg: () => <Soundbar onClick={() => {
         callService({
           domain: 'remote',
-          service: 'send_command',
+          service: 'sendCommand',
           target: {
             device_id: '3b5cd884569e393b965c72ad576cd13b',
           },

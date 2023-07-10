@@ -47,7 +47,7 @@ export function OutdoorKitchen() {
       zIndex: 3,
     },
     entities: {
-      switch: 'switch.switch_back_sliding_door_outdoor_lights',
+      switch: 'switch.switch_outdoor_kitchen_roof_lights',
     }
   }, {
     base: bbq,

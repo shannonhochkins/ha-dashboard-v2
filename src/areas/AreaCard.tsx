@@ -2,7 +2,8 @@ import React, { ReactNode, useCallback } from 'react';
 import styled from '@emotion/styled';
 import { useMq, useCurrentRoute } from '@hooks';
 import { omit } from 'lodash';
-import { useHass } from 'ha-component-kit';
+import { useHass, useApi } from 'ha-component-kit';
+import type { DomainService } from 'ha-component-kit';
 
 interface ZoneOverlay {
   width?: string;
@@ -128,24 +129,14 @@ function Zone({
   active = false
 }: ZoneProps) {
   let brightness = 0;
-  const { getEntity, callService } = useHass();
+  const { getEntity } = useHass();
+  const switchService = useApi('switch');
+  const coverService = useApi('cover');
   const callSwitch = useCallback((entity) => {
-    callService({
-      domain: 'switch',
-      service: 'toggle',
-      target: {
-        entity_id: entity
-      }
-    });
+    switchService.toggle(entity);
   }, []);
-  const callCover = useCallback((entity, service) => {
-    callService({
-      domain: 'cover',
-      service,
-      target: {
-        entity_id: entity
-      }
-    });
+  const callCover = useCallback((entity, service: DomainService<'cover'>) => {
+    coverService[service](entity);
   }, []);
   const light = entities?.light ? getEntity(entities.light) : null;
   const $switch = entities?.switch ? getEntity(entities.switch) : null;
@@ -167,7 +158,7 @@ function Zone({
           callSwitch(entities.switch);
         }
         if (entities?.cover && cover) {
-          callCover(entities.cover, cover.state === 'open' ? 'close_cover' : 'open_cover');
+          callCover(entities.cover, cover.state === 'open' ? 'closeCover' : 'openCover');
         }
       })}
     </ZoneOverlay>}

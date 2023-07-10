@@ -7,7 +7,8 @@
     "clean": "rm -rf dist .parcel-cache",
     "build": "npm run clean && NODE_ENV=production parcel build --no-source-maps src/*.html",
     "start": "NODE_ENV=development parcel src/index.html",
-    "postbuild": "node replace-html.js"
+    "postbuild": "node replace-html.js",
+    "deploy": "npx tsx ./scripts/deploy.ts"
   },
   "repository": {
     "type": "git",
@@ -45,7 +46,7 @@
     "@fontsource/roboto": "^4.5.8",
     "@types/react-transition-group": "^4.4.5",
     "chart.js": "^3.9.1",
-    "ha-component-kit": "^0.1.11",
+    "ha-component-kit": "^1.0.11",
     "home-assistant-js-websocket": "^8.0.0",
     "lodash": "^4.17.21",
     "polished": "^4.2.2",
@@ -70,6 +71,8 @@
     "chartjs-plugin-datalabels": "^2.1.0",
     "chartjs-plugin-gradient": "^0.5.1",
     "crypto-browserify": "^3.12.0",
+    "dotenv": "^16.3.1",
+    "node-scp": "^0.0.22",
     "parcel": "^2.7.0",
     "process": "^0.11.10",
     "typescript": "^4.8.4"

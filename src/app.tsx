@@ -4,13 +4,12 @@ import { createRoot } from 'react-dom/client';
 import { Toaster } from 'react-hot-toast';
 import { css, Global } from '@emotion/react';
 import { CSSTransition, TransitionGroup } from 'react-transition-group';
-import { Hass } from '@hass';
 import { useRoutes, useRefresh } from '@hooks';
 import { cssTheme } from './theme';
 
 import { BottomMenu, LowBatteryAlert, FrontDoorOpened } from '@components';
 
-import { HassConnect, HassConnectProps } from 'ha-component-kit';
+import { HassConnect } from 'ha-component-kit';
 const BASE_URL = process.env.NODE_ENV === 'production' ? process.env.HA_URL_PROD : process.env.HA_URL_DEV;
 
 import "@fontsource/roboto/300.css";
@@ -143,6 +142,7 @@ function Root() {
           padding: 0;
           font-family: "Roboto";
           overflow: hidden;
+          scroll-behavior: smooth;
         }
         
         #root {

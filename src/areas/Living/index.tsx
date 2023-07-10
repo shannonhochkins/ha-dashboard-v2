@@ -14,7 +14,7 @@ const LivingContainer = styled(AreaBase)``;
 
 export function Living() {
   const { callService } = useHass();
-  const livingRoomTV = useEntity('media_player.samsung_tv_master_bedroom');
+  const livingRoomTV = useEntity('media_player.samsung_tv_living_room');
   const zones = [{
     base: livingLight,
     overlay:  {
@@ -24,7 +24,7 @@ export function Living() {
       renderSvg: onClick => <Roof onClick={onClick} />,
     },
     entities: {
-      switch: 'switch.switch_back_sliding_door_living_room_light',
+      switch: 'switch.switch_living_room_light',
     }
   }, {
     base: livingTV,
@@ -34,8 +34,8 @@ export function Living() {
       width: '17.1%',
       renderSvg: () => <TV onClick={() => {
         callService({
-          domain: 'media_player',
-          service: livingRoomTV.state === 'on' ? 'turn_off' : 'turn_on',
+          domain: 'mediaPlayer',
+          service: livingRoomTV.state === 'on' ? 'turnOff' : 'turnOn',
           target: {
             entity_id: 'media_player.samsung_tv_living_room',
           }

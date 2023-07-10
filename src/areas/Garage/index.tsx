@@ -7,21 +7,16 @@ import base from '@assets/garage-base.jpg';
 import downlights from '@assets/garage-lights.jpg';
 import { CoverCard } from '@components';
 import { Downlights, GarageDoor } from './zones';
-import { useHass, useEntity } from 'ha-component-kit';
+import { useEntity, useApi } from 'ha-component-kit';
 
 const GarageContainer = styled(AreaBase)`
   
 `;
 export function Garage() {
-  const { callService } = useHass();
+  const coverService = useApi('cover');
+  
   const callCover = useCallback(entity => {
-    callService({
-      domain: 'cover',
-      service: 'toggle',
-      target: {
-        entity_id: entity
-      }
-    })
+    coverService.toggle(entity);
   }, []);
   const garageMain = useEntity('cover.garage_door_main');
   const zones = [{
