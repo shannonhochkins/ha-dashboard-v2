@@ -1,7 +1,6 @@
-import React  from 'react';
 import styled from '@emotion/styled';
 import { AreaBase } from '../AreaBase';
-import { AreaCard } from '../AreaCard';
+import { AreaCard, ZoneProps } from '../AreaCard';
 import { Roof } from './zones';
 import { CoverCard } from '@components';
 
@@ -11,7 +10,7 @@ import diningLight from '@assets/dining-light-optimised.jpg';
 const DiningContainer = styled(AreaBase)``;
 
 export function Dining() {
-  const zones = [{
+  const zones: ZoneProps[] = [{
     base: diningLight,
     overlay:  {
       top: '9%',

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from '@emotion/styled';
-import { useMq } from '@hooks';
-import { useEntity } from 'ha-component-kit';
+import { mq } from '@hooks';
+import { useEntity } from '@hakit/core';
 import { Popup } from '@components';
 import frontDoor from '@assets/front-door-open.jpg';
 
@@ -15,7 +15,7 @@ const FrontDoor = styled.div`
   background-position: center center;
   overflow: hidden;
   border-radius: 20px;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     width: 300px;
     height: 300px;
   `)}

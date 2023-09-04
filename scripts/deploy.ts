@@ -2,9 +2,9 @@ import { Client } from 'node-scp';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
-const USERNAME = process.env.SSH_USERNAME;
-const PASSWORD = process.env.SSH_PASSWORD;
-const HOST_OR_IP_ADDRESS = process.env.SSH_HOSTNAME;
+const USERNAME = process.env.VITE_SSH_USERNAME;
+const PASSWORD = process.env.VITE_SSH_PASSWORD;
+const HOST_OR_IP_ADDRESS = process.env.VITE_SSH_HOSTNAME;
 const PORT = 22;
 const REMOTE_FOLDER_NAME = 'dashboard';
 const LOCAL_DIRECTORY = './dist';

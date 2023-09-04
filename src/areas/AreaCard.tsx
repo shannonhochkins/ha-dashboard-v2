@@ -1,15 +1,16 @@
-import React, { ReactNode, useCallback } from 'react';
+import { ReactNode, useCallback } from 'react';
 import styled from '@emotion/styled';
-import { useMq, useCurrentRoute } from '@hooks';
+import { mq, useCurrentRoute } from '@hooks';
 import { omit } from 'lodash';
-import { useHass, useApi } from 'ha-component-kit';
-import type { DomainService } from 'ha-component-kit';
+import { useHass, useApi } from '@hakit/core';
+import type { DomainService, SnakeToCamel } from '@hakit/core';
 
 interface ZoneOverlay {
   width?: string;
   height?: string;
   top?: string;
   left?: string;
+  zIndex?: number;
   renderSvg?: (callback: () => void) => ReactNode;
 }
 
@@ -23,7 +24,7 @@ const ZoneOverlay = styled.div<{
     width: 100%;
     overflow: inherit;
     animation: fillAnimation 5s linear infinite;
-    ${useMq(['fridge'], `
+    ${mq(['fridge'], `
       animation: none;
       fill: rgb(100 203 255 / 10%);
     `)}
@@ -81,7 +82,7 @@ const ZoneFooter = styled.div`
     margin: 0 20px;
     
   }
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     padding: 10px 16px;
     > * {
       margin: 0 10px;
@@ -103,12 +104,12 @@ const Background = styled.div`
     height: auto;
     width: 100%;
   }
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     margin: 0;
   `)}
   
 `;
-interface ZoneProps {
+export interface ZoneProps {
   entities?: {
     light?: string;
     switch?: string;
@@ -132,17 +133,17 @@ function Zone({
   const { getEntity } = useHass();
   const switchService = useApi('switch');
   const coverService = useApi('cover');
-  const callSwitch = useCallback((entity) => {
+  const callSwitch = useCallback((entity: string) => {
     switchService.toggle(entity);
   }, []);
-  const callCover = useCallback((entity, service: DomainService<'cover'>) => {
+  const callCover = useCallback((entity: string, service: SnakeToCamel<DomainService<'cover'>>) => {
     coverService[service](entity);
   }, []);
   const light = entities?.light ? getEntity(entities.light) : null;
   const $switch = entities?.switch ? getEntity(entities.switch) : null;
   const cover = entities?.cover ? getEntity(entities.cover) : null;
   if (light || $switch) {
-    brightness = light && light.state !== 'unavailable' ? light.state === 'on' ? (light.attributes.brightness / 255) : 0 : $switch.state === 'on' ? 1 : 0;
+    brightness = light && light.state !== 'unavailable' ? light.state === 'on' ? (light.attributes.brightness / 255) : 0 : $switch?.state === 'on' ? 1 : 0;
   } else if (active) {
     brightness = 1;
   } else if (cover && cover.state === 'open') {

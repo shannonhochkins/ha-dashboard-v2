@@ -7,7 +7,7 @@ function determineDevice() {
   const matched = Object.entries(BREAKPOINTS)
     .map(([device, query]) => [device, window.matchMedia(query.replace(/^[^(]+/, ''))])
     .sort()
-    .find(([device, query]) => (query as MediaQueryList).matches);
+    .find(([, query]) => (query as MediaQueryList).matches);
   return matched ? matched[0] : 'desktop'  as Devices;
 }
 

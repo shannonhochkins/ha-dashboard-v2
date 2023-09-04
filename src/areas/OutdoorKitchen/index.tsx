@@ -1,7 +1,6 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
-import { AreaCard } from '../AreaCard';
+import { AreaBase } from '../AreaBase';
+import { AreaCard, ZoneProps } from '../AreaCard';
 import base from '@assets/outdoor-kitchen-base.jpg';
 import fridge from '@assets/outdoor-kitchen-fridge.jpg';
 import striplights from '@assets/outdoor-kitchen-striplights.jpg';
@@ -13,7 +12,7 @@ const OutdoorKitchenContainer = styled(AreaBase)``;
 
 
 export function OutdoorKitchen() {
-  const zones = [{
+  const zones: ZoneProps[] = [{
     base: fridge,
     overlay:  {
       renderSvg: onClick => <Fridge onClick={onClick} />,

@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import styled from '@emotion/styled';
-import { useMq } from '@hooks';
-import { useHass, useEntity } from 'ha-component-kit';
+import { mq } from '@hooks';
+import { useHass, useEntity, EntityName, AllDomains } from '@hakit/core';
 import { Popup } from '@components';
+import { ButtonCard } from '@hakit/components';
 import { IconButton } from '../';
 
 import { Icon } from '@iconify/react';
@@ -18,7 +19,7 @@ const FieldWrapper = styled.div`
   border-radius: 12px;
   padding:12px 12px;
   flex-wrap: wrap;
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     padding: 40px 12px;
   `)}
 `;
@@ -28,7 +29,7 @@ const ButtonRow = styled.div`
   align-items: center;
   justify-content: center;
   width: 100%;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     flex-direction: column;
   `)}
 `;
@@ -46,11 +47,11 @@ const Button = styled.button`
   svg {
     margin-right: 6px;
   }
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     width: calc(100% - 40px);
     margin: 8px 0;
   `)}
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     padding: 30px;
     font-size: 24px;
   `)}
@@ -73,7 +74,7 @@ const FieldTitle = styled.label`
     font-variant-numeric: tabular-nums;
     color: #fff;
   }
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     font-size: 24px;
     margin-top: -20px;
   `)}
@@ -87,17 +88,22 @@ const Label = styled.label`
   font-size: 16px;
   color: white;
   margin-top: 24px;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     margin-top: 10px;
     font-size: 12px;
   `)}
 `;
-
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type FilterPrefix<T, Prefix extends AllDomains> = T extends `${Prefix}${infer _Rest}` ? T : never;
 
 export function CoverCard({ 
   entity,
   label,
   type = null
+}: {
+  entity: FilterPrefix<EntityName, 'cover'>;
+  label: string;
+  type?: string | null;
 }) {
 
   const { callService } = useHass();
@@ -111,7 +117,7 @@ export function CoverCard({
     if (cover.attributes.current_position !== value) {
       setValue(cover.attributes.current_position);
     }
-  }, [cover.attributes.current_position])
+  }, [cover.attributes.current_position, value])
 
   const garageIcon = cover.state === 'open' ? 'mdi:garage-open': cover.state === 'closed' ? 'mdi:garage' : 'mdi:garage-alert';
   return <>
@@ -159,6 +165,7 @@ export function CoverCard({
       <FieldWrapper>
         {typeof value !== 'undefined' && <FieldTitle data-val={`${value}%`}>Current Position:</FieldTitle>}
         <ButtonRow>
+          <ButtonCard entity={entity} service="openCover" title="Close" description={null} />
           
           <Button onClick={() => {
             callService({

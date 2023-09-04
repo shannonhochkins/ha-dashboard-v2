@@ -1,6 +1,6 @@
 
 import styled from '@emotion/styled';
-import { useMq } from '@hooks';
+import { mq } from '@hooks';
 
 export const IconButton = styled.button<{
   color?: string;
@@ -40,7 +40,7 @@ export const IconButton = styled.button<{
       fill: transparent;
     }
   }
-  ${useMq(['mobile', 'tablet'], `
+  ${mq(['mobile', 'tablet'], `
     &:before {
       width: 2.1em;
       height: 2.1em;

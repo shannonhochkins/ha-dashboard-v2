@@ -1,15 +1,8 @@
 import { isNumber, isObject } from 'lodash';
 
-
 const namespace = 'ha';
 
-
-
 export const theme = {
-  // sidebar: {
-  //   width: 280,
-  //   background: 'rgba(17, 24, 39, 1)'
-  // },
   menu: {
     background: 'rgba(17, 24, 39, 1)',
     animation: {
@@ -23,18 +16,6 @@ export const theme = {
   gradient: {
     primary: 'linear-gradient(-45deg, rgb(18 25 41) 0%, rgb(11 15 25) 100% )',
     secondary: 'linear-gradient(-45deg, rgb(38 50 79) 0%, rgb(22 30 47) 100% )',
-  },
-  radial: {
-    animation: {
-      start: 'rgb(25 49 58)',
-      end: 'rgba(17, 24, 39, 1)'
-    }
-  },
-  media: {
-    card: {
-      primary: 'linear-gradient(175deg, #75ffef 0%, #50999f 100% )',
-      secondary: 'linear-gradient(175deg, #f0e2f2 0%, #d0c0e2 100% )',
-    }
   },
   secondary: '#1e1e21',
   button: {

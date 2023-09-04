@@ -1,7 +1,7 @@
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import styled from '@emotion/styled';
-import { useMq } from '@hooks';
+import { mq } from '@hooks';
 interface PopupProps {
   className?: string;
   open: boolean;
@@ -43,7 +43,7 @@ export const Popup = styled(PopupBase)<PopupProps>`
   -webkit-backdrop-filter: blur(70px);
   backdrop-filter: blur(70px);
   background: rgb(41 46 108 / 10%);
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     background-color: rgb(22 30 47);
   `)}
   border: 1px solid rgba(0, 0, 0, 0.77);
@@ -80,6 +80,6 @@ function PopupBase({
         {children && <div>{children}</div>}
       </div>
     </>,
-    document.getElementById('root')
+    document.getElementById('root') as HTMLElement
   )
 }

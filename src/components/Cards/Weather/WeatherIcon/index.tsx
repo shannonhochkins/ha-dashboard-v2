@@ -1,6 +1,6 @@
-import React, { useEffect, useState, ReactNode } from 'react';
+import { useEffect, useState } from 'react';
 import { useWeather } from '@hooks';
-import { useEntity } from 'ha-component-kit';
+import { useEntity } from '@hakit/core';
 import { Base, Cloudy, CloudyDay, CloudyNight, Rain, Fog, Thunderstorm, ClearDay, ClearNight } from './svgs';
 import { Icon } from '@iconify/react';
 import { WeatherTypes } from '../../../../hooks/useWeather';
@@ -12,7 +12,7 @@ interface WeatherIconProps {
 }
 
 export function WeatherIcon({ className, name, animated = true }: WeatherIconProps) {
-  const [icon, setIcon] = useState<ReactNode>(null);
+  const [icon, setIcon] = useState<JSX.Element | null>(null);
   const { state: sunState } = useEntity('sun.sun');
   const { data, isLoading } = useWeather();
 
@@ -74,10 +74,10 @@ export function WeatherIcon({ className, name, animated = true }: WeatherIconPro
       default:
         weatherIcon = <Cloudy />;
     }
-    if (icon !== weatherIcon) {
+    if (icon === null || icon.type?.name !== weatherIcon.type.name) {
       setIcon(weatherIcon);
     }
-  }, [data]);
+  }, [animated, data, icon, name, sunState]);
 
   return isLoading ? <Icon icon="eos-icons:three-dots-loading" /> : icon && <><Base /><div className={className}>{icon}</div></>;
 }

@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useCallback, useMemo } from 'react';
+import { useEffect, useState, useCallback, useMemo } from 'react';
 import styled from '@emotion/styled';
 import { Thermostat } from 'react-thermostat';
-import { useHass, useEntity } from 'ha-component-kit';
+import { useHass, useEntity, HvacMode } from '@hakit/core';
 import { useDevice } from '@hooks';
 import { Icon } from '@iconify/react';
 
@@ -18,12 +18,12 @@ const Fab = styled.button<{
   display: flex;
   align-items: center;
   justify-content: center;
-  width: ${props => props.size / 5}px;
-  height: ${props => props.size / 5}px;
-  font-size: ${props => props.size / 17}px;
+  width: ${props => (props.size ?? 40) / 5}px;
+  height: ${props => (props.size ?? 40) / 5}px;
+  font-size: ${props => (props.size ?? 40) / 17}px;
   padding: 4px;
   svg {
-    font-size: ${props => props.size / 10}px;
+    font-size: ${props => (props.size ?? 40) / 10}px;
   }
   outline: 0;
   color: ${props => props.active ? `${props.activeColor}` : 'var(--ha-button-primary-color)'}
@@ -38,7 +38,7 @@ const Container = styled.div`
 `;
 
 const FanIcon = styled(Icon)<{
-  speed: FanMode | null;
+  speed: FanMode;
 }>`
   animation-name: spin;
   animation-duration: ${props => props.speed === 'Low' ? '5s' : props.speed === 'Mid' ? '3s' : props.speed === 'High' ? '1s' : '0s'};
@@ -134,7 +134,7 @@ const offColors = ['#848484', '#383838'];
 const dryColors = ['#fff', '#ffc0bd'];
 const fanColors = ['#fff', '#f9f9f9'];
 
-type FanMode = 'Low' | 'Mid' | 'High';
+type FanMode = 'Low' | 'Mid' | 'High' | '';
 
 const fanModes: FanMode[] = ['Low', 'Mid', 'High'];
 
@@ -147,16 +147,14 @@ export const ThermostatCard = () => {
   const ac_30 = useEntity('automation.turn_off_aircon_after_30mins');
   const ac_45 = useEntity('automation.turn_off_aircon_after_45_mins');
   const ac_60 = useEntity('automation.turn_off_aircon_after_60_mins');
-
-  const currentTime = useEntity('sensor.time');
   const { current_temperature, fan_mode, max_temp, temperature } = ac.attributes || {};
-  const state = ac.state;
+  const state = ac.state as HvacMode;
   const on = state !== 'off';
   const [colors, setColors] = useState<string[]>(offColors);
   const [internalFanMode, setInternalFanMode] = useState<FanMode>(fan_mode as FanMode);
-  const [internalState, setInternalState] = useState(state);
+  const [internalState, setInternalState] = useState<HvacMode>(state);
   const [internalTemperature, setInternalTemperature] = useState<number>(temperature);
-  const size = device === 'fridge' ? 400 : device === 'mobile' ? 220 : 350;
+  const size = device === 'fridge' ? 400 : device === 'mobile' ? 220 : 300;
 
   useEffect(() => {
     if (state.includes('heat')) {
@@ -178,7 +176,7 @@ export const ThermostatCard = () => {
       setInternalTemperature(temperature);
       setColors(coolingColors);
     }
-  }, [ac]);
+  }, [ac, internalTemperature, temperature]);
 
   useEffect(() => {
     if (internalFanMode !== fan_mode) {
@@ -193,7 +191,7 @@ export const ThermostatCard = () => {
         }
       });
     }
-  }, [internalFanMode]);
+  }, [callService, fan_mode, internalFanMode]);
 
   const turnOn = useCallback(() => {
     if (temperature >= 24) {
@@ -224,13 +222,13 @@ export const ThermostatCard = () => {
         }
       });
     }
-  }, [internalState, internalTemperature]);
+  }, [callService, internalState, internalTemperature, state, temperature]);
 
   const currentTempColor = state === 'off' ? 'var(--ha-text-light)' : colors ? colors[1] : 'transparent';
 
-  const ac60Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_60.attributes.last_triggered), [ac_60.attributes.last_triggered, currentTime]);
-  const ac45Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_45.attributes.last_triggered), [ac_45.attributes.last_triggered, currentTime]);
-  const ac30Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_30.attributes.last_triggered), [ac_30.attributes.last_triggered, currentTime]);
+  const ac60Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_60.attributes.last_triggered), [ac_60.attributes.last_triggered, getElapsedTimeInMinutes]);
+  const ac45Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_45.attributes.last_triggered), [ac_45.attributes.last_triggered, getElapsedTimeInMinutes]);
+  const ac30Elapsed = useMemo(() => getElapsedTimeInMinutes(ac_30.attributes.last_triggered), [ac_30.attributes.last_triggered, getElapsedTimeInMinutes]);
 
   const ac60Active = useMemo(() => ac60Elapsed <= 60 && ac_60.state === 'on', [ac60Elapsed, ac_60]);
   const ac45Active = useMemo(() => ac45Elapsed <= 45 && ac_45.state === 'on', [ac45Elapsed, ac_45]);
@@ -281,14 +279,7 @@ export const ThermostatCard = () => {
         });
       }
     });
-  }, [
-    ac60Active,
-    ac45Active,
-    ac30Active,
-    ac_30,
-    ac_45,
-    ac_60,
-  ])
+  }, [ac60Active, ac_60.state, ac45Active, ac_45.state, ac30Active, ac_30.state, turnOn, callService])
 
 
   return internalTemperature !== null ? <Container>
@@ -301,7 +292,7 @@ export const ThermostatCard = () => {
       <Fab size={size} active={on} activeColor={colors[1]} onClick={() => {
           const currentIndex = fanModes.findIndex(mode => mode === internalFanMode);
           setInternalFanMode(fanModes[currentIndex + 1] ? fanModes[currentIndex + 1] : fanModes[0]);
-        }}><FanIcon speed={on ? internalFanMode : null} icon="mdi:fan" />
+        }}><FanIcon speed={on ? internalFanMode : ''} icon="mdi:fan" />
       </Fab>
     </ActionsLeft>
     <ActionsRight>
@@ -329,20 +320,23 @@ export const ThermostatCard = () => {
         startTimer('automation.turn_off_aircon_after_30mins');
       }}>{ac30Active ? 30 - ac30Elapsed : 30}{ac30Active ? 'm left' : ' min'}</Fab>
     </Timers>
-    <Thermostat
-      value={internalTemperature}
-      onChange={v => {
-        setInternalTemperature(v);
-      }}
-      min={16}
-      max={max_temp}
-      disabled={!on}
-      track={{
-        thickness: size / 10,
-        colors
-      }}
-      size={size}
-    />
+    <div style={{
+      width: size,
+    }}>
+      <Thermostat
+        value={internalTemperature}
+        onChange={v => {
+          setInternalTemperature(Number(v.toFixed(0)));
+        }}
+        min={16}
+        max={max_temp}
+        disabled={!on}
+        track={{
+          thickness: size / 10,
+          colors
+        }}
+      />
+    </div>
     <Fab style={{
       marginTop: 20
     }} size={size * 1.5} active={on} activeColor={'#cfac48'} onClick={() => {

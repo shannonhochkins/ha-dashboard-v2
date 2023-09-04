@@ -1,4 +1,4 @@
-import { ResponsiveTypes } from '@types';
+export type ResponsiveTypes = 'desktop' | 'tablet' | 'mobile' | 'fridge';
 
 // [min width, min height, max width, max height]
 export const BREAKPOINTS: { [key in ResponsiveTypes]: string } = {
@@ -8,7 +8,7 @@ export const BREAKPOINTS: { [key in ResponsiveTypes]: string } = {
   mobile: `@media only screen and (max-width: 767px)`,
 }
 
-export const useMq = (names: ResponsiveTypes[], cssValues: string) => {
+export const mq = (names: ResponsiveTypes[], cssValues: string) => {
   return names.map(name => `
     ${BREAKPOINTS[name]} {
       ${cssValues}

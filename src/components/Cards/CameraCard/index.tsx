@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useCallback, useState, useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
 import { groupBy, uniqBy } from 'lodash';
 import "react-responsive-carousel/lib/styles/carousel.min.css"; // requires a loader
@@ -159,7 +159,7 @@ interface AssetsByDate {
 // used to find assets that are 60s apart from each other (groups events together)
 const TIME_SPAN = 60;
 
-function download(url, ref, cb) {
+function download(url: string, ref: HTMLElement, cb: () => void) {
   const req = new XMLHttpRequest();
   req.open("GET", url, true);
   req.addEventListener("progress", function (evt) {
@@ -174,8 +174,8 @@ function download(url, ref, cb) {
   req.responseType = "blob";
   req.onreadystatechange = function () {
       if (req.readyState === 4 && req.status === 200) {
-          var filename = url.split('/').pop();
-          var link = document.createElement('a');
+          const filename = url.split('/').pop() as string;
+          const link = document.createElement('a');
           link.href = window.URL.createObjectURL(req.response);
           link.download = filename;
           link.click();
@@ -185,7 +185,7 @@ function download(url, ref, cb) {
 }
 
 
-function createdAt(d) {
+function createdAt(d: string | number) {
   const today = new Date(d);
   let h = today.getHours();
   const m = today.getMinutes();
@@ -221,28 +221,25 @@ function paginate<T>({ page = 1, pageSize = 10, data = [] }: PaginationOptions<T
 
 export function CameraCard({ open, onClose, camera, title }: { open: boolean, onClose: () => void, camera: string, title: string }) {
   const [assets, setAssets] = useState<AssetsByDate>({});
-  const [day, setDay] = useState(null);
+  const [day, setDay] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [loading, setLoading] = useState(false);
-  const progressRefs = useRef({});
-  const [downloadingVideo, setDownloadingVideo] = useState(null);
+  const progressRefs = useRef<HTMLElement[]>([]);
+  const [downloadingVideo, setDownloadingVideo] = useState<number | null>(null);
   const [thumbnails, setThumbnails] = useState<Asset[][] | null>(null);
   const [allData, setAllData] = useState<Asset[][] | null>(null);
   const [totalPages, setTotalPages] = useState(1);
-  useEffect(() => {
-    requestData();
-  }, []);
 
-  async function requestData() {
+  const requestData = useCallback(async () => {
     setLoading(true);
     fetch(`https://rwdwrtzkr59smlxgb934b72q647a3zr1.ui.nabu.casa/local/${camera}.json?d=${Date.now()}`, {
-    }).then(r => r.json()).then($assets => {
+    }).then(r => r.json()).then(($assets: string[]) => {
       const mapped = $assets.map((a, index) => {
         const matched = a.match(/(\d{4})+(\d{2})+(\d{2})+(\d{2})+(\d{2})+(\d{2})/);
         if (matched === null) {
           return null;
         }
-        const [fullMatch, year, month, day, hour, min, sec] = matched;
+        const [, year, month, day, hour, min, sec] = matched;
         const dateString = `${year}/${month}/${day}`;
         const dateCreated = new Date(`${year}-${month}-${day}T${hour}:${min}:${sec}`);
         return {
@@ -255,31 +252,35 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
           key: index,
           date: dateCreated.getTime()
         }
-      }).filter(x => x !== null);
+      }).filter((x): x is Asset => x !== null);
       const groupedAssets = groupBy(mapped.sort((a, b) => a.date - b.date), a => a.dateString);
       setAssets(groupedAssets);
-      setDay(Object.keys(groupedAssets).pop());
+      setDay(Object.keys(groupedAssets).pop() as string);
       setLoading(false);
     })
-  }
+  }, [camera]);
 
-  function relatedDates(a, b) {
+  useEffect(() => {
+    requestData();
+  }, [requestData]);
+
+  function relatedDates(a: Asset, b: Asset) {
     return (a.date - b.date >= 0 && a.date - b.date <= (TIME_SPAN * 1000)) || (b.date - a.date >= 0 && b.date - a.date <= (TIME_SPAN * 1000));
   }
-  function getRelatedFiles(thumbs, asset) {
+  const getRelatedFiles = useCallback((thumbs: Asset[], asset: Asset): Asset[] => {
     const relatedThumbs = thumbs.filter(b => relatedDates(asset, b));
     const outputThumbs = thumbs.filter(t => !relatedThumbs.map(x => x.name).includes(t.name));
     const additional = relatedThumbs.flatMap(x => getRelatedFiles(outputThumbs, x));
     return uniqBy([...relatedThumbs, ...additional], a => a.date);
-  }
+  }, []);
 
-
-  function getAvailableThumbnails(): Asset[][] | null {
+  const getAvailableThumbnails = useCallback((): Asset[][] | null => {
     const key = day;
+    if (key === null) return null;
     const selectedDayEntries = {...assets}[key];
     if (selectedDayEntries) {
       const allThumbs = selectedDayEntries.filter(a => a.name.endsWith('jpg') && a.name.match(/[\d]_thumb\.jpg+/));
-      const processed = [];
+      const processed: string[] = [];
       const grouped = allThumbs.reduce((groups, a) => {
         // find images within a specific time period between each other
         if (processed.includes(a.name)) {
@@ -298,10 +299,11 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
       return Object.values(grouped);
     }
     return null;
-  }
+  }, [assets, day, getRelatedFiles]);
 
-  function findRelatedAssets(thumbnail) {
+  function findRelatedAssets(thumbnail: Asset) {
     const key = day;
+    if (key === null) return null;
     const selectedDayEntries = {...assets}[key];
     if (selectedDayEntries) {
       const nonThumnails = selectedDayEntries.filter(asset => !asset.name.includes('_thumb'));
@@ -324,6 +326,7 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
       // move backwards
       _currentPage -= 1;
     }
+    if (allData === null) return;
     const { data, totalPages: $totalPages, currentPage: $currentPage } = paginate<Asset[]>({
       page: _currentPage,
       pageSize: 10,
@@ -332,6 +335,10 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
     setCurrentPage($currentPage);
     setThumbnails(data);
     setTotalPages($totalPages);
+  }
+
+  function onDayChange(newValue: { value: string }) {
+    setDay(newValue.value);
   }
 
 
@@ -347,7 +354,7 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
       setThumbnails(data);
       setTotalPages($totalPages);
     }
-  }, [day]);
+  }, [currentPage, day, getAvailableThumbnails]);
 
 
   const options = Object.keys(assets).map(d => ({
@@ -364,36 +371,32 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
           <span>{title}</span>
           <Select 
             styles={{
-              control: (baseStyles, state) => ({
+              control: (baseStyles) => ({
                 ...baseStyles,
                 backgroundColor: `var(--ha-background)`,
                 borderColor: `var(--ha-highlight)`
               }),
-              singleValue: (baseStyles, state) => ({
+              singleValue: (baseStyles) => ({
                 ...baseStyles,
                 color: `var(--ha-text-light)`
               }),
-              input: (baseStyles, state) => ({
+              input: (baseStyles) => ({
                 ...baseStyles,
                 color: `var(--ha-text-light)`
               }),
-              option: (baseStyles, state) => ({
+              option: (baseStyles) => ({
                 ...baseStyles,
                 backgroundColor: `var(--ha-background)`,
                 color: `var(--ha-text-light)`
               }),
-              menu: (baseStyles, state) => ({
+              menu: (baseStyles) => ({
                 ...baseStyles,
                 backgroundColor: `var(--ha-background)`,
               })
             }}
             value={selectedOption}
-            onChange={(e: {
-              value: string;
-              label: string
-            }) => {
-              setDay(e.value);
-            }}
+            // @ts-expect-error - fix later
+            onChange={onDayChange}
             options={options} />
             <Refresh onClick={() => requestData()} icon="material-symbols:refresh" />
             <p style={{ marginLeft: 40 }}>Page {currentPage} of {totalPages}</p>
@@ -403,7 +406,9 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
         {loading ? <Loading icon="line-md:loading-twotone-loop" /> : <CameraCardContent>
           {thumbnails && thumbnails.length === 0 && <Row><p>No camera data available for this date.</p></Row>}
           {thumbnails && [...thumbnails].reverse().map((groupedThumbnails, index) => {
-            const [snapshot, $video] = findRelatedAssets(groupedThumbnails[0]);
+            const assets = findRelatedAssets(groupedThumbnails[0]);
+            if (assets === null) return null;
+            const [snapshot, $video] = assets;
             return groupedThumbnails && <CameraInner>
               {groupedThumbnails.length > 1 ? <Carousel animationHandler="fade" showThumbs={false}>
                 {groupedThumbnails.map(a => {
@@ -425,7 +430,10 @@ export function CameraCard({ open, onClose, camera, title }: { open: boolean, on
                   {downloadingVideo !== groupedThumbnails[0].key && <Icon icon="material-symbols:cloud-download-rounded" />}
                   <span style={{
                     display: downloadingVideo === groupedThumbnails[0].key ? 'block' : 'none'
-                  }} ref={(element) => progressRefs.current[index] = element}></span>
+                  }} ref={(element) => {
+                    if (!element) return;
+                    progressRefs.current[index] = element
+                  }}></span>
                 </a>}
               </Actions>
             </CameraInner>

@@ -1,5 +1,5 @@
 import { useEffect } from "react";
-import { useHass, useEntity } from 'ha-component-kit';
+import { useHass, useEntity } from '@hakit/core';
 
 interface TimerEvent {
   data: {
@@ -15,7 +15,7 @@ export function useRefresh()  {
   const { callService, connection } = useHass();
   const timer = useEntity('timer.refresh_internal');
   // authenticated user must be admin for this event listener to work
-  connection.subscribeEvents((ev: TimerEvent) => {
+  connection?.subscribeEvents((ev: TimerEvent) => {
     try {
       if (ev?.data?.entity_id === 'timer.refresh_internal') {
         window.location.reload();
@@ -23,8 +23,7 @@ export function useRefresh()  {
     } catch (e) {
       // failed to reload
     }
-  }, 'timer.finished').then(r => {
-  });
+  }, 'timer.finished');
   useEffect(() => {
     if (timer.state === 'idle') {
       callService({
@@ -35,5 +34,5 @@ export function useRefresh()  {
         }
       })
     }
-  }, [timer]);
+  }, [timer, callService]);
 }

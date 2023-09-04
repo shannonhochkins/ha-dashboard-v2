@@ -1,25 +1,18 @@
-import React, { useCallback } from 'react';
 import styled from '@emotion/styled';
-import { Icon } from '@iconify/react';
 import { AreaBase } from '../AreaBase';
-import { AreaCard } from '../AreaCard';
+import { AreaCard, ZoneProps } from '../AreaCard';
 import base from '@assets/garage-base.jpg';
 import downlights from '@assets/garage-lights.jpg';
 import { CoverCard } from '@components';
 import { Downlights, GarageDoor } from './zones';
-import { useEntity, useApi } from 'ha-component-kit';
+import { useApi } from '@hakit/core';
 
 const GarageContainer = styled(AreaBase)`
   
 `;
 export function Garage() {
   const coverService = useApi('cover');
-  
-  const callCover = useCallback(entity => {
-    coverService.toggle(entity);
-  }, []);
-  const garageMain = useEntity('cover.garage_door_main');
-  const zones = [{
+  const zones: ZoneProps[] = [{
     base: downlights,
     overlay:  {
       renderSvg: onClick => <Downlights onClick={onClick} />,
@@ -31,10 +24,9 @@ export function Garage() {
       switch: 'switch.switch_light_garage_main',
     }
   }, {
-    base: null,
     overlay:  {
       renderSvg: () => <GarageDoor onClick={() => {
-        callCover('cover.garage_door_main');
+        coverService.toggle('cover.garage_door_main');
       }} />,
       top: '23.4%',
       left: '0%',

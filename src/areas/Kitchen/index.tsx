@@ -1,7 +1,6 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
-import { AreaCard } from '../AreaCard';
+import { AreaBase } from '../AreaBase';
+import { AreaCard, ZoneProps } from '../AreaCard';
 import kitchenBase from '@assets/kitchen-base.jpg';
 import kitchenPantry from '@assets/kitchen-pantry.png';
 import kitchenRoof from '@assets/kitchen-roof.png';
@@ -17,7 +16,7 @@ export function Kitchen() {
   const now = new Date().getHours();
   const smartFrameOn = now >= 8 && now <= 21;
 
-  const zones = [{
+  const zones: ZoneProps[] = [{
     base: kitchenPantry,
     overlay:  {
       renderSvg: onClick => <Pantry onClick={onClick} />,

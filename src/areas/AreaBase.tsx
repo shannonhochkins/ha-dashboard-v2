@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import styled from '@emotion/styled';
-import { useMq } from '@hooks';
+import { mq } from '@hooks';
 
 const BottomMenuFill = styled.span`
   content: '';
@@ -16,6 +16,7 @@ const BottomMenuFill = styled.span`
 
 const AreaBaseStyled = styled.div`
   height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -35,14 +36,14 @@ const AreaBaseStyled = styled.div`
     > * {
       max-height: 100%;
     }
-    ${useMq(['mobile'], `
+    ${mq(['mobile'], `
       padding: 0 24px;
     `)}
-    ${useMq(['fridge'], `
+    ${mq(['fridge'], `
       padding: 48px;
     `)}
   }
-  ${useMq(['desktop'], `
+  ${mq(['desktop'], `
     display: flex;
     align-items: center;
     justify-content: center;
@@ -52,7 +53,7 @@ const AreaBaseStyled = styled.div`
       flex-shrink: 0;
     }
   `)}
-  ${useMq(['mobile', 'tablet'], `
+  ${mq(['mobile', 'tablet'], `
     &:after {
       height: 100px;
       position: absolute;
@@ -65,32 +66,7 @@ const AreaBaseStyled = styled.div`
       background: linear-gradient(to top, rgba(0, 0, 0, 1) 2%, rgba(0, 0, 0, 0) 100%);
     }
   `)}
-  background: radial-gradient(circle at var(--ha-x) var(--ha-y), var(--ha-radial-animation-start) 0%, var(--ha-radial-animation-end) 50%, var(--ha-radial-animation-end) 100%);
-  background-size: cover;
-  animation: gradientAnimation 15s linear infinite;
-  @keyframes gradientAnimation {
-    0% { 
-      --ha-x: 0%;
-      --ha-y: 0%;
-    }
-    25% { 
-      --ha-x: 0%;
-      --ha-y: 100%;
-    }
-    50% { 
-      --ha-x: 100%;
-      --ha-y: 100%;
-    }
-    75% { 
-      --ha-x: 100%;
-      --ha-y: 0%;
-    }
-    100% { 
-      --ha-x: 0%;
-      --ha-y: 0%;
-    }
-  }
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     background: none;
     display: flex;
     align-items: center;

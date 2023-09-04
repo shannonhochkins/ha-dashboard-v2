@@ -1,7 +1,7 @@
 import React from 'react';
 import { Glow } from '@components';
 
-export function Pendants({ onClick }) {
+export function Pendants({ onClick }: { onClick: () => void}) {
   return <svg viewBox="585.205 15.787 198.53 73.041" xmlns="http://www.w3.org/2000/svg">
     <Glow />
     <path onClick={onClick} d="M 621.934 17.276 C 621.934 17.276 617.739 15.471 605.819 15.835 C 593.899 16.199 592.503 17.771 592.427 17.771 C 592.351 17.771 592.461 45.46 592.461 45.46 L 585.205 72.905 L 585.331 79.705 C 585.331 79.705 594.833 80.698 607.242 80.317 C 619.651 79.936 631.587 79.321 631.587 79.321 L 630.753 73.292 L 622.168 45.176 L 621.934 17.276 Z"/>
@@ -10,7 +10,7 @@ export function Pendants({ onClick }) {
   </svg>;
 }
 
-export function Roof({ onClick }) {
+export function Roof({ onClick }: { onClick: () => void}) {
   return <svg viewBox="487.282 -72.135 81.232 87.092" xmlns="http://www.w3.org/2000/svg">
     <Glow />
     <ellipse onClick={onClick} cx="527.898" cy="-28.589" rx="40.616" ry="43.546"/>
@@ -18,7 +18,7 @@ export function Roof({ onClick }) {
 }
 
 
-export function Pantry({ onClick }) {
+export function Pantry({ onClick }: { onClick: () => void}) {
   return <svg viewBox="569.905 65.139 96.401 264.652" xmlns="http://www.w3.org/2000/svg">
     <Glow />
     <path onClick={onClick} d="M 573.505 329.791 L 663.912 291.526 L 666.306 65.139 L 629.838 66.376 L 630.902 80.172 L 615.714 81.27 L 599.605 81.681 L 584.991 80.604 L 584.24 74.376 L 584.294 69.124 L 569.905 69.657 L 573.505 329.791 Z"/>

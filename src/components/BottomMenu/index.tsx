@@ -1,7 +1,7 @@
-import React, { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useRef } from 'react';
 import styled from '@emotion/styled';
-import { useHass, useEntity } from 'ha-component-kit';
-import { useRoutes, useHash, useResize, useMq } from '@hooks';
+import { useHash, useEntity, useApi } from '@hakit/core';
+import { useRoutes, useResize, mq } from '@hooks';
 import { Icon } from '@iconify/react';
 import { WeatherIcon } from '@components';
 
@@ -18,7 +18,7 @@ const Menu = styled.menu`
   background-color: var(--ha-menu-background);
   z-index: 2;
   height: 100px;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     font-size: 1em;
     height: 80px;
   `)}
@@ -82,7 +82,7 @@ const MenuItem = styled.button<{
     }
   }
 
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     &:before {
       width: 3em;
       height: 3em;
@@ -108,22 +108,12 @@ const MenuBorder = styled.div`
 
 export function BottomMenu() {
   const routes = useRoutes();
-  const { callService } = useHass();
-  const callSwitch = useCallback((entity, service) => {
-    callService({
-      domain: 'switch',
-      service,
-      target: {
-        entity_id: entity
-      }
-    });
-  }, []);
   const size = useResize();
   const [hash, setHash] = useHash();
-  const menuBorderRef = useRef(null);
+  const switchApi = useApi('switch');
+  const menuBorderRef = useRef<HTMLDivElement>(null);
   const roomRef = useRef<HTMLButtonElement>(null);
   const acRef = useRef<HTMLButtonElement>(null);
-  const securityRef = useRef<HTMLButtonElement>(null);
   const weatherRef = useRef<HTMLButtonElement>(null);
   const goodnightSwitch = useEntity('switch.goodnight_switch');
   const goodmorningSwitch = useEntity('switch.goodmorning_switch');
@@ -134,7 +124,8 @@ export function BottomMenu() {
   const acView = routes.find(route => route.hash === 'air-conditioner');
 
 
-  function offsetBubble(item: HTMLButtonElement) {
+  function offsetBubble(item: HTMLButtonElement | null) {
+    if (!menuBorderRef.current || !item) return;
     const offsetActiveItem = item.getBoundingClientRect();
     const left = Math.floor(offsetActiveItem.left - (menuBorderRef.current.offsetWidth  - offsetActiveItem.width) / 2) +  "px";
     menuBorderRef.current.style.transform = `translate3d(${left}, 0 , 0)`;
@@ -142,25 +133,25 @@ export function BottomMenu() {
 
   useEffect(() => {
     if (menuBorderRef && menuBorderRef.current) {
-      if (isRoomActive) {
+      if (isRoomActive && roomRef.current) {
         offsetBubble(roomRef.current);
-      } else if (acView && acView.active) {
+      } else if (acView && acView.active && acRef.current) {
         offsetBubble(acRef.current);
-      } else if (weatherView && weatherView.active) {
+      } else if (weatherView && weatherView.active && weatherRef.current) {
         offsetBubble(weatherRef.current);
-      };
+      }
     }
-  }, [menuBorderRef, routes, size]);
+  }, [acView, isRoomActive, menuBorderRef, routes, size, weatherView]);
 
   return <>
     <Menu>
         <MenuItem active={goodmorningSwitch.state === 'on'} color="#e0b115" onClick={() => {
-          callSwitch('switch.goodmorning_switch', 'turn_on');
+          switchApi.turnOn('switch.goodmorning_switch');
         }}>
           <Icon icon="charm:sun" />
         </MenuItem>
         <MenuItem ref={acRef} onClick={() => {
-          setHash(acView.hash);
+          setHash(acView?.hash ?? '');
           offsetBubble(acRef.current);
         }} active={acView?.active} color="#f54888">
           <Icon icon="material-symbols:device-thermostat" />
@@ -172,13 +163,13 @@ export function BottomMenu() {
           <Icon icon="mdi:widgets-outline" />
         </MenuItem>
         <MenuItem ref={weatherRef} onClick={() => {
-          setHash(weatherView.hash);
+          setHash(weatherView?.hash ?? '');
           offsetBubble(weatherRef.current);
         }} active={weatherView?.active} color="#65ddb7">
           <WeatherIcon />
         </MenuItem>
         <MenuItem color="#e0b115" active={goodnightSwitch.state === 'on'} onClick={() => {
-          callSwitch('switch.goodnight_switch', 'turn_on');
+          switchApi.turnOn('switch.goodnight_switch');
         }}>
           <Icon icon="fluent:weather-partly-cloudy-night-20-filled" />
         </MenuItem>

@@ -1,8 +1,7 @@
-import React from 'react';
 import styled from '@emotion/styled';
-import { AreaBase, AreaBaseProps } from '../AreaBase';
+import { AreaBase } from '../AreaBase';
 import { WeatherCard } from '@components';
-import { useMq } from '@hooks';
+import { mq } from '@hooks';
 
 const WeatherContainer = styled(AreaBase)`
   display: flex;
@@ -11,7 +10,7 @@ const WeatherContainer = styled(AreaBase)`
   > div {
     width: 100%;
     max-width: 1000px;
-    ${useMq(['fridge'], `
+    ${mq(['fridge'], `
       max-width: 800px;
     `)}
   }

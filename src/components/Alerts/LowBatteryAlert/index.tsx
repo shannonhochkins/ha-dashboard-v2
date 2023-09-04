@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from '@emotion/styled';
 import { Icon } from '@iconify/react';
 import { useLowDevices } from '@hooks';
@@ -36,6 +36,7 @@ const Fab = styled.button`
   border: 1px solid var(--ha-text-light);
   cursor: pointer;
   background-color: var(--ha-secondary);
+  z-index: 2;
 `;
 
 
@@ -48,8 +49,8 @@ export function LowBatteryAlert() {
     {someLowDevices && <Fab onClick={() => setOpen(true)}><Icon icon="material-symbols:battery-alert" /></Fab>}
     <Popup onClose={() => setOpen(false)} open={open}>
       {entities ? <div>
-      {entities.sort((a,b) => Number(a.state) - Number(b.state)).map(entitiy => {
-      return <AlertChild key={entitiy.entity_id}><span>{entitiy.attributes.friendly_name}</span><span>{entitiy.state}%</span></AlertChild>
+      {entities.filter(entity => Number(entity.state) < 20).sort((a,b) => Number(a.state) - Number(b.state)).map(entity => {
+      return <AlertChild key={entity.entity_id}><span>{entity.attributes.friendly_name}</span><span>{entity.state}%</span></AlertChild>
       })}
     </div> : null}
     </Popup>

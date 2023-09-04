@@ -1,4 +1,3 @@
-import { Home } from './Home';
 import { Dining } from './Dining';
 import { Garage } from './Garage';
 import { Kitchen } from './Kitchen';
@@ -12,7 +11,6 @@ import { FrontHouse } from './FrontHouse';
 
 export {
   FrontHouse,
-  Home,
   Dining,
   Garage,
   Kitchen,

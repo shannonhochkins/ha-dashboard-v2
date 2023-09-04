@@ -1,4 +1,4 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import styled from '@emotion/styled';
 import { Icon } from '@iconify/react';
 import { Line as LineBase } from 'react-chartjs-2';
@@ -12,7 +12,8 @@ import {
   LineElement,
   Filler,
 } from 'chart.js';
-import { useWeather, useDevice, useMq } from '@hooks';
+import { useWeather, useDevice, mq } from '@hooks';
+import { Temp, WeatherResponse } from '../../../hooks/useWeather';
 import { WeatherIcon as WeatherIconBase } from './WeatherIcon';
 import { isEqual } from 'lodash';
 export { WeatherIcon } from './WeatherIcon';
@@ -43,7 +44,7 @@ const WeatherIconSmall = styled(WeatherIconBase)`
     width: 100%;
     height: 100%;
   }
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     width: 20px;
     height: 20px;
     margin: 4px 0;
@@ -52,7 +53,7 @@ const WeatherIconSmall = styled(WeatherIconBase)`
 
 const Umbrella = styled(Icon)`
   margin-right: 8px;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     margin-right: 4px;
   `)}
 `;
@@ -78,11 +79,11 @@ const CurrentTemperature = styled.h2`
   line-height: 120px;
   font-family: "Kanit", sans-serif;
   margin: 30px 0;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     font-size: 60px;
     line-height: 60px;
   `)}
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     font-size: 180px;
     line-height: 180px;
   `)}
@@ -99,7 +100,7 @@ const Location = styled.h1`
   line-height: 40px;
   margin: 0;
   font-family: "Kanit", sans-serif;
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     font-size: 44px;
     line-height: 50px;
   `)}
@@ -107,7 +108,7 @@ const Location = styled.h1`
 
 const Predictions = styled(Row)`
   font-size: 16px;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     font-size: 12px;
   `)}
 `;
@@ -119,32 +120,25 @@ const FeelsLike = styled(Row)`
   font-family: "Kanit", sans-serif;
 `;
 
-const DateTime = styled.h3`
-  margin: 10px 0 0 0;
-  font-size: 20px;
-  line-height:24px;
-  font-family: "Kanit", sans-serif;
-`;
-
 const ChartWrapper = styled(Row)<{
   view: 'daily' | 'hourly'
 }>`
   position: relative;
   height: 200px;
-  ${useMq(['mobile'], `
+  ${mq(['mobile'], `
     height: 150px;
   `)}
   ${props => props.view === 'daily' && `
     width: 93% !important;
     margin-left: -10px;
-    ${useMq(['mobile'], `
+    ${mq(['mobile'], `
       width: 100% !important;
     `)}
   `}
   ${props => props.view === 'hourly' && `
     width: 96% !important;
     margin-left: -10px;
-    ${useMq(['mobile'], `
+    ${mq(['mobile'], `
       width: 100% !important;
     `)}
   `}
@@ -192,7 +186,7 @@ const ToggleBase = styled.button<{
   border-color: ${props => props.active ? '#111' : 'white'};
   color: ${props => props.active ? '#111' : 'white'};
   margin: 20px 10px;
-  ${useMq(['fridge'], `
+  ${mq(['fridge'], `
     margin: 40px 20px;
   `)}
 `;
@@ -214,11 +208,11 @@ function Toggle({
 export function WeatherCard() {
   const [view, setView] = useState<'hourly' | 'daily'>('daily');
   const { data, isLoading } = useWeather();
-  const [chartData, setChartData] = useState(null);
+  const [chartData, setChartData] = useState<unknown | null>(null);
   const device = useDevice();
   const today = new Date();
   const hour = today.getHours();
-  let time = null;
+  let time: keyof Temp = 'morn';
   // Parts of the Day.
   // Morning 5 am to 12 pm (noon)
   // Afternoon 12 pm to 5 pm.
@@ -271,19 +265,20 @@ export function WeatherCard() {
     if (!isEqual(chartData, newChartData)) {
       setChartData(newChartData);
     }
-  }, [hourlyLabels, dailyLabels]);
+  }, [hourlyLabels, dailyLabels, view, dailyData, hourlyData, chartData]);
 
   if (isLoading) {
     return null;
   }
+  const weatherData = data as WeatherResponse;
 
   return <Weather>
     <Column>
       <Location>Hamlyn Terrace</Location>
-      <Row><CurrentTemperature>{toTemp(data.current.temp)}</CurrentTemperature> <WeatherIcon /></Row>
-      <CurrentWeatherDescription>{data.current.weather[0].description}</CurrentWeatherDescription>
+      <Row><CurrentTemperature>{toTemp(weatherData.current.temp)}</CurrentTemperature> <WeatherIcon /></Row>
+      <CurrentWeatherDescription>{weatherData.current.weather[0].description}</CurrentWeatherDescription>
       <FeelsLike>
-        Feels like: {toTemp(data.current.feels_like)}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;<Icon icon="akar-icons:arrow-up" />&nbsp;{toTemp(maxTemp)} <Icon icon="akar-icons:arrow-down" />&nbsp;{toTemp(minTemp)}
+        Feels like: {toTemp(weatherData.current.feels_like)}&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;<Icon icon="akar-icons:arrow-up" />&nbsp;{toTemp(maxTemp)} <Icon icon="akar-icons:arrow-down" />&nbsp;{toTemp(minTemp)}
       </FeelsLike>
       <Row>
         <Toggle active={view === 'hourly'} onClick={() => setView('hourly')}>Hourly</Toggle>
@@ -316,6 +311,7 @@ export function WeatherCard() {
             }
             
           }}
+          // @ts-expect-error - simply don't want to type this out as it will be scrapped soon
           data={chartData} />
       </ChartWrapper>
       <Predictions active={view === 'daily'}>{dailyData.map((daily, index) => {

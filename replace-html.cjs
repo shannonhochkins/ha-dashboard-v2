@@ -1,7 +1,8 @@
+/* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-var-requires */
 const replace = require('replace-in-file');
 const path = require('path');
 const paths = [
-  path.resolve('./dist/fridge.html'),
   path.resolve('./dist/index.html'),
 ]
 const options = {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-const KEY = process.env.WEATHER_API_KEY;
+const KEY = import.meta.env.VITE_WEATHER_API_KEY;
 const lat = -33.255275;
 const lon = 151.474943;
 
@@ -46,7 +46,7 @@ interface CurrentWeather extends Shared {
   visibility: number;
   weather: Weather[];
 }
-interface Temp {
+export interface Temp {
   day: number;
   min: number;
   max: number;
@@ -76,7 +76,7 @@ interface HourlyWeather extends Shared {
   pop: number;
 }
 
-interface WeatherResponse {
+export interface WeatherResponse {
   lat: number;
   lon: number;
   timezone: string;
@@ -84,9 +84,10 @@ interface WeatherResponse {
   current: CurrentWeather;
   daily: DailyWeather[];
   hourly: HourlyWeather[];
+  error: string;
 }
 
-let weatherRequest = null;
+let weatherRequest: Promise<WeatherResponse | null> | null = null;
  
 export const useWeather = () => {
   const [data, setData] = useState<WeatherResponse | null>(null);
@@ -94,11 +95,11 @@ export const useWeather = () => {
   const [error, setError] = useState("");
   useEffect(() => {
     if (!weatherRequest) {
-      weatherRequest = fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${KEY}&units=metric&exclude=minutely`).then((res) => res.json());
+      weatherRequest = fetch(`https://api.openweathermap.org/data/3.0/onecall?lat=${lat}&lon=${lon}&appid=${KEY}&units=metric&exclude=minutely`).then((res) => res.json()) as Promise<WeatherResponse | null>;
     }
     weatherRequest
       .then((data) => {
-          setError(data.error)
+          setError(data?.error ?? '')
           setData(data)
           setIsLoading(false)
       })

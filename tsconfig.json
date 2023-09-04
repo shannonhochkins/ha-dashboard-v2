@@ -1,17 +1,24 @@
 {
   "compilerOptions": {
-    "target": "es5",
-    "lib": ["dom", "DOM.Iterable", "esnext"],
-    "jsx": "react-jsx",
-    "types": ["node"],
-    "moduleResolution": "node",
-    "esModuleInterop": true,
-    "forceConsistentCasingInFileNames": true,
-    "isolatedModules": true,
+    "target": "ES2020",
+    "useDefineForClassFields": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "module": "ESNext",
+    "skipLibCheck": true,
+    /* Bundler mode */
+    "moduleResolution": "bundler",
+    "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
+    "isolatedModules": true,
+    "noEmit": true,
+    "jsx": "react-jsx",
+    /* Linting */
+    "strict": true,
+    "noUnusedLocals": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
     "baseUrl": ".",
     "paths": {
-      "@root": ["src"],
       "@store": ["src/store/"],
       "@components": ["src/components/"],
       "@areas": ["src/areas/"],
@@ -21,10 +28,6 @@
       "@assets/*": ["src/assets/*"]
     }
   },
-  "include": ["src", ".d.ts"],
-  "exclude": [
-    ".parcel-cache",
-    "dist",
-    "node_modules"
-  ]
+  "include": ["sync-types.ts", "supported-types.d.ts", "src", ".d.ts"],
+  "references": [{ "path": "./tsconfig.node.json" }]
 }

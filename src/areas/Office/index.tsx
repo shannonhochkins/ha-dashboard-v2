@@ -1,7 +1,6 @@
-import React from 'react';
 import styled from '@emotion/styled';
 import { AreaBase } from '../AreaBase';
-import { AreaCard } from '../AreaCard';
+import { AreaCard, ZoneProps } from '../AreaCard';
 import officeBase from '@assets/office-base.jpg';
 import downlightsBase from '@assets/office-downlights.jpg';
 import striplightsBase from '@assets/office-striplights.jpg';
@@ -14,7 +13,7 @@ import { Computer, RoofLight, Downlights, Striplights } from '../Office/zones';
 const OfficeContainer = styled(AreaBase)``;
 
 export function Office() {
-  const zones = [{
+  const zones: ZoneProps[] = [{
     base: downlightsBase,
     overlay:  {
       renderSvg: onClick => <Downlights onClick={onClick} />,

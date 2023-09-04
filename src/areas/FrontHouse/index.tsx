@@ -1,14 +1,13 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import styled from '@emotion/styled';
-import { Icon } from '@iconify/react';
 import { AreaBase } from '../AreaBase';
-import { AreaCard } from '../AreaCard';
+import { AreaCard, ZoneProps } from '../AreaCard';
 import base from '@assets/front-house-base.jpg';
 import mainGarage from '@assets/front-house-main-gargage-open.png';
 import toolshedGarge from '@assets/front-house-tool-garage-open.png';
 import { CameraCard } from '@components';
 import { ToolShed, MainGarage, Circle } from './zones';
-import { useEntity } from 'ha-component-kit';
+// import { useEntity } from '@hakit/core';
 
 const FrontHouseContainer = styled(AreaBase)`
   
@@ -18,8 +17,8 @@ export function FrontHouse() {
     name: string;
     title: string;
   }>(null);
-  const garageMain = useEntity('cover.garage_door_main');
-  const zones = [{
+  // const garageMain = useEntity('cover.garage_door_main');
+  const zones: ZoneProps[] = [{
     base: mainGarage,
     blendMode: 'none',
     overlay:  {
@@ -44,7 +43,6 @@ export function FrontHouse() {
       // cover: 'cover.garage_door_main',
     }
   }, {
-    base: null,
     blendMode: 'none',
     stateless: true,
     overlay:  {
@@ -60,7 +58,6 @@ export function FrontHouse() {
       zIndex: 4,
     },
   }, {
-    base: null,
     blendMode: 'none',
     stateless: true,
     overlay:  {
@@ -76,7 +73,6 @@ export function FrontHouse() {
       zIndex: 4,
     },
   }, {
-    base: null,
     blendMode: 'none',
     stateless: true,
     overlay:  {
