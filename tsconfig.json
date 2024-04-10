@@ -5,29 +5,27 @@
     "lib": ["ES2020", "DOM", "DOM.Iterable"],
     "module": "ESNext",
     "skipLibCheck": true,
+
     /* Bundler mode */
     "moduleResolution": "bundler",
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
-    "isolatedModules": true,
+    "isolatedModules": false,
     "noEmit": true,
     "jsx": "react-jsx",
+
     /* Linting */
     "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
     "noFallthroughCasesInSwitch": true,
+
     "baseUrl": ".",
     "paths": {
-      "@store": ["src/store/"],
-      "@components": ["src/components/"],
-      "@areas": ["src/areas/"],
-      "@hooks": ["src/hooks/"],
-      "@hass": ["src/hass/"],
-      "@types": ["types.d.ts"],
+      "@components/*": ["src/components/*"],
       "@assets/*": ["src/assets/*"]
     }
   },
-  "include": ["sync-types.ts", "supported-types.d.ts", "src", ".d.ts"],
+  "include": ["sync-types.ts", ".d.ts", "src", "supported-types.d.ts"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }
