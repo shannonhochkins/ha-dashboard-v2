@@ -80,7 +80,10 @@ function Dashboard({ background }: DashboardProps) {
               >
                 {configuration.weather && (
                   <Column className="md-6" fullHeight>
-                    <Weather entity={configuration.weather.entity} config={configuration.weather} />
+                    <Weather
+                      entity={configuration.weather.entity}
+                      config={configuration.weather}
+                    />
                   </Column>
                 )}
                 {configuration.calendar?.entities &&

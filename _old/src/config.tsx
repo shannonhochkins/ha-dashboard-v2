@@ -89,7 +89,7 @@ export const configuration: Configuration = {
             <Cameras sm={3} md={6} lg={6} xlg={6} />
             <ButtonCard
               entity="climate.air_conditioner"
-              defaultLayout="slim-vertical"
+              layoutType="slim-vertical"
               sm={3}
               md={6}
               lg={6}
@@ -106,7 +106,7 @@ export const configuration: Configuration = {
               onClick={async () => {
                 await playYouTubeVideo("_Z0ZQT0FttM");
               }}
-              defaultLayout="slim-vertical"
+              layoutType="slim-vertical"
             />
             <ButtonCard
               title="Play The Wiggles"
@@ -119,7 +119,7 @@ export const configuration: Configuration = {
               onClick={async () => {
                 await playYouTubeVideo("MY98CSj3Xdo");
               }}
-              defaultLayout="slim-vertical"
+              layoutType="slim-vertical"
             />
           </Row>
         );
@@ -138,7 +138,7 @@ export const configuration: Configuration = {
           <Row gap="1rem">
             <ButtonCard
               entity="switch.all_downstairs_light_switchs"
-              defaultLayout="slim-vertical"
+              layoutType="slim-vertical"
               sm={3}
               md={6}
               lg={6}
@@ -147,7 +147,7 @@ export const configuration: Configuration = {
             />
             <ButtonCard
               entity="switch.all_upstairs_lights"
-              defaultLayout="slim-vertical"
+              layoutType="slim-vertical"
               sm={3}
               md={6}
               lg={6}

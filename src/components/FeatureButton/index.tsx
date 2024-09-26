@@ -33,7 +33,7 @@ export function FeatureButton<E extends EntityName>({
   description,
   icon: _icon,
   entity: _entity,
-  iconColor,
+  iconProps,
   cssStyles = "",
   color1 = "#283069",
   color2 = "#4a6aff",
@@ -43,24 +43,27 @@ export function FeatureButton<E extends EntityName>({
   const domain = _entity ? computeDomain(_entity) : null;
   const icon = typeof _icon === "string" ? _icon : null;
   const domainIcon = useIconByDomain(domain === null ? "unknown" : domain, {
-    color: iconColor || undefined,
+    color: iconProps?.style?.color || undefined,
   });
   const entityIcon = useIconByEntity(_entity || "unknown", {
-    color: iconColor || undefined,
+    color: iconProps?.style?.color || undefined,
   });
   const iconElement = useIcon(icon, {
-    color: iconColor || undefined,
+    color: iconProps?.style?.color || undefined,
   });
 
   return (
     <ButtonCard
       entity={_entity}
-      title={title}
+      title={null}
       borderRadius={borderRadius}
       description={description}
       onlyFunctionality
       disableColumns
+      hideDetails
       hideLastUpdated
+      hideToggle
+      hideIcon
       hideState
       {...props}
       cssStyles={`
@@ -85,7 +88,7 @@ export function FeatureButton<E extends EntityName>({
       `
       }
       .contents > div > *:not(.children) {
-        display: none;
+        // display: none;
       }
       .children {
         width: 100%;

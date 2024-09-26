@@ -5,7 +5,10 @@ import Dashboard from "./Dashboard";
 function App() {
   return (
     <>
-      <HassConnect hassUrl={import.meta.env.VITE_HA_URL}>
+      <HassConnect
+        hassUrl={import.meta.env.VITE_HA_URL}
+        hassToken={import.meta.env.VITE_HA_TOKEN}
+      >
         <ThemeProvider
           globalComponentStyles={{
             modal: `

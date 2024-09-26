@@ -1,9 +1,4 @@
-import {
-  EntityName,
-  FilterByDomain,
-  useEntity,
-  HvacMode,
-} from "@hakit/core";
+import { EntityName, FilterByDomain, useEntity, HvacMode } from "@hakit/core";
 import { useResizeDetector } from "react-resize-detector";
 import { useId, useState } from "react";
 import { FeatureButton, FeatureButtonProps } from "@components/FeatureButton";
@@ -16,7 +11,6 @@ import {
   computeHvacModeIcon,
 } from "@hakit/components";
 import styled from "@emotion/styled";
-import { Dial } from "./Dial";
 import { Icon } from "@iconify/react";
 
 type HvacModeData<T> = {
@@ -124,7 +118,7 @@ export function Climate<E extends EntityName>({
         description="Show the climate controls"
         icon="mdi:home-climate"
         layoutId={_id}
-        defaultLayout="slim-vertical"
+        layoutType="slim-vertical"
         color1={"#297471"}
         color2={"#3deec4"}
         // @ts-expect-error - TODO  FIX LATER

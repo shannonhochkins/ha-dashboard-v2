@@ -28,7 +28,6 @@ export interface WeatherBackgroundProps {
 }
 export function WeatherBackground({ entity, blur }: WeatherBackgroundProps) {
   const weather = useEntity(entity);
-  console.log("weather", weather.state);
 
   const videoSrc = useMemo(() => {
     switch (weather.state) {

@@ -9,7 +9,14 @@ import {
   HassEntityWithService,
 } from "@hakit/core";
 import { Modal, Column, Row } from "@hakit/components";
-import { useId, useRef, useState, useEffect, useCallback, ReactNode } from "react";
+import {
+  useId,
+  useRef,
+  useState,
+  useEffect,
+  useCallback,
+  ReactNode,
+} from "react";
 import { FeatureButton, FeatureButtonProps } from "@components/FeatureButton";
 import {
   WeatherSvg as _WeatherSvg,
@@ -42,19 +49,19 @@ export interface WeatherSchema {
   dewPoint?: number;
   cloudCoverage?: number;
   uvIndex?: number;
-
   daily?: [];
   hourly?: [];
   current?: {};
 }
 
-export type ForecastAttribute = NonNullable<WeatherEntity["attributes"]["forecast"]>[number];
+export type ForecastAttribute = NonNullable<
+  WeatherEntity["attributes"]["forecast"]
+>[number];
 
 type WeatherData = {
   daily: ForecastAttribute[];
   hourly: ForecastAttribute[];
-}
-
+};
 
 export function Weather<E extends FilterByDomain<EntityName, "weather">>({
   entity,
@@ -63,57 +70,62 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
 }: FeatureButtonProps<E> & {
   config?: WeatherOptions;
 }) {
-
   const _id = useId();
-  const [weatherInformation, setWeatherInformation] = useState<WeatherSchema>({});
+  const [weatherInformation, setWeatherInformation] = useState<WeatherSchema>(
+    {},
+  );
   const [open, setOpen] = useState(false);
   const { getAllEntities } = useHass();
   const entities = getAllEntities();
-  const relatedEntities = (config.related ?? [])
-    .map(entityId => entities[entityId])
-    .filter(x => !!x);
-  console.log('relatedEntities', relatedEntities);
-  const weather = useEntity(entity ?? 'unknown', {
+  const relatedEntities = (config?.related ?? [])
+    .map((entityId) => entities[entityId])
+    .filter((x) => !!x);
+  const weather = useEntity(entity ?? "unknown", {
     returnNullIfNotFound: true,
   });
   const icon = weather
     ? getIconByEntity("weather", weather)
     : "mdi:weather-fog";
 
-  const onDataChange = useCallback((data: WeatherData) => {
-    if (config && config.preFormat) {
-      config.preFormat({
-        entity: weather,
-        daily: data.daily,
-        hourly: data.hourly,
-        related: relatedEntities
-      }).then(result => {
-        setWeatherInformation(result);
-      });
-    } else if (weather) {
-      setWeatherInformation({
-        location: weather.attributes.friendly_name,
-        lastUpdated: new Date(weather.last_updated),
-        humidity: weather.attributes.humidity,
-        pressure: weather.attributes.pressure,
-        temperature: weather.attributes.temperature,
-        visibility: weather.attributes.visibility,
-        windBearing: weather.attributes.wind_bearing,
-        windSpeed: weather.attributes.wind_speed,
-        precipitationUnit: weather.attributes.precipitation,
-        pressureUnit: weather.attributes.pressure_unit,
-        temperatureUnit: weather.attributes.temperature_unit,
-        visibilityUnit: weather.attributes.visibility_unit,
-        windSpeedUnit: weather.attributes.wind_speed_unit,
-        apparentTemperature: weather.attributes.apparent_temperature,
-        dewPoint: weather.attributes.dew_point,
-        cloudCoverage: weather.attributes.cloud_coverage,
-        uvIndex: weather.attributes.uv_index,
-        daily: data.daily,
-        hourly: data.hourly,
-      })
-    }
-  }, [config, weather, relatedEntities]);
+  const onDataChange = useCallback(
+    (data: WeatherData) => {
+      if (config && config.preFormat) {
+        config
+          .preFormat({
+            entity: weather,
+            daily: data.daily,
+            hourly: data.hourly,
+            related: relatedEntities,
+          })
+          .then((result) => {
+            setWeatherInformation(result);
+          });
+      } else if (weather) {
+        setWeatherInformation({
+          location: weather.attributes.friendly_name,
+          lastUpdated: new Date(weather.last_updated),
+          humidity: weather.attributes.humidity,
+          pressure: weather.attributes.pressure,
+          temperature: weather.attributes.temperature,
+          visibility: weather.attributes.visibility,
+          windBearing: weather.attributes.wind_bearing,
+          windSpeed: weather.attributes.wind_speed,
+          precipitationUnit: weather.attributes.precipitation,
+          pressureUnit: weather.attributes.pressure_unit,
+          temperatureUnit: weather.attributes.temperature_unit,
+          visibilityUnit: weather.attributes.visibility_unit,
+          windSpeedUnit: weather.attributes.wind_speed_unit,
+          apparentTemperature: weather.attributes.apparent_temperature,
+          dewPoint: weather.attributes.dew_point,
+          cloudCoverage: weather.attributes.cloud_coverage,
+          uvIndex: weather.attributes.uv_index,
+          daily: data.daily,
+          hourly: data.hourly,
+        });
+      }
+    },
+    [config, weather, relatedEntities],
+  );
   return (
     <>
       <FeatureButton
@@ -123,7 +135,7 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
         icon={icon}
         color1={"#755b00"}
         color2={"#fdff54"}
-        defaultLayout="slim-vertical"
+        layoutType="slim-vertical"
         // @ts-expect-error - TODO  FIX LATER
         longPressCallback={() => {
           setOpen(true);
@@ -144,25 +156,62 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
         `}
       >
         <Row fullHeight fullWidth>
-          {entity && <WeatherWithEntity entity={entity} onLoad={onDataChange} />}
+          {entity && (
+            <WeatherWithEntity entity={entity} onLoad={onDataChange} />
+          )}
           {!entity && <WeatherWeatherWithoutEntity onLoad={onDataChange} />}
           <Column>
-            {weatherInformation.temperature && <p>{weatherInformation.temperature}{weatherInformation.temperatureUnit ?? ''}</p>}
-            {weatherInformation.location && <p>{weatherInformation.location}</p>}
-            {weatherInformation.apparentTemperature && <p>Feels Like: {weatherInformation.apparentTemperature}</p>}
-            {weatherInformation.lastUpdated && <p>{weatherInformation.lastUpdated.toISOString()}</p>}
-            {weatherInformation.humidity && <p>{weatherInformation.humidity}</p>}
-            {weatherInformation.pressure && <p>{weatherInformation.pressure}</p>}
-            {weatherInformation.visibility && <p>{weatherInformation.visibility}</p>}
-            {weatherInformation.windBearing && <p>{weatherInformation.windBearing}</p>}
-            {weatherInformation.windSpeed && <p>{weatherInformation.windSpeed}</p>}
-            {weatherInformation.precipitationUnit && <p>{weatherInformation.precipitationUnit}</p>}
-            {weatherInformation.pressureUnit && <p>{weatherInformation.pressureUnit}</p>}
-            {weatherInformation.temperatureUnit && <p>{weatherInformation.temperatureUnit}</p>}
-            {weatherInformation.visibilityUnit && <p>{weatherInformation.visibilityUnit}</p>}
-            {weatherInformation.windSpeedUnit && <p>{weatherInformation.windSpeedUnit}</p>}
-            {weatherInformation.dewPoint && <p>{weatherInformation.dewPoint}</p>}
-            {weatherInformation.cloudCoverage && <p>{weatherInformation.cloudCoverage}</p>}
+            {weatherInformation.temperature && (
+              <p>
+                {weatherInformation.temperature}
+                {weatherInformation.temperatureUnit ?? ""}
+              </p>
+            )}
+            {weatherInformation.location && (
+              <p>{weatherInformation.location}</p>
+            )}
+            {weatherInformation.apparentTemperature && (
+              <p>Feels Like: {weatherInformation.apparentTemperature}</p>
+            )}
+            {weatherInformation.lastUpdated && (
+              <p>{weatherInformation.lastUpdated.toISOString()}</p>
+            )}
+            {weatherInformation.humidity && (
+              <p>{weatherInformation.humidity}</p>
+            )}
+            {weatherInformation.pressure && (
+              <p>{weatherInformation.pressure}</p>
+            )}
+            {weatherInformation.visibility && (
+              <p>{weatherInformation.visibility}</p>
+            )}
+            {weatherInformation.windBearing && (
+              <p>{weatherInformation.windBearing}</p>
+            )}
+            {weatherInformation.windSpeed && (
+              <p>{weatherInformation.windSpeed}</p>
+            )}
+            {weatherInformation.precipitationUnit && (
+              <p>{weatherInformation.precipitationUnit}</p>
+            )}
+            {weatherInformation.pressureUnit && (
+              <p>{weatherInformation.pressureUnit}</p>
+            )}
+            {weatherInformation.temperatureUnit && (
+              <p>{weatherInformation.temperatureUnit}</p>
+            )}
+            {weatherInformation.visibilityUnit && (
+              <p>{weatherInformation.visibilityUnit}</p>
+            )}
+            {weatherInformation.windSpeedUnit && (
+              <p>{weatherInformation.windSpeedUnit}</p>
+            )}
+            {weatherInformation.dewPoint && (
+              <p>{weatherInformation.dewPoint}</p>
+            )}
+            {weatherInformation.cloudCoverage && (
+              <p>{weatherInformation.cloudCoverage}</p>
+            )}
             {weatherInformation.uvIndex && <p>{weatherInformation.uvIndex}</p>}
           </Column>
         </Row>
@@ -174,7 +223,7 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
 function WeatherWithEntity<E extends FilterByDomain<EntityName, "weather">>({
   entity,
   onLoad,
-}: Omit<FeatureButtonProps<E>, 'entity' | 'onLoad'> & {
+}: Omit<FeatureButtonProps<E>, "entity" | "onLoad"> & {
   entity: E;
   onLoad: (data: {
     daily: ForecastAttribute[];
@@ -183,21 +232,24 @@ function WeatherWithEntity<E extends FilterByDomain<EntityName, "weather">>({
 }) {
   const lastRequested = useRef<Date | null>();
   const weatherDaily = useWeather(entity, {
-    type: 'daily'
+    type: "daily",
   });
   const weatherHourly = useWeather(entity, {
-    type: 'hourly'
+    type: "hourly",
   });
   useEffect(() => {
     // if the lastRequested.current value is < 5 minutes ago, don't request again
-    if (lastRequested.current && lastRequested.current.getTime() > Date.now() - 1000 * 60 * 5) {
+    if (
+      lastRequested.current &&
+      lastRequested.current.getTime() > Date.now() - 1000 * 60 * 5
+    ) {
       return;
     }
     lastRequested.current = new Date();
     onLoad({
       daily: weatherDaily.forecast?.forecast ?? [],
       hourly: weatherHourly.forecast?.forecast ?? [],
-    })
+    });
   }, [onLoad, weatherDaily.forecast, weatherHourly.forecast]);
   return null;
 }
@@ -209,13 +261,14 @@ interface WeatherByApiProps {
   }) => void;
 }
 
-function WeatherWeatherWithoutEntity({
-  onLoad,
-}: WeatherByApiProps) {
+function WeatherWeatherWithoutEntity({ onLoad }: WeatherByApiProps) {
   const lastRequested = useRef<Date | null>();
   useEffect(() => {
     // if the lastRequested.current value is < 5 minutes ago, don't request again
-    if (lastRequested.current && lastRequested.current.getTime() > Date.now() - 1000 * 60 * 5) {
+    if (
+      lastRequested.current &&
+      lastRequested.current.getTime() > Date.now() - 1000 * 60 * 5
+    ) {
       return;
     }
     lastRequested.current = new Date();

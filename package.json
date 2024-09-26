@@ -10,13 +10,13 @@
     "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
     "preview": "vite preview",
     "prettier": "prettier --write .",
-    "sync": "npx ts-node --esm ./sync-types.ts",
+    "sync": "npx tsx ./sync-types.ts",
     "prebuild": "npm run prettier && npm run sync",
-    "deploy": "npx ts-node --esm scripts/deploy.ts"
+    "deploy": "npx tsx scripts/deploy.ts"
   },
   "dependencies": {
-    "@hakit/components": "file:../ha-component-kit/packages/components/hakit-components-3.1.1.tgz",
-    "@hakit/core": "^3.1.1",
+    "@hakit/components": "^4.0.3",
+    "@hakit/core": "^4.0.3",
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
   },

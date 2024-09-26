@@ -13,7 +13,8 @@ const Link = styled.a`
   padding: 1rem 2rem;
   transition: color var(--ha-transition-duration) var(--ha-easing);
   cursor: pointer;
-  &:hover, &:focus {
+  &:hover,
+  &:focus {
     color: rgba(255, 255, 255, 0.8);
   }
 `;
@@ -22,7 +23,8 @@ const StyledTimeCard = styled(TimeCard)`
   &.card-base {
     border: none;
     background: transparent;
-    &:hover, &:focus {
+    &:hover,
+    &:focus {
       &:not(:disabled) {
         background: transparent;
       }
@@ -47,9 +49,12 @@ export function Navigation({ ...props }: NavigationProps) {
           <StyledTimeCard disableColumns hideIcon hideDate />
         </Row>
         <Row fullWidth>
-          <Fab icon="mdi:view-dashboard" style={{
-            marginRight: '4rem'
-          }} />
+          <Fab
+            icon="mdi:view-dashboard"
+            style={{
+              marginRight: "4rem",
+            }}
+          />
           <Link>Rooms</Link>
           <Link>Music</Link>
           <Link>Devices</Link>

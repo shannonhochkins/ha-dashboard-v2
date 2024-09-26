@@ -1,4 +1,9 @@
-import { AllDomains, EntityName, FilterByDomain, HassEntityWithService } from "@hakit/core";
+import {
+  AllDomains,
+  EntityName,
+  FilterByDomain,
+  HassEntityWithService,
+} from "@hakit/core";
 import { ReactNode } from "react";
 import { Office } from "@components/Areas/Office";
 import { OutdoorKitchen } from "@components/Areas/OutdoorKitchen";
@@ -8,7 +13,7 @@ import { Dining } from "@components/Areas/Dining";
 import { Garage } from "@components/Areas/Garage";
 import { Kitchen } from "@components/Areas/Kitchen";
 import { MasterBedroom } from "@components/Areas/MasterBedroom";
-import { WeatherSchema, ForecastAttribute } from '@components/Widgets/Weather'
+import { WeatherSchema, ForecastAttribute } from "@components/Widgets/Weather";
 import { HassEntity } from "home-assistant-js-websocket";
 
 const KEY = import.meta.env.VITE_WEATHER_API_KEY;
@@ -54,7 +59,7 @@ interface ScreenSaverOptions {
 }
 
 interface WeatherData {
-  entity: HassEntityWithService<'weather'> | null;
+  entity: HassEntityWithService<"weather"> | null;
   daily: ForecastAttribute[];
   hourly: ForecastAttribute[];
   related: HassEntity[];
@@ -67,9 +72,9 @@ export type WeatherOptions = {
   related?: EntityName[];
   /** This method is called before the page renders, it will receive all the related entities as well as the main entity where you can format the data into the required structure
    * NOTE: You can also ignore the entities altogether and make an API call here, just make sure to return the data in the correct format
-   *  */ 
+   *  */
   preFormat?: (data: WeatherData) => Promise<WeatherSchema>;
-}
+};
 
 export interface Configuration {
   weather?: WeatherOptions;
@@ -175,30 +180,30 @@ export interface WeatherResponse {
 export const configuration: Configuration = {
   weather: {
     entity: "weather.freesia",
-    related: [
-      'sensor.openweathermap_uv_index'
-    ],
+    related: ["sensor.openweathermap_uv_index"],
     async preFormat(data) {
-      console.log('data', data);
+      console.log("data", data);
       const response = await fetch(
         `https://api.openweathermap.org/data/3.0/onecall?lat=-33.257592&lon=151.482344&appid=${KEY}&units=metric&exclude=minutely`,
       );
-      const res = await response.json() as WeatherResponse | null;
+      const res = (await response.json()) as WeatherResponse | null;
       if (!res) return null;
       return {
         lastUpdated: new Date(res.current.dt * 1000),
-        location: 'Hamlyn Terrace',
+        location: "Hamlyn Terrace",
         humidity: res.current.humidity,
-        isDaytime: res.current.dt > res.current.sunrise && res.current.dt < res.current.sunset,
+        isDaytime:
+          res.current.dt > res.current.sunrise &&
+          res.current.dt < res.current.sunset,
         temperature: res.current.temp,
         visibility: res.current.visibility,
         windBearing: res.current.wind_deg,
         windSpeed: res.current.wind_speed,
-        precipitationUnit: 'mm',
-        pressureUnit: 'hPa',
-        temperatureUnit: '°C',
-        visibilityUnit: 'km',
-        windSpeedUnit: 'km/h',
+        precipitationUnit: "mm",
+        pressureUnit: "hPa",
+        temperatureUnit: "°C",
+        visibilityUnit: "km",
+        windSpeedUnit: "km/h",
         apparentTemperature: res.current.feels_like,
         dewPoint: res.current.dew_point,
         cloudCoverage: res.current.clouds,

@@ -115,7 +115,7 @@ export function Calendar<E extends EntityName>({
         description="Show the Calendar events"
         icon="mdi:calendar"
         layoutId={_id}
-        defaultLayout="slim-vertical"
+        layoutType="slim-vertical"
         color1={"#850f78"}
         color2={"#ff8be3"}
         // @ts-expect-error - TODO  FIX LATER

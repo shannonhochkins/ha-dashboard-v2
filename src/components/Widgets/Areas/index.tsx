@@ -107,7 +107,7 @@ export function Area<E extends EntityName>({
         layoutId={id}
         icon={configurationAreas[id]?.card?.icon ?? "mdi:information"}
         title={title}
-        defaultLayout="slim-vertical"
+        layoutType="slim-vertical"
         description={description}
         cssStyles={`
         .inner-column {

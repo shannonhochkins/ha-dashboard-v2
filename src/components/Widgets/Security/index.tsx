@@ -13,7 +13,6 @@ export function Cameras<E extends EntityName>({
 }) {
   const _id = useId();
   const [open, setOpen] = useState(false);
-  console.log("entities", entities);
   return (
     <>
       <FeatureButton
@@ -22,7 +21,7 @@ export function Cameras<E extends EntityName>({
         title="Security"
         description="Show the security cameras"
         icon="mdi:security"
-        defaultLayout="slim-vertical"
+        layoutType="slim-vertical"
         // @ts-expect-error - TODO - fix later
         longPressCallback={() => {
           setOpen(true);

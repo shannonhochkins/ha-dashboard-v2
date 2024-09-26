@@ -21,7 +21,7 @@ export function Cameras<E extends EntityName>(props: ButtonCardProps<E>) {
         title="Show the cameras"
         description="Security"
         icon="mdi:security"
-        defaultLayout="slim-vertical"
+        layoutType="slim-vertical"
         onClick={() => {
           setOpen(true);
         }}
