@@ -145,7 +145,7 @@ export interface Temp {
   morn: number;
 }
 
-interface DailyWeather extends Shared {
+export interface DailyWeather extends Shared {
   feels_like: {
     day: number;
     night: number;
@@ -160,7 +160,7 @@ interface DailyWeather extends Shared {
   pop: number;
 }
 
-interface HourlyWeather extends Shared {
+export interface HourlyWeather extends Shared {
   weather: Weather[];
   temp: number;
   pop: number;
@@ -180,14 +180,13 @@ export interface WeatherResponse {
 export const configuration: Configuration = {
   weather: {
     entity: "weather.freesia",
-    related: ["sensor.openweathermap_uv_index"],
     async preFormat(data) {
       console.log("data", data);
       const response = await fetch(
         `https://api.openweathermap.org/data/3.0/onecall?lat=-33.257592&lon=151.482344&appid=${KEY}&units=metric&exclude=minutely`,
       );
       const res = (await response.json()) as WeatherResponse | null;
-      if (!res) return null;
+      if (!res) return {};
       return {
         lastUpdated: new Date(res.current.dt * 1000),
         location: "Hamlyn Terrace",
@@ -210,7 +209,7 @@ export const configuration: Configuration = {
         uvIndex: res.current.uvi,
         daily: res.daily,
         hourly: res.hourly,
-      };
+      } satisfies WeatherSchema;
     },
   },
   climate: {

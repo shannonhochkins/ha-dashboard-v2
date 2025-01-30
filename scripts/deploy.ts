@@ -46,12 +46,14 @@ async function deploy() {
         "Missing ./dist directory, have you run `npm run build`?",
       );
     }
+    console.info("Connecting to scp client");
     const client = await Client({
       host: HOST_OR_IP_ADDRESS,
       port: PORT,
       username: USERNAME,
       password: PASSWORD,
     });
+    console.info("Connected to scp client");
     // seems somewhere along the lines, home assistant decided to rename the config directory to homeassistant...
     const directories = ["config", "homeassistant"];
     for (const dir of directories) {
@@ -60,6 +62,7 @@ async function deploy() {
       if (exists) {
         // empty the directory initially so we remove anything that doesn't need to be there
         try {
+          console.info("Removing remote directory");
           await client.rmdir(remote);
         } catch (e) {
           // directory may not exist, ignore

@@ -23,7 +23,7 @@ import {
   WeatherState,
 } from "weather-icons-animated";
 import styled from "@emotion/styled";
-import { WeatherOptions } from "../../../config";
+import { WeatherOptions, DailyWeather, HourlyWeather } from "../../../config";
 
 const WeatherSvg = styled(_WeatherSvg)`
   width: 100%;
@@ -49,9 +49,8 @@ export interface WeatherSchema {
   dewPoint?: number;
   cloudCoverage?: number;
   uvIndex?: number;
-  daily?: [];
-  hourly?: [];
-  current?: {};
+  daily?: ForecastAttribute[] | DailyWeather[];
+  hourly?: ForecastAttribute[] | HourlyWeather[];
 }
 
 export type ForecastAttribute = NonNullable<
@@ -82,7 +81,7 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
     .filter((x) => !!x);
   const weather = useEntity(entity ?? "unknown", {
     returnNullIfNotFound: true,
-  });
+  }) as HassEntityWithService<"weather">;
   const icon = weather
     ? getIconByEntity("weather", weather)
     : "mdi:weather-fog";
@@ -136,7 +135,7 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
         color1={"#755b00"}
         color2={"#fdff54"}
         layoutType="slim-vertical"
-        // @ts-expect-error - TODO  FIX LATER
+        // @ts-expect-error - ignore, don't need args/overloads
         longPressCallback={() => {
           setOpen(true);
         }}
@@ -230,7 +229,7 @@ function WeatherWithEntity<E extends FilterByDomain<EntityName, "weather">>({
     hourly: ForecastAttribute[];
   }) => void;
 }) {
-  const lastRequested = useRef<Date | null>();
+  const lastRequested = useRef<Date | null>(null);
   const weatherDaily = useWeather(entity, {
     type: "daily",
   });
@@ -262,7 +261,7 @@ interface WeatherByApiProps {
 }
 
 function WeatherWeatherWithoutEntity({ onLoad }: WeatherByApiProps) {
-  const lastRequested = useRef<Date | null>();
+  const lastRequested = useRef<Date | null>(null);
   useEffect(() => {
     // if the lastRequested.current value is < 5 minutes ago, don't request again
     if (

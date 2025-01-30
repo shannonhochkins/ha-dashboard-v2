@@ -143,13 +143,18 @@ function Zone({
   const coverService = useService("cover");
   const callSwitch = useCallback(
     (entity: string) => {
-      switchService.toggle(entity);
+      switchService.toggle({
+        target: entity,
+      });
     },
     [switchService],
   );
   const callCover = useCallback(
     (entity: string, service: SnakeToCamel<DomainService<"cover">>) => {
-      coverService[service](entity);
+      // @ts-expect-error - this is fine
+      coverService[service]({
+        target: entity,
+      });
     },
     [coverService],
   );

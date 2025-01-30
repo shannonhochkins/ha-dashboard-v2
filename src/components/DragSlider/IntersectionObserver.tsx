@@ -14,7 +14,8 @@ export const IntersectionObserver = ({
   reset = false,
 }: IntersectionObserverProps) => {
   const [inView, setInView] = useState(false);
-  const intersectionRef = React.useRef(null);
+  const intersectionRef = React.useRef<HTMLDivElement>(null);
+  // @ts-expect-error - this is fine, types of react-use are not up to date
   const intersection = useIntersection(intersectionRef, {
     threshold: 0,
   });

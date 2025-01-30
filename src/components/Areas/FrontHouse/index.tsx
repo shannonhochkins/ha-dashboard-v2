@@ -10,7 +10,7 @@ import { ToolShed, MainGarage, Circle } from "./zones";
 
 const FrontHouseContainer = styled(AreaBase)``;
 export function FrontHouse() {
-  const [activeCamera, setActiveCamera] = useState<null | {
+  const [, setActiveCamera] = useState<null | {
     name: string;
     title: string;
   }>(null);

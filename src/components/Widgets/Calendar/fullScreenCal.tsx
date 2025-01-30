@@ -396,7 +396,7 @@ export function FullScreenCalendar({
   view,
   includeHeader = true,
   ...rest
-}: CalendarCardProps): JSX.Element {
+}: CalendarCardProps) {
   const { useStore } = useHass();
   const config = useStore((store) => store.config);
   const calRef = useRef<FullCalendar>(null);
@@ -587,9 +587,9 @@ export function FullScreenCalendar({
     if (initialRequest.current) return;
     // initially request the events
     if (!view) {
-      const defaultView = "dayGridMonth";
-      const eventDisplay =
-        defaultView === "dayGridMonth" ? "list-item" : "auto";
+      // const defaultView = "dayGridMonth";
+      // const eventDisplay =
+      //   defaultView === "dayGridMonth" ? "list-item" : "auto";
       // changeView((api) => {
       //   api.setOption("eventDisplay", eventDisplay);
       //   api.changeView(defaultView as string);

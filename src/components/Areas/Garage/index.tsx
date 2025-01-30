@@ -4,11 +4,11 @@ import { AreaCard, ZoneProps } from "../AreaCard";
 import base from "@assets/garage-base.jpg";
 import downlights from "@assets/garage-lights.jpg";
 import { Downlights, GarageDoor } from "./zones";
-import { useService } from "@hakit/core";
+// import { useService } from "@hakit/core";
 
 const GarageContainer = styled(AreaBase)``;
 export function Garage() {
-  const coverService = useService("cover");
+  // const coverService = useService("cover");
   const zones: ZoneProps[] = [
     {
       base: downlights,
@@ -27,7 +27,7 @@ export function Garage() {
         renderSvg: () => (
           <GarageDoor
             onClick={() => {
-              coverService.toggle("cover.garage_door_main");
+              // coverService.toggle("cover.garage_door_main");
             }}
           />
         ),

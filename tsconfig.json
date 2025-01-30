@@ -27,5 +27,6 @@
     }
   },
   "include": ["sync-types.ts", ".d.ts", "src", "supported-types.d.ts"],
+  "exclude": ["_old"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

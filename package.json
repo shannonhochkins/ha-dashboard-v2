@@ -11,24 +11,25 @@
     "preview": "vite preview",
     "prettier": "prettier --write .",
     "sync": "npx tsx ./sync-types.ts",
-    "prebuild": "npm run prettier && npm run sync",
-    "deploy": "npx tsx scripts/deploy.ts"
+    "prebuild": "npm run type-check && npm run prettier && npm run sync",
+    "deploy": "npx tsx scripts/deploy.ts",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hakit/components": "^4.0.3",
-    "@hakit/core": "^4.0.3",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0"
+    "@hakit/components": "../ha-component-kit/packages/components/hakit-components-5.0.1.tgz",
+    "@hakit/core": "../ha-component-kit/packages/core/hakit-core-5.0.1.tgz",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@emotion/css": "^11.11.2",
-    "@emotion/react": "^11.11.1",
-    "@emotion/styled": "^11.11.0",
-    "@iconify/react": "^4.1.1",
-    "@types/lodash": "^4.14.202",
+    "@emotion/css": "^11.13.5",
+    "@emotion/react": "^11.14.0",
+    "@emotion/styled": "^11.14.0",
+    "@iconify/react": "^5.2.0",
+    "@types/lodash": "^4.17.14",
     "@types/node": "^20.9.2",
-    "@types/react": "^18.2.37",
-    "@types/react-dom": "^18.2.15",
+    "@types/react": "^19.0.3",
+    "@types/react-dom": "^19.0.2",
     "@types/react-virtualized": "^9.21.28",
     "@typescript-eslint/eslint-plugin": "^6.10.0",
     "@typescript-eslint/parser": "^6.10.0",
@@ -37,17 +38,16 @@
     "eslint": "^8.53.0",
     "eslint-plugin-react-hooks": "^4.6.0",
     "eslint-plugin-react-refresh": "^0.4.4",
-    "framer-motion": "^10.16.14",
-    "home-assistant-js-websocket": "^9.1.0",
+    "framer-motion": "^11.16.0",
+    "home-assistant-js-websocket": "^9.4.0",
     "lodash": "^4.17.21",
     "node-scp": "^0.0.23",
     "prettier": "^3.1.0",
     "react-background-video-player": "^1.1.8",
-    "react-resize-detector": "^9.1.0",
-    "react-virtualized": "^9.22.5",
-    "typescript": "^5.2.2",
-    "vite": "^5.0.0",
-    "vite-tsconfig-paths": "^4.2.1",
-    "weather-icons-animated": "^1.0.1"
+    "react-resize-detector": "^12.0.2",
+    "typescript": "^5.7.2",
+    "vite": "^6.0.7",
+    "vite-tsconfig-paths": "^5.1.4",
+    "weather-icons-animated": "^2.0.1"
   }
 }

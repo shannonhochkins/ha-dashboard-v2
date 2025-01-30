@@ -11,7 +11,6 @@ import styled from "@emotion/styled";
 import { useAreas } from "@hakit/core";
 import { chunk } from "lodash";
 import { configuration } from "./config";
-
 export interface DashboardProps {
   background?: BackgroundProps;
 }
@@ -24,13 +23,11 @@ const Footer = styled.footer`
   width: 100%;
   height: 200px;
 `;
-
 function Dashboard({ background }: DashboardProps) {
   const areas = useAreas();
   return (
     <>
       <Background {...background} />
-
       <Column fullWidth fullHeight justifyContent="space-between" wrap="nowrap">
         <Header>
           <Navigation />

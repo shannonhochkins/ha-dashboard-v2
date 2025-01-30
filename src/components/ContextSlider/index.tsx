@@ -14,7 +14,7 @@ import {
   ComponentPropsWithoutRef,
 } from "react";
 import styled from "@emotion/styled";
-import { withResizeDetector } from "react-resize-detector";
+import { useResizeDetector } from "react-resize-detector";
 import { FabCard } from "@hakit/components";
 
 const CardBase = styled(motion.div)`
@@ -32,17 +32,17 @@ interface CardProps extends Extendable {
   height?: number;
 }
 
-function Card({ index, onSizeChange, width, height, ...rest }: CardProps) {
+function ResizeCard({ index, onSizeChange, ...rest }: CardProps) {
+  const targetRef = useRef(null);
+  const { width, height } = useResizeDetector({ targetRef });
   useEffect(() => {
     if (height && width) {
       onSizeChange(index, width, height);
     }
   }, [onSizeChange, index, width, height]);
 
-  return <CardBase {...rest} />;
+  return <CardBase ref={targetRef} {...rest} />;
 }
-
-const ResizeCard = withResizeDetector(Card);
 
 const MainWrapper = styled(motion.div)`
   display: flex;
@@ -267,7 +267,7 @@ export const ContextSlider = ({
   return (
     <MainWrapper
       dragElastic={0}
-      dragMomentum={0}
+      dragMomentum={false}
       drag={items.length > 1 ? "x" : false}
       onDrag={detectPaginationGesture}
       onDragStart={() => (hasPaginated.current = false)}

@@ -180,7 +180,9 @@ export function Dial<E extends EntityName>({
   const debounceOnChange = useDebouncedCallback((updatedValue: number) => {
     dragging.current = false;
     entity.service.setTemperature({
-      temperature: updatedValue,
+      serviceData: {
+        temperature: updatedValue,
+      },
     });
   }, 100);
 

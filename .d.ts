@@ -37,3 +37,11 @@ declare global {
     hakit_cache: Options;
   }
 }
+
+import React from "react";
+declare module "react" {
+  interface Attributes {
+    css?: CSSInterpolation;
+    cssStyles?: CSSInterpolation;
+  }
+}

@@ -1,4 +1,3 @@
-import React from "react";
 import { Glow } from "@components/Glow";
 
 export function Computer({ onClick }: { onClick: () => void }) {

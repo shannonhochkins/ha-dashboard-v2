@@ -140,8 +140,8 @@ const WeatherChart = ({ data, settings }: WeatherChartProps) => {
       maxVal = 0;
     const chartWidth =
       values && values.length > 0
-        ? width ?? 0 - c.marginLeft - c.marginRight
-        : width ?? 0;
+        ? (width ?? 0 - c.marginLeft - c.marginRight)
+        : (width ?? 0);
 
     const YTextTop = c.marginTop + c.fontSizeTop;
     const YTextBottom = (height ?? 0) - c.fontSizeBottom - c.marginBottom;
