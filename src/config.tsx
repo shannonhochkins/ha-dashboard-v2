@@ -216,7 +216,12 @@ export const configuration: Configuration = {
     entity: "climate.air_conditioner",
   },
   cameras: {
-    entities: ["camera.backyard_sub", "camera.caravan_sub", "camera.side_sub"],
+    entities: [
+      "camera.backyard_sub",
+      "camera.caravan_sub",
+      "camera.side_sub",
+      "camera.evies_camera",
+    ],
   },
   calendar: {
     entities: [

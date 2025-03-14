@@ -22,7 +22,7 @@ export function MasterBedroom() {
         renderSvg: (onClick) => <Roof onClick={onClick} />,
       },
       entities: {
-        switch: "switch.switch_master_bedroom_light",
+        switch: "switch.master_bedroom_fan_switch",
       },
     },
     {
