@@ -3409,6 +3409,18 @@ declare module "@hakit/core" {
       | "switch.music_assistant_pre_release"
       | "update.music_assistant_update"
       | "binary_sensor.backups_stale"
-      | "sensor.backup_state";
+      | "sensor.backup_state"
+      | "button.theos_camera_reboot"
+      | "button.theos_camera_set_system_date_and_time"
+      | "switch.theos_camera_autofocus"
+      | "switch.theos_camera_ir_lamp"
+      | "switch.theos_camera_wiper"
+      | "binary_sensor.theos_camera_face_detection"
+      | "binary_sensor.theos_camera_cell_motion_detection"
+      | "binary_sensor.theos_camera_vehicle_detection"
+      | "binary_sensor.theos_camera_pet_detection"
+      | "binary_sensor.theos_camera_motion_alarm"
+      | "binary_sensor.theos_camera_person_detection"
+      | "camera.theos_camera_profile000_mainstream";
   }
 }
