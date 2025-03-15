@@ -10,6 +10,13 @@ function App() {
         hassToken={import.meta.env.VITE_HA_TOKEN}
       >
         <ThemeProvider
+          breakpoints={{
+            xxs: 600,
+            xs: 900,
+            sm: 1200,
+            md: 1536,
+            lg: 1700,
+          }}
           globalComponentStyles={{
             modal: `
               background: rgba(255, 255, 255, 0.1);
