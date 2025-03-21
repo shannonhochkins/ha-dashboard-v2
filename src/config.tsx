@@ -221,6 +221,7 @@ export const configuration: Configuration = {
       "camera.caravan_sub",
       "camera.side_sub",
       "camera.evies_camera",
+      "camera.theos_camera_profile000_mainstream",
     ],
   },
   calendar: {

@@ -134,7 +134,7 @@ export function Calendar<E extends EntityName>({
           setOpen(false);
         }}
         cssStyles={`
-          --ha-modal-width: 90vw;
+          --ha-modal-width: 98vw;
         `}
       >
         <FullScreenCalendar entities={entities} />

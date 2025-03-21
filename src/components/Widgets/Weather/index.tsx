@@ -151,7 +151,7 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
           setOpen(false);
         }}
         cssStyles={`
-          --ha-modal-width: 90vw;
+          --ha-modal-width: 98vw;
         `}
       >
         <Row fullHeight fullWidth>

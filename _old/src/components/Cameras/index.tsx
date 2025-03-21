@@ -68,22 +68,6 @@ export function Cameras<E extends EntityName>(props: ButtonCardProps<E>) {
             xlg={4}
             view="live"
           />
-          <CameraCard
-            entity="camera.evies_camera"
-            sm={12}
-            md={6}
-            lg={6}
-            xlg={4}
-            view="live"
-          />
-          <CameraCard
-            entity="camera.theos_camera_profile000_mainstream"
-            sm={12}
-            md={6}
-            lg={6}
-            xlg={4}
-            view="live"
-          />
         </Row>
       </Modal>
     </>

@@ -1,5 +1,5 @@
 import { EntityName, FilterByDomain } from "@hakit/core";
-import { Modal, CameraCard, Row } from "@hakit/components";
+import { Modal, CameraCard, Row, FabCard } from "@hakit/components";
 import { useId, useState } from "react";
 import { FeatureButton, FeatureButtonProps } from "@components/FeatureButton";
 
@@ -13,6 +13,7 @@ export function Cameras<E extends EntityName>({
 }) {
   const _id = useId();
   const [open, setOpen] = useState(false);
+  const [activeEntity, setActiveEntity] = useState<string | null>(null);
   return (
     <>
       <FeatureButton
@@ -36,28 +37,49 @@ export function Cameras<E extends EntityName>({
           setOpen(false);
         }}
         cssStyles={`
-          --ha-modal-width: 90vw;
+          --ha-modal-width: 98vw;
         `}
       >
+        {activeEntity && (
+          <Row>
+            <FabCard
+              icon="mdi:arrow-left"
+              onClick={() => {
+                setActiveEntity(null);
+              }}
+              cssStyles={`
+              margin-bottom: 1rem;
+            `}
+            />
+          </Row>
+        )}
         <Row
           gap="1rem"
           fullWidth
           alignItems="flex-start"
           justifyContent="flex-start"
         >
-          {entities.map((entity) => {
-            return (
-              <CameraCard
-                key={entity}
-                entity={entity}
-                sm={12}
-                md={6}
-                lg={6}
-                xlg={4}
-                view="live"
-              />
-            );
-          })}
+          {entities
+            .filter((entity) => (activeEntity ? entity === activeEntity : true))
+            .map((entity) => {
+              return (
+                <CameraCard
+                  key={entity}
+                  entity={entity}
+                  sm={entity === activeEntity ? 12 : 12}
+                  md={entity === activeEntity ? 12 : 6}
+                  lg={entity === activeEntity ? 12 : 6}
+                  hideViewControls
+                  hideName
+                  muted={entity !== activeEntity}
+                  onClick={() => {
+                    setActiveEntity(entity);
+                  }}
+                  xlg={entity === activeEntity ? 12 : 4}
+                  view="live"
+                />
+              );
+            })}
         </Row>
       </Modal>
     </>
