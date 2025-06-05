@@ -104,7 +104,6 @@ export function Area<E extends EntityName>({
       <FeatureButton
         {...bind()}
         id={id}
-        layoutId={id}
         icon={configurationAreas[id]?.card?.icon ?? "mdi:information"}
         title={title}
         layoutType="slim-vertical"

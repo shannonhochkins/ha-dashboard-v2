@@ -1,4 +1,4 @@
-import { EntityName, FilterByDomain } from "@hakit/core";
+import { EntityName, FilterByDomain, useHass } from "@hakit/core";
 import { Modal, CameraCard, Row, FabCard } from "@hakit/components";
 import { useId, useState } from "react";
 import { FeatureButton, FeatureButtonProps } from "@components/FeatureButton";
@@ -14,6 +14,8 @@ export function Cameras<E extends EntityName>({
   const _id = useId();
   const [open, setOpen] = useState(false);
   const [activeEntity, setActiveEntity] = useState<string | null>(null);
+  const { useStore } = useHass();
+  const allEntities = useStore((state) => state.entities);
   return (
     <>
       <FeatureButton
@@ -31,28 +33,40 @@ export function Cameras<E extends EntityName>({
       ></FeatureButton>
       <Modal
         id={_id}
-        title="Cameras"
+        title={
+          <>
+            <Row>
+              {activeEntity && (
+                <Row>
+                  <FabCard
+                    icon="mdi:arrow-left"
+                    onClick={() => {
+                      setActiveEntity(null);
+                    }}
+                    cssStyles={`
+                margin-right: 1rem;
+              `}
+                  />
+                </Row>
+              )}
+              <div>
+                Cameras{" "}
+                {activeEntity
+                  ? ` - ${allEntities[activeEntity]?.attributes?.friendly_name}`
+                  : ""}
+              </div>
+            </Row>
+          </>
+        }
         open={open}
         onClose={() => {
           setOpen(false);
+          setActiveEntity(null);
         }}
         cssStyles={`
           --ha-modal-width: 98vw;
         `}
       >
-        {activeEntity && (
-          <Row>
-            <FabCard
-              icon="mdi:arrow-left"
-              onClick={() => {
-                setActiveEntity(null);
-              }}
-              cssStyles={`
-              margin-bottom: 1rem;
-            `}
-            />
-          </Row>
-        )}
         <Row
           gap="1rem"
           fullWidth
@@ -71,12 +85,12 @@ export function Cameras<E extends EntityName>({
                   lg={entity === activeEntity ? 12 : 6}
                   hideViewControls
                   hideName
-                  muted={entity !== activeEntity}
+                  muted={activeEntity ? false : true}
                   onClick={() => {
                     setActiveEntity(entity);
                   }}
                   xlg={entity === activeEntity ? 12 : 4}
-                  view="live"
+                  view={"live"}
                 />
               );
             })}

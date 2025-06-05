@@ -7,7 +7,6 @@ function App() {
     <>
       <HassConnect
         hassUrl={import.meta.env.VITE_HA_URL}
-        hassToken={import.meta.env.VITE_HA_TOKEN}
       >
         <ThemeProvider
           breakpoints={{

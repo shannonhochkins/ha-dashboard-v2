@@ -46,7 +46,12 @@ export function Navigation({ ...props }: NavigationProps) {
     <Nav {...props}>
       <Row fullWidth wrap="nowrap" justifyContent="space-between">
         <Row>
-          <StyledTimeCard disableColumns hideIcon hideDate />
+          <StyledTimeCard
+            disableColumns
+            hideIcon
+            hideDate
+            timeFormat="hh:mm:ss a"
+          />
         </Row>
         <Row fullWidth>
           <Fab

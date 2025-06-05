@@ -338,7 +338,6 @@ export const ContextSlider = ({
       <div className="buttons">
         <FabCard
           disabled={activeIndex === 0}
-          whileTap={{ scale: 0.8 }}
           onClick={() => changePage(-1)}
           icon="mdi:chevron-left"
           cssStyles={`
@@ -357,7 +356,6 @@ export const ContextSlider = ({
             backdrop-filter: blur(5px);
             border: 2px solid rgba(255, 255, 255, 0.1);
           `}
-          whileTap={{ scale: 0.8 }}
           onClick={() => changePage(1)}
         />
       </div>

@@ -16,10 +16,11 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hakit/components": "^5.0.9",
-    "@hakit/core": "^5.0.9",
+    "@hakit/components": "^5.1.1-canary.0",
+    "@hakit/core": "^5.1.1-canary.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "use-long-press": "^3.3.0"
   },
   "devDependencies": {
     "@emotion/css": "^11.13.5",
