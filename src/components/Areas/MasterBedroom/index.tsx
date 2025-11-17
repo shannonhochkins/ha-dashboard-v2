@@ -10,7 +10,7 @@ import { Roof, TV, Soundbar } from "./zones";
 const MasterBedroomContainer = styled(AreaBase)``;
 
 export function MasterBedroom() {
-  const { callService } = useHass();
+  const { callService } = useHass.getState().helpers;
   const masterTV = useEntity("media_player.samsung_tv_master_bedroom");
   const zones: ZoneProps[] = [
     {

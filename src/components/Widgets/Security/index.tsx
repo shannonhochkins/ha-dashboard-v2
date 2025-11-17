@@ -14,8 +14,7 @@ export function Cameras<E extends EntityName>({
   const _id = useId();
   const [open, setOpen] = useState(false);
   const [activeEntity, setActiveEntity] = useState<string | null>(null);
-  const { useStore } = useHass();
-  const allEntities = useStore((state) => state.entities);
+  const allEntities = useHass((state) => state.entities);
   return (
     <>
       <FeatureButton

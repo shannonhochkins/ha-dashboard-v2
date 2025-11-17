@@ -6,10 +6,9 @@ import {
   useHass,
 } from "@hakit/core";
 import { motion, useMotionValue, PanInfo } from "framer-motion";
-import { useEffect, useState, useCallback, useRef, CSSProperties } from "react";
+import { useEffect, useCallback, useRef, CSSProperties } from "react";
 import styled from "@emotion/styled";
 import { DialLines } from "./DialLines";
-import type { HassConfig } from "home-assistant-js-websocket";
 import { useDebouncedCallback } from "use-debounce";
 
 const DialParent = styled.div`
@@ -70,8 +69,7 @@ export function Dial<E extends EntityName>({
   const targetValue = useRef<HTMLSpanElement>(null);
   const newValue = useRef<number>(temperature);
   const dragging = useRef(false);
-  const { getConfig } = useHass();
-  const [config, setConfig] = useState<HassConfig | null>(null);
+  const config = useHass((state) => state.config);
   // Track the last X position
   const initialXY = useRef([0, 0]);
   // we use the circle to calculate the angle of the drag
@@ -79,12 +77,6 @@ export function Dial<E extends EntityName>({
   const rotation = useMotionValue(OFFSET); // Start at 180 degrees for bottom center
 
   const isUnavailable = isUnavailableState(entity.state);
-
-  useEffect(() => {
-    getConfig().then((config) => {
-      if (config) setConfig(config);
-    });
-  }, [getConfig]);
 
   useEffect(() => {
     if (targetValue.current) {

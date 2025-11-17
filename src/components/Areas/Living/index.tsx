@@ -10,7 +10,7 @@ import { useHass, useEntity } from "@hakit/core";
 const LivingContainer = styled(AreaBase)``;
 
 export function Living() {
-  const { callService } = useHass();
+  const { callService } = useHass.getState().helpers;
   const livingRoomTV = useEntity("media_player.samsung_tv_living_room");
 
   const zones: ZoneProps[] = [

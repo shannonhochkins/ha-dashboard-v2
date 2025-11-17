@@ -74,7 +74,7 @@ export function Weather<E extends FilterByDomain<EntityName, "weather">>({
     {},
   );
   const [open, setOpen] = useState(false);
-  const { getAllEntities } = useHass();
+  const { getAllEntities } = useHass.getState().helpers;
   const entities = getAllEntities();
   const relatedEntities = (config?.related ?? [])
     .map((entityId) => entities[entityId])

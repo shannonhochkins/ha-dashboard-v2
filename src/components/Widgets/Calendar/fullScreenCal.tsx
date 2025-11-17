@@ -397,8 +397,7 @@ export function FullScreenCalendar({
   includeHeader = true,
   ...rest
 }: CalendarCardProps) {
-  const { useStore } = useHass();
-  const config = useStore((store) => store.config);
+  const config = useHass((store) => store.config);
   const calRef = useRef<FullCalendar>(null);
   const initialRequest = useRef(false);
   const [error, setError] = useState<string | null>(null);
@@ -409,7 +408,7 @@ export function FullScreenCalendar({
     refreshMode: "debounce",
     refreshRate: 500,
   });
-  const { callApi, getAllEntities } = useHass();
+  const { callApi, getAllEntities } = useHass.getState().helpers;
   const [currentEvent, setCurrentEvent] =
     useState<CalendarEventWithEntity | null>(null);
   const allEntities = getAllEntities();

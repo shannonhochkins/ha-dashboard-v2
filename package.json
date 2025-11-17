@@ -16,8 +16,8 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
-    "@hakit/components": "^5.1.5",
-    "@hakit/core": "^5.1.5",
+    "@hakit/components": "^6.0.0",
+    "@hakit/core": "^6.0.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "use-long-press": "^3.3.0"
